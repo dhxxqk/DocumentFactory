@@ -130,3 +130,59 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 - [rFonts 脚本和主题字体的跨样式覆盖规则](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/aef3c9a6-5d6c-434b-90b7-85e761fd8e62)
 - [ThemeFontLanguages 与东亚主题语言](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.themefontlanguages?view=openxml-3.0.1)
 - [Word Documents.Open 的 ReadOnly 参数](https://learn.microsoft.com/en-us/office/vba/api/word.documents.open)
+
+
+## 下一阶段方向：从审计器演进为文档规范化引擎
+
+> 架构决策日期：2026-09-19。当前 `v0.1` 能力边界保持不变；以下内容是后续版本的正式演进方向，不代表当前版本已经具备自动修复能力。
+
+DocumentFactory 的长期定位不是 WPS / Word 的单一插件，而是一个可被 AI、CLI、桌面工具以及 Office/WPS 入口共同调用的 **文档分析、规范化与验证核心引擎**。
+
+目标调用链：
+
+```text
+输入 DOCX
+  ↓
+Document Analyzer
+  ↓
+Document Structure Model
+  ↓
+Formatting Rules / Preset
+  ↓
+Normalization Engine
+  ↓
+Validation
+  ↓
+输出 DOCX + Validation Report
+```
+
+### 架构原则
+
+1. **Core 与入口分离**：核心能力不绑定 WPS、Word、GUI 或任何单一 Agent。CLI、DeepSeek Harness、Codex、未来 WPS 插件都只是调用入口。
+2. **规则配置化**：格式要求继续由正式规范和机器规则共同驱动，后续增加可复用的 preset/profile，不把字体、字号、段落等规则写死在入口代码中。
+3. **先识别语义角色，再修改格式**：对 Title、Heading 1/2/3、Body、Table、Caption、Header、Footer 等结构分别归一化，而不是对全文进行无差别字体替换。
+4. **保留只读审计能力**：现有 lint / audit 是后续自动修复的安全基座。修复前必须能够识别问题，修复后必须再次验证。
+5. **不覆盖原始文档**：未来 normalization/fix 操作默认生成新文件，不直接改写输入 DOCX；必要时继续使用哈希校验与输出路径保护。
+6. **验证闭环优先**：自动修改完成后生成机器可读和中文报告，明确列出修复项、剩余异常、无法确定项，禁止只因“成功保存文件”就宣称格式合格。
+7. **Office/WPS 是可选高级后端**：优先保持 OOXML/Python 核心独立；只有 python-docx/OOXML 难以安全实现的能力，再考虑调用 Word/WPS 作为高级后端。
+8. **AI 不直接控制底层格式细节**：AI 负责选择规范、解释意图和调用工具；确定性的排版修改由 DocumentFactory Core 执行。
+
+### 外部参考实现
+
+后续实现可参考 Word-Formatter-Pro 一类项目的工程思路，重点吸收“核心排版逻辑独立、CLI/Agent 作为薄入口、配置驱动、原文件保护”等模式。参考的目的是减少重复试错，不把 DocumentFactory 绑定为其 fork，也不把第三方项目作为运行时依赖。
+
+### 下一阶段最小闭环
+
+后续 `TASK_DOC_002` 应围绕以下最小闭环展开：
+
+```text
+输入 DOCX
+→ 识别正文 / 标题 / 表格等语义角色
+→ 读取 preset / rules
+→ 对可确定对象执行字体、字号等规范化
+→ 输出新的 DOCX
+→ 重新运行 lint / audit
+→ 生成 Validation Report
+```
+
+首阶段不做 GUI，不优先做 WPS 插件。WPS/Word 插件仅作为未来入口层；只有在核心引擎稳定后再评估实现。
