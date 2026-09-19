@@ -1,0 +1,92 @@
+version: '1.4.0'
+spec_version: V1.4
+source: specs/电网科技项目实施方案文档格式规范_V1.4.md
+# Markdown 为主源；以下为已人工核对的确定性映射。字号：三号 16pt、四号 14pt、五号 10.5pt。
+document:
+  page_size: A4
+  page_size_twips: [11906, 16838]
+  orientation: portrait
+  margins_cm: {top: 2.8, bottom: 2.6, left: 2.8, right: 2.6}
+  tolerance_twips: 3
+body:
+  style_name: 正文
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12
+  first_line_indent_chars: 2
+  line_spacing: 1.5
+  space_before_pt: 0
+  space_after_pt: 0
+  alignment: both
+heading1: {word_style: Heading 1, chinese_font: 黑体, size_pt: 16, color: '000000'}
+heading2: {word_style: Heading 2, chinese_font: 黑体, size_pt: 14, color: '000000'}
+heading3: {word_style: Heading 3, chinese_font: 黑体, size_pt: 12, color: '000000'}
+toc:
+  required: true
+  levels: [1, 2]
+  expected_field_logic: 'TOC \o "1-2" \h \z \u'
+  update_fields: true
+numbering:
+  automatic_multilevel_required: true
+  manual_heading_number_forbidden: true
+  manual_patterns:
+    - '^\s*\d+(?:\.\d+){0,2}(?=[\s、．.)）\u4e00-\u9fff]|$)'
+    - '^\s*[一二三四五六七八九十百]+、'
+    - '^\s*[（(][一二三四五六七八九十百]+[）)]'
+tables:
+  required_styles: [表格表头, 表格正文]
+  optional_styles: [表格正文-居中]
+  header_strategy: first_row_or_repeat
+  cover_style_pattern: '^(封面|cover)'
+  first_line_indent: 0
+  left_indent: 0
+  right_indent: 0
+  space_before_pt: 0
+  space_after_pt: 0
+  header_font: 黑体
+  body_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 10.5
+  line_spacing_allowed: [single, exact]
+font_aliases:
+  仿宋: [仿宋, FangSong]
+  黑体: [黑体, SimHei]
+  Times New Roman: [Times New Roman]
+rules:
+  PAGE001: {source: '§2.1', severity: ERROR}
+  PAGE002: {source: '§2.1', severity: WARNING}
+  PAGE003: {source: '§2.1', severity: ERROR}
+  STYLE001: {source: '§5.1', severity: ERROR}
+  STYLE002: {source: '§5.1', severity: ERROR}
+  STYLE003: {source: '§5.1', severity: ERROR}
+  STYLE004: {source: '§5.1', severity: ERROR}
+  STYLE005: {source: '§5.1', severity: ERROR}
+  BODY001: {source: '§2.2', severity: ERROR}
+  BODY002: {source: '§2.2', severity: ERROR}
+  BODY003: {source: '§2.2', severity: WARNING}
+  NUM001: {source: '§5.2、§9.2', severity: ERROR}
+  NUM002: {source: '§5.2', severity: ERROR}
+  NUM003: {source: '§5.2', severity: ERROR}
+  TOC001: {source: '§4.2、§9.1', severity: ERROR}
+  TOC002: {source: '§4.2', severity: ERROR}
+  TOC003: {source: '§4.2、§9.2', severity: WARNING}
+  TOC004: {source: '§4.2', severity: WARNING}
+  TOC005: {source: '§4.2', severity: WARNING}
+  TABLE001: {source: '§6.1', severity: ERROR}
+  TABLE002: {source: '§6.1', severity: WARNING}
+  TABLE003: {source: '§6.1', severity: ERROR}
+  TABLE004: {source: '§6.3', severity: ERROR}
+  TABLE005: {source: '§6.1', severity: ERROR}
+  TABLE006: {source: '§6.3', severity: WARNING}
+  TABLE007: {source: '§6.1、§6.3', severity: ERROR}
+  TABLE008: {source: '§6.1、§6.2', severity: ERROR}
+  TABLE009: {source: '§6.4', severity: INFO}
+  TABLE010: {source: '§6.1', severity: ERROR}
+  FONT001: {source: '§2.2、§5.1、§6.2', severity: ERROR}
+  FONT002: {source: '§2.2、§6.2', severity: ERROR}
+  FONT003: {source: '§2.2、§5.1、§6.2', severity: ERROR}
+  FONT004: {source: '§5.1', severity: ERROR}
+  FRONT001: {source: '§4.1', severity: ERROR}
+  FRONT002: {source: '§4.2', severity: ERROR}
+  FRONT003: {source: '§4.3', severity: WARNING}
+  STRUCT001: {source: '§1.2、§10.3', severity: WARNING}

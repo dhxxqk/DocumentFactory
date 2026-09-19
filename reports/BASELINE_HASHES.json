@@ -1,0 +1,14 @@
+{
+  "电网科技项目实施方案文档格式规范_V1.4.md": {
+    "source": "G:\\文档修改测试\\电网科技项目实施方案文档格式规范_V1.4.md",
+    "copy": "G:\\Workflows\\DocumentFactory\\specs\\电网科技项目实施方案文档格式规范_V1.4.md",
+    "source_sha256": "65a91e6a313ff62f11d369e8ec0fded2a1e8796d4a85438c62f9a5989d5b00d7",
+    "copy_sha256": "65a91e6a313ff62f11d369e8ec0fded2a1e8796d4a85438c62f9a5989d5b00d7"
+  },
+  "第三周_规划管理能力_培训材料_格式规范V1.4.docx": {
+    "source": "G:\\文档修改测试\\第三周_规划管理能力_培训材料_格式规范V1.4.docx",
+    "copy": "G:\\Workflows\\DocumentFactory\\testcases\\第三周_规划管理能力_培训材料_格式规范V1.4.docx",
+    "source_sha256": "a94bcfe25e6741bc7eb38684eb5e88e809d3acad8ee486c89763a9274fbd237b",
+    "copy_sha256": "a94bcfe25e6741bc7eb38684eb5e88e809d3acad8ee486c89763a9274fbd237b"
+  }
+}
