@@ -1,5 +1,14 @@
 # 更新记录
 
+## Unreleased — 2026-09-19
+
+- 确认 DocumentFactory 的长期定位：从只读 DOCX 审计工具演进为“文档分析 + 规范化 + 验证”核心引擎。
+- 明确核心引擎与 CLI、DeepSeek Harness、Codex、WPS/Word 插件等入口分离，避免绑定单一办公软件。
+- 决定后续采用规则 / preset 驱动，先识别 Title、Heading、Body、Table、Caption 等语义角色，再进行确定性的格式规范化。
+- 保留 v0.1 只读 lint / audit 作为安全基座；未来自动修复默认输出新 DOCX，并在修复后重新审计生成 Validation Report。
+- Word-Formatter-Pro 等项目仅作为架构参考实现，不作为 DocumentFactory 的产品定位或强制运行时依赖。
+- 下一阶段 TASK_DOC_002 聚焦最小闭环：识别结构 → 读取规则 → 规范化字体/字号等可确定格式 → 输出新 DOCX → 再审计验证。
+
 ## 0.1.0 — 2026-09-19
 
 - 建立分层 Python 工程与 `lint`、`render`、`audit` CLI。
