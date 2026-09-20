@@ -25,7 +25,7 @@
 
 凭据检查只记录是否存在，不读取或输出 secret：当前进程、Windows User 和 Windows Machine 三个作用域的 `DEEPSEEK_API_KEY` 均未设置；DSH credential service 也没有可用的 DeepSeek key。API Key 未写入仓库、Git、`cordis.patch.yml` 或本报告。
 
-指定必读文件 `docs/DOCUMENTFACTORY_PRODUCT_DESIGN_V1.md` 在当前最新仓库中不存在；`README.md`、`docs/ADR_001_DOCUMENTFACTORY_DIRECTION.md` 与 `reports/TASK_DOC_003_REPORT.md` 已完整读取。缺失文件没有被擅自创建，也不改变已确认的 `DSH → MCP → DocumentFactory → normalize Core` 架构。
+任务开始时，指定必读文件 `docs/DOCUMENTFACTORY_PRODUCT_DESIGN_V1.md` 尚未出现在本地或当时的 `origin/master`。本轮提交后发现远端并发新增提交 `986c7ea`，随即 fetch 并完整阅读该文件，再以普通 merge 保留双方历史。`README.md`、`docs/ADR_001_DOCUMENTFACTORY_DIRECTION.md` 与 `reports/TASK_DOC_003_REPORT.md` 也已完整读取。资料共同确认 `DSH → MCP → DocumentFactory → normalize Core` 架构。
 
 ## 3. DSH CLI 与配置核验
 
@@ -126,6 +126,9 @@ preset: grid_tech_v1_4
 
 ## 9. 修改范围
 
-本轮仓库内仅新增本报告：`reports/TASK_DOC_003_FIX_REPORT.md`。没有修改功能代码、配置、规则、测试或已有报告。
+本轮功能提交仅新增本报告：`reports/TASK_DOC_003_FIX_REPORT.md`。没有修改功能代码、配置、规则、测试或已有报告。远端并发新增的产品设计文档通过普通 merge 纳入本地历史。
 
-Git 提交与 SSH push 结果将在提交后以 Git 历史为准；不执行 force push、reset、rebase 或 amend。
+- TASK_DOC_003_FIX 提交：`64dc1098047634b9ad95bb95b6dd64260f525a0d`（`fix: complete DSH end to end document workflow`）。
+- 首次 SSH push 因远端并发提交而被 non-fast-forward 保护拒绝；未使用 force push、reset、rebase 或 amend。
+- fetch 后确认远端只新增 `986c7ea docs: add DocumentFactory product design direction`，通过普通 merge 提交 `7f052c3` 合并，无冲突。
+- 合并结果已通过 SSH 成功推送至 `origin/master`；本次报告事实修正使用后续独立 docs 提交。
