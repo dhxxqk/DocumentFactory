@@ -1,6 +1,6 @@
-# DocumentFactory v0.1
+# DocumentFactory v0.2-alpha
 
-只读的 DOCX 文档质量工具：OOXML 解析 → 结构审计 → 中文报告 → PDF / PNG 渲染。不会修改、修复、重建或保存输入 DOCX，不调用 LLM、OCR 或自动排版服务。
+确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 可确定格式规范化 → 修复后验证 → 中文 Markdown / JSON 报告，并保留 v0.1 的 PDF / PNG 可选渲染能力。`lint`、`render`、`audit` 继续只读；`normalize` 绝不覆盖输入，只生成新的 DOCX。不调用 LLM、OCR 或自动排版服务。
 
 本项目位于任务书指定的 `G:\Workflows\DocumentFactory`。规范主源为 `specs/电网科技项目实施方案文档格式规范_V1.4.md`；`rules/grid_tech_v1_4.yaml` 是人工核对后的机器映射，每条规则记录规范章节和严重等级。规则修改应先核对 Markdown，不能把机器配置作为新的格式规范。
 
@@ -23,6 +23,13 @@ python -m venv .venv
   'testcases\第三周_规划管理能力_培训材料_格式规范V1.4.docx' `
   --rules 'rules\grid_tech_v1_4.yaml' `
   --report 'reports\TEST_CASE_001_LINT_REPORT.md'
+
+# 确定性规范化：lint before → normalize → lint after → Validation Report
+& .\.venv\Scripts\python.exe -X utf8 -m document_factory normalize `
+  'testcases\第三周_规划管理能力_培训材料_格式规范V1.4.docx' `
+  --rules 'rules\grid_tech_v1_4.yaml' `
+  --output 'output\normalized\TEST_CASE_001_formatted.docx' `
+  --report 'reports\TEST_CASE_001_NORMALIZATION_REPORT.md'
 
 # 只渲染，不进行结构检查
 & .\.venv\Scripts\python.exe -X utf8 -m document_factory render `
@@ -50,6 +57,28 @@ $LASTEXITCODE
 | 1 | 结构审计 FAIL，报告已生成 |
 | 2 | 输入、规则、路径或执行错误 |
 | 3 | 渲染不可用或失败；audit 仍生成结构报告。优先于结构 FAIL 的退出码 |
+
+`normalize` 的退出码 1 表示新 DOCX 和 Validation Report 已安全生成，但修复后 lint 仍有 ERROR；不能把“成功输出”误报为文档完全合规。CLI 同时打印 `STATUS`、`OUTPUT`、`REPORT`、`BEFORE_ERROR`、`AFTER_ERROR` 和 `CHANGED`。
+
+## Python 结构化接口
+
+核心逻辑不依赖 CLI 文本，可直接供后续 Agent / MCP 薄适配层调用：
+
+```python
+from document_factory import normalize
+
+result = normalize(
+    "input.docx",
+    "rules/grid_tech_v1_4.yaml",
+    output_path="output/normalized/input_formatted.docx",
+    report_path="reports/input_NORMALIZATION_REPORT.md",
+)
+
+print(result.status, result.before_counts, result.after_counts)
+print(result.output_path, result.report_path, result.source_unchanged)
+```
+
+`NormalizationResult` 提供 `status`、输入/输出/报告路径、输入/输出 SHA-256、前后计数、逐项 `changes`、剩余问题和 `source_unchanged`；`to_dict()` 可直接用于 MCP/Agent 的 JSON 序列化。
 
 ## 渲染后端
 
@@ -83,6 +112,7 @@ src/document_factory/
   section_analyzer.py          A4、方向、页边距、前置标题及首章分页证据
   table_analyzer.py            表格专用样式、继承、缩进、间距、行距及字体
   lint_engine.py              规则加载、正文/标题/Run 检查及结果聚合
+  normalizer.py               确定性 OOXML 规范化、原子落盘、前后 lint 与 Validation Report
   renderer.py                 后端探测、私有副本、PDF 和 PNG、失败状态
   _word_export.py             有界 Word COM 工作进程
   report_writer.py            中文 Markdown 和完整机器可读 JSON
@@ -108,13 +138,15 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 
 ## 基线与可复现性
 
-两份正式基线从 `G:\文档修改测试` 原样复制，SHA-256 见 `reports/BASELINE_HASHES.json`。规范 Markdown 和体积较小的正式 DOCX 均纳入 Git。解析、审计、渲染均使用只读输入；审计与渲染在操作结束时校验输入哈希。测试不会改写正式样本。
+两份正式基线从 `G:\文档修改测试` 原样复制，SHA-256 见 `reports/BASELINE_HASHES.json`。规范 Markdown 和体积较小的正式 DOCX 均纳入 Git。解析、审计、渲染均使用只读输入；规范化也只读取输入，通过同目录临时 ZIP 和原子替换生成新文件，并在操作前后校验输入哈希。未修改的 ZIP 部件逐项原样复制。测试不会改写正式样本。
 
 如正式规范缺失，规则加载会拒绝审计；如正式样本缺失，对应回归测试明确 skip，不能将其作为完整验收通过。允许生成的最小 OOXML fixtures 仅用于自动测试，不是规范或 TEST_CASE_001 的替代品。
 
 已验证依赖版本记录在 `reports/ENVIRONMENT.json`。可用 `python -m pip install -e '.[test,word]'` 在另一 Windows 环境重建依赖；原生 Office 后端和字体必须另行具备。
 
 ## 已知边界
+
+规范化只处理现有 StyleResolver 明确认定的 Heading 1/2/3、明确使用“正文”样式的段落/Run，以及明确使用表格表头、表格正文、表格正文-居中样式的对象。不会把 Normal、疑似标题或疑似表头自动重分类，不会修改编号和 TOC。
 
 不完整模拟 Word 排版、条件表格样式、复杂文字脚本、全部主题语言映射、浮动对象、文本框阅读顺序、修订结构、AlternateContent 和所有字段语法。遇到相关对象时输出诊断；条件表格格式可能影响字体，须结合后续渲染复核。支持标准 `word/document.xml` 包布局，不支持重定位的主文档 part；不会执行包中的宏、关系目标或外部导入内容。
 
@@ -132,57 +164,8 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 - [Word Documents.Open 的 ReadOnly 参数](https://learn.microsoft.com/en-us/office/vba/api/word.documents.open)
 
 
-## 下一阶段方向：从审计器演进为文档规范化引擎
+## TASK_DOC_003 MCP 接入准备
 
-> 架构决策日期：2026-09-19。当前 `v0.1` 能力边界保持不变；以下内容是后续版本的正式演进方向，不代表当前版本已经具备自动修复能力。
+v0.2-alpha 已完成入口无关的 `normalize(...)` Core 和稳定结构化结果，可在 TASK_DOC_003 中增加薄 MCP 适配：参数校验后调用 Core，将 `NormalizationResult.to_dict()` 返回给调用方即可。MCP 层不应复制 OOXML 判断、格式目标、lint 或报告逻辑，也不应让 Agent 直接决定底层 XML 修改。
 
-DocumentFactory 的长期定位不是 WPS / Word 的单一插件，而是一个可被 AI、CLI、桌面工具以及 Office/WPS 入口共同调用的 **文档分析、规范化与验证核心引擎**。
-
-目标调用链：
-
-```text
-输入 DOCX
-  ↓
-Document Analyzer
-  ↓
-Document Structure Model
-  ↓
-Formatting Rules / Preset
-  ↓
-Normalization Engine
-  ↓
-Validation
-  ↓
-输出 DOCX + Validation Report
-```
-
-### 架构原则
-
-1. **Core 与入口分离**：核心能力不绑定 WPS、Word、GUI 或任何单一 Agent。CLI、DeepSeek Harness、Codex、未来 WPS 插件都只是调用入口。
-2. **规则配置化**：格式要求继续由正式规范和机器规则共同驱动，后续增加可复用的 preset/profile，不把字体、字号、段落等规则写死在入口代码中。
-3. **先识别语义角色，再修改格式**：对 Title、Heading 1/2/3、Body、Table、Caption、Header、Footer 等结构分别归一化，而不是对全文进行无差别字体替换。
-4. **保留只读审计能力**：现有 lint / audit 是后续自动修复的安全基座。修复前必须能够识别问题，修复后必须再次验证。
-5. **不覆盖原始文档**：未来 normalization/fix 操作默认生成新文件，不直接改写输入 DOCX；必要时继续使用哈希校验与输出路径保护。
-6. **验证闭环优先**：自动修改完成后生成机器可读和中文报告，明确列出修复项、剩余异常、无法确定项，禁止只因“成功保存文件”就宣称格式合格。
-7. **Office/WPS 是可选高级后端**：优先保持 OOXML/Python 核心独立；只有 python-docx/OOXML 难以安全实现的能力，再考虑调用 Word/WPS 作为高级后端。
-8. **AI 不直接控制底层格式细节**：AI 负责选择规范、解释意图和调用工具；确定性的排版修改由 DocumentFactory Core 执行。
-
-### 外部参考实现
-
-后续实现可参考 Word-Formatter-Pro 一类项目的工程思路，重点吸收“核心排版逻辑独立、CLI/Agent 作为薄入口、配置驱动、原文件保护”等模式。参考的目的是减少重复试错，不把 DocumentFactory 绑定为其 fork，也不把第三方项目作为运行时依赖。
-
-### 下一阶段最小闭环
-
-后续 `TASK_DOC_002` 应围绕以下最小闭环展开：
-
-```text
-输入 DOCX
-→ 识别正文 / 标题 / 表格等语义角色
-→ 读取 preset / rules
-→ 对可确定对象执行字体、字号等规范化
-→ 输出新的 DOCX
-→ 重新运行 lint / audit
-→ 生成 Validation Report
-```
-
-首阶段不做 GUI，不优先做 WPS 插件。WPS/Word 插件仅作为未来入口层；只有在核心引擎稳定后再评估实现。
+当前版本没有实现 MCP Server、GUI、WPS/Word 插件、HTTP API、云服务或 LLM API；这些能力不属于 TASK_DOC_002。

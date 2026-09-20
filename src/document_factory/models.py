@@ -6,6 +6,7 @@ from typing import Any
 class Run:
     text: str
     properties: dict
+    element: Any = field(default=None, repr=False)
 
 
 @dataclass
@@ -103,6 +104,24 @@ class RenderResult:
     pages: list[str] = field(default_factory=list)
     message: str = ""
     source_unchanged: bool = True
+
+
+@dataclass
+class NormalizationResult:
+    status: str
+    input_path: str
+    output_path: str
+    report_path: str
+    input_sha256: str
+    output_sha256: str
+    before_counts: dict[str, int]
+    after_counts: dict[str, int]
+    changes: list[dict[str, Any]] = field(default_factory=list)
+    remaining_findings: list[dict[str, Any]] = field(default_factory=list)
+    source_unchanged: bool = True
+
+    def to_dict(self):
+        return asdict(self)
 
 
 class DocumentFactoryError(Exception):

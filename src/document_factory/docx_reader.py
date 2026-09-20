@@ -140,7 +140,7 @@ def read_docx(path):
                 if any(a.tag == q("del") for a in r.iterancestors()):
                     continue
                 text = "".join((e.text or "") if e.tag == q("t") else "\t" if e.tag == q("tab") else "\n" if e.tag == q("br") else "" for e in r)
-                runs.append(Run(text, properties(r.find("w:rPr", NS))))
+                runs.append(Run(text, properties(r.find("w:rPr", NS)), element=r))
             props = properties(p.find("w:pPr", NS))
             pp = Paragraph(indices[p], part, "".join(r.text for r in runs), props.get("pStyle", default_style), props, runs,
                            bool(p.xpath('.//w:br[@w:type="page"]', namespaces=NS)), *table_map.get(p, (None, None, None)), element=p)

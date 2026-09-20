@@ -21,6 +21,11 @@ def load_rules(path):
                 raise ValueError(f"规则 {name} 缺少有效 severity/source")
         for pattern in rules["numbering"]["manual_patterns"]:
             re.compile(pattern)
+        table_spacing = rules["tables"].get("normalization_line_spacing")
+        if table_spacing is not None and table_spacing not in rules["tables"]["line_spacing_allowed"]:
+            raise ValueError("表格规范化行距必须属于 line_spacing_allowed")
+        if table_spacing == "exact" and int(rules["tables"].get("normalization_exact_line_twips", 0)) <= 0:
+            raise ValueError("固定表格行距需要正数 normalization_exact_line_twips")
         source = (path.parent.parent / rules["source"]).resolve()
         if not source.is_file():
             raise ValueError(f"规范主源缺失，停止正式审计：{source}")

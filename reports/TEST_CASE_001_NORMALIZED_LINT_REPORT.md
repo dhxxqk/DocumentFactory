@@ -1,0 +1,183 @@
+# DocumentFactory 文档审计报告
+
+## 1. 基本信息
+
+- 生成时间：2026-09-20T12:00:27+08:00
+- DocumentFactory 版本：0.2.0a1
+- 规范版本：V1.4
+- 输入文件：G:\Workflows\DocumentFactory\output\normalized\TEST_CASE_001_formatted.docx
+- 输入 SHA-256：90785a3561fa1eec26d7c68721adf0958c65c74dd063d1c8853f91cd4860c094
+- Lint 规则版本：1.4.0
+- 规则 SHA-256：79a5b7f5699dcfac55871a5366ce8f6cc34ef736ed71146e4ac01796be408672
+- 规范 SHA-256：65a91e6a313ff62f11d369e8ec0fded2a1e8796d4a85438c62f9a5989d5b00d7
+- 运行环境：Windows-11-10.0.26200-SP0 / Python 3.12.14 / G:\Workflows\DocumentFactory\.venv\Scripts\python.exe
+- 是否成功渲染：NOT_REQUESTED（仅执行 lint）
+
+## 2. 总体结果
+
+**RESULT: FAIL**
+
+- ERROR: 3
+- WARNING: 20
+- INFO: 4243
+- PASS 检查记录：4200
+- UNSUPPORTED 记录：51
+
+RESULT 为结构规则结果：任何 ERROR 均为 FAIL。WARNING / UNSUPPORTED 不代表合规已获证明；渲染状态单独列出。INFO 数含 PASS 检查记录。
+
+## 3. 页面结构检查
+
+ERROR 0 / WARNING 0 / INFO 15
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| FRONT001 | 1 | 0 | 0 |
+| FRONT002 | 1 | 0 | 0 |
+| FRONT003 | 1 | 0 | 0 |
+| PAGE001 | 2 | 0 | 0 |
+| PAGE002 | 2 | 0 | 0 |
+| PAGE003 | 8 | 0 | 0 |
+
+## 4. 样式检查
+
+ERROR 0 / WARNING 0 / INFO 6
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| STYLE004 | 2 | 0 | 0 |
+| STYLE005 | 4 | 0 | 0 |
+
+## 5. Heading 与编号检查
+
+ERROR 3 / WARNING 0 / INFO 105
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| NUM002 | 34 | 3 | 0 |
+| NUM003 | 34 | 0 | 0 |
+| STYLE001 | 11 | 0 | 0 |
+| STYLE002 | 26 | 0 | 0 |
+
+## 6. TOC 检查
+
+ERROR 0 / WARNING 0 / INFO 3
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| TOC001 | 1 | 0 | 0 |
+| TOC002 | 1 | 0 | 0 |
+| TOC005 | 1 | 0 | 0 |
+
+## 7. 正文检查
+
+ERROR 0 / WARNING 0 / INFO 500
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| BODY001 | 100 | 0 | 0 |
+| BODY002 | 300 | 0 | 0 |
+| BODY003 | 100 | 0 | 0 |
+
+## 8. 表格检查
+
+ERROR 0 / WARNING 20 / INFO 2140
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| TABLE002 | 96 | 12 | 0 |
+| TABLE003 | 412 | 0 | 8 |
+| TABLE004 | 523 | 0 | 0 |
+| TABLE005 | 3 | 0 | 0 |
+| TABLE006 | 523 | 0 | 0 |
+| TABLE007 | 526 | 0 | 0 |
+| TABLE008 | 12 | 0 | 0 |
+| TABLE009 | 0 | 0 | 43 |
+| TABLE010 | 2 | 0 | 0 |
+
+## 9. 字体与 Run 异常检查
+
+ERROR 0 / WARNING 0 / INFO 1474
+
+| Rule ID | PASS | FAIL | UNSUPPORTED |
+|---|---:|---:|---:|
+| FONT001 | 636 | 0 | 0 |
+| FONT002 | 144 | 0 | 0 |
+| FONT003 | 657 | 0 | 0 |
+| FONT004 | 37 | 0 | 0 |
+
+## 10. 渲染结果
+
+本次仅执行 lint，未请求渲染。
+
+## 11. 问题明细
+
+完整 PASS 与问题记录另见同名 JSON。以下列出所有非 PASS 记录。
+
+| Rule ID | Severity | 状态 | 对象类型 | 位置 | 当前值 | 预期值 | 说明 | 规范出处 |
+|---|---|---|---|---|---|---|---|---|
+| NUM002 | ERROR | FAIL | Paragraph | word/document.xml / Paragraph 62 / 课程结构与学习产出 | {"reason": "numId=0 显式取消编号", "valid": false} | 有效 Word 自动编号 | 解析 paragraph numPr、样式编号、numbering.xml | §5.2 |
+| NUM002 | ERROR | FAIL | Paragraph | word/document.xml / Paragraph 742 / 附录A：建议课堂练习 | {"reason": "numId=0 显式取消编号", "valid": false} | 有效 Word 自动编号 | 解析 paragraph numPr、样式编号、numbering.xml | §5.2 |
+| NUM002 | ERROR | FAIL | Paragraph | word/document.xml / Paragraph 763 / 附录B：制度条款与培训内容对应关系 | {"reason": "numId=0 显式取消编号", "valid": false} | 有效 Word 自动编号 | 解析 paragraph numPr、样式编号、numbering.xml | §5.2 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 7 / Table 1, Row 1, Cell 1 / 项目名称： | 封面-信息标签 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 8 / Table 1, Row 1, Cell 2 / 规划管理能力培训（第三周） | 封面-信息内容 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 9 / Table 1, Row 2, Cell 1 / 文件性质： | 封面-信息标签 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 10 / Table 1, Row 2, Cell 2 / 培训材料（初稿） | 封面-信息内容 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 11 / Table 1, Row 3, Cell 1 / 版本号： | 封面-信息标签 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 12 / Table 1, Row 3, Cell 2 / V0.1 | 封面-信息内容 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 13 / Table 1, Row 4, Cell 1 / 编制依据： | 封面-信息标签 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE003 | WARNING | UNSUPPORTED | Paragraph | word/document.xml / Paragraph 14 / Table 1, Row 4, Cell 2 / 《项目管理手册（2026版）征求意见稿》、《第三周 规划管理（大纲）》 | 封面-信息内容 | 按 §3.2 封面信息表或 §6.1 内容表确认 | 专用封面样式提示此表可能为封面布局；规范封面与内容表要求不同，不能按普通内容表确定判错 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 1 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 2 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 80 / Table 3, Row 1, Cell 1 / 制度要求：《项目管理手册》第四章明确：所有正式立项项目必须进行项目规划，并形成基准文件，作为项目执行、监控和验收的依据；规划深度应与项目级别 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 3 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 94 / Table 4, Row 1, Cell 1 / 培训实操补充：本培训将“范围—WBS—进度—资源—成本—迭代”视为一条连续链路。每一环都应能够追溯到上一环，避免出现范围与计划脱节、计划与资 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 4 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 5 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 6 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 7 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 152 / Table 8, Row 1, Cell 1 / 培训实操补充：手册规定了目标与范围文件应包含的内容，但没有规定目标拆解模板。上述四层拆解是培训使用的方法，实际项目应优先使用公司配套模板及部 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 8 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 9 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 10 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 11 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 223 / Table 12, Row 1, Cell 1 / 制度要求：需求最终进入执行前，应按手册要求完成内部跨职能评审；内部评审通过后，应推动客户或业务用户正式评审并取得书面确认。需求确认是后续设计 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 12 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 13 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 253 / Table 14, Row 1, Cell 1 / 分级管控：强矩阵管理项目、重大项目须编制完整规划文件并召开正式规划评审会；B、C类及3级项目重点关注范围、进度与成本预算；D类及4级项目可简 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 14 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 15 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 16 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 17 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 18 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 19 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 371 / Table 20, Row 1, Cell 1 / 提醒：关键路径不是“最重要的任务排行榜”。它反映的是进度依赖关系。非关键任务如果消耗了浮动时间，也可能转变为关键任务，因此执行阶段需要动态复 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 20 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 21 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 22 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 429 / Table 23, Row 1, Cell 1 / 制度要求：规划文件不是一次性产物。《项目管理手册》第二十六条要求在主要阶段开始时对下一阶段工作进行更详细的滚动规划，并根据批准的变更及时更新 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 23 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 24 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 25 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 26 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 27 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 525 / Table 28, Row 1, Cell 1 / 说明：预算口径、费用科目、毛利率标准和具体审批权限应以公司财务制度及当年发布标准为准。本培训不另行定义财务口径。 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 28 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 29 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 548 / Table 30, Row 1, Cell 1 / 规划阶段风险同步：手册要求规划阶段形成《项目风险跟踪表》。在资源与成本规划结束时，应再次检查资源冲突、外部依赖、预算不足、工期压缩等风险是否 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 30 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 31 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 32 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 595 / Table 33, Row 1, Cell 1 / 边界提醒：MVP用于版本规划，不用于绕开变更审批。客户新增需求、原有验收范围调整或进度/成本基准变化，仍必须按项目变更控制流程处理。 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 33 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 34 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 35 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 36 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 661 / Table 37, Row 1, Cell 1 / 基线纪律：规划一旦获批，范围、进度、成本等关键内容进入基线管理。后续发现“计划不合理”并不意味着可以直接改表；应判断属于正常滚动细化，还是已 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 37 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 38 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 39 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 40 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE002 | WARNING | FAIL | Paragraph | word/document.xml / Paragraph 740 / Table 41, Row 1, Cell 1 / 与第四周衔接：第三周解决“计划如何形成”；第四周将进一步解决“计划形成后如何执行、监控、识别偏差、处理变更、闭环风险与问题，并最终完成质量验 | 表格正文 | 表格表头 | 首行仅作表头候选，封面信息表等需人工确认 | §6.1 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 41 | [] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 42 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |
+| TABLE009 | INFO | UNSUPPORTED | Table | Table 43 | [1] | 跨页表格应重复表头 | XML 可读取重复标记，但无法确定表格是否实际跨页 | §6.4 |

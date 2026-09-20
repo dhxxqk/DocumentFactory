@@ -1,6 +1,17 @@
 # 更新记录
 
-## Unreleased — 2026-09-19
+## 0.2.0-alpha — 2026-09-20
+
+- 新增规则驱动的确定性 DOCX normalization Core 与 Python `normalize(...)` 结构化接口。
+- 新增 `document-factory normalize` CLI、机器友好摘要，以及中文 Markdown + JSON Validation Report。
+- 规范化明确的 Heading 1/2/3、正文和表格段落样式/Run；不重分类疑似语义，不修改编号或 TOC。
+- 使用临时 ZIP 与原子替换生成新 DOCX，禁止覆盖输入，前后验证输入 SHA-256，并逐项保留未修改 ZIP 部件。
+- 每次规范化自动执行 lint before / lint after，完整返回修改明细和剩余 ERROR/WARNING/UNSUPPORTED。
+- TEST_CASE_001 实测 ERROR 由 42 降至 3，WARNING 保持 20；FONT001 37 和 STYLE005 2 均归零，保留范围外 NUM002 3。
+- 自动测试增至 74 项，覆盖输入保护、未知部件、允许的三类语义对象、禁止重分类、编号/TOC 保持、幂等性、旧规则 lint 兼容和报告契约。
+- 版本更新为 Python `0.2.0a1`（产品标识 v0.2-alpha），为 TASK_DOC_003 的薄 MCP 适配提供稳定 Core 契约。
+
+## Direction decision — 2026-09-19
 
 - 确认 DocumentFactory 的长期定位：从只读 DOCX 审计工具演进为“文档分析 + 规范化 + 验证”核心引擎。
 - 明确核心引擎与 CLI、DeepSeek Harness、Codex、WPS/Word 插件等入口分离，避免绑定单一办公软件。

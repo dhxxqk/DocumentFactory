@@ -48,6 +48,7 @@ tables:
   latin_font: Times New Roman
   font_size_pt: 10.5
   line_spacing_allowed: [single, exact]
+  normalization_line_spacing: single
 font_aliases:
   仿宋: [仿宋, FangSong]
   黑体: [黑体, SimHei]
