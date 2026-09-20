@@ -124,5 +124,27 @@ class NormalizationResult:
         return asdict(self)
 
 
+@dataclass
+class TemplateApplyResult:
+    status: str
+    template_path: str
+    input_path: str
+    output_path: str
+    report_path: str
+    template_sha256: str
+    input_sha256: str
+    output_sha256: str
+    mappings: list[dict[str, Any]] = field(default_factory=list)
+    changes: list[dict[str, Any]] = field(default_factory=list)
+    validation_mismatches: list[dict[str, Any]] = field(default_factory=list)
+    before_lint_counts: dict[str, int] = field(default_factory=dict)
+    after_lint_counts: dict[str, int] = field(default_factory=dict)
+    template_unchanged: bool = True
+    source_unchanged: bool = True
+
+    def to_dict(self):
+        return asdict(self)
+
+
 class DocumentFactoryError(Exception):
     """Expected, user-readable input or execution failure."""

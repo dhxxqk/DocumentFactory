@@ -1,5 +1,16 @@
 # 更新记录
 
+## 0.4.0-alpha — 2026-09-20
+
+- 新增 Template Analyzer，提取页面、页眉页脚、Paragraph Style、表格样式/默认格式和编号使用事实。
+- 新增 schema 1.0 `TemplateProfile`，支持 JSON 序列化、保存、读取、人工修改与版本控制。
+- 新增最小 Template Apply：映射现有 Normal、Title、Heading 1/2/3，并迁移表格字体、字号和对齐。
+- 复用现有 OOXML、`StyleResolver`、normalizer 写入与 lint 能力；不复制格式级联和审计逻辑。
+- 新增 `template analyze` / `template apply` CLI、Python 结构化接口、迁移报告、真实 Demo 与自动测试。
+- 保留输入与模板文件，输出新的 DOCX；不改文字、段落顺序、复杂编号、图片布局或页眉页脚。
+- MCP 仍保持 v0.3-alpha 的三个工具，本版本不新增模板 MCP tool。
+- 版本更新为 Python `0.4.0a1`（产品标识 v0.4-alpha）。
+
 ## 0.3.0-alpha — 2026-09-20
 
 - 新增基于官方 MCP Python SDK 2.x 的本地 stdio Server 与 `document-factory-mcp` 入口。

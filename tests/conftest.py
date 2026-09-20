@@ -35,10 +35,11 @@ def rules():
 
 @pytest.fixture
 def make_docx(tmp_path):
-    def build(body='', styles=None, numbering=None, extra=None, section=SECTION):
+    def build(body='', styles=None, numbering=None, extra=None, section=SECTION, normal_style=None):
         path = tmp_path / f'fixture_{len(list(tmp_path.glob("*.docx")))}.docx'
+        normal = normal_style or '<w:style w:type="paragraph" w:styleId="Normal" w:default="1"><w:name w:val="Normal"/></w:style>'
         parts = {'word/document.xml': f'<w:document xmlns:w="{W}"><w:body>{body}{section}</w:body></w:document>',
-                 'word/styles.xml': f'<w:styles xmlns:w="{W}"><w:style w:type="paragraph" w:styleId="Normal" w:default="1"><w:name w:val="Normal"/></w:style>{BODY_STYLE + HEADING_STYLES if styles is None else styles}</w:styles>',
+                 'word/styles.xml': f'<w:styles xmlns:w="{W}">{normal}{BODY_STYLE + HEADING_STYLES if styles is None else styles}</w:styles>',
                  'word/settings.xml': f'<w:settings xmlns:w="{W}"><w:updateFields w:val="true"/></w:settings>'}
         if numbering is not None:
             parts['word/numbering.xml'] = f'<w:numbering xmlns:w="{W}">{numbering}</w:numbering>'

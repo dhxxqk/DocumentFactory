@@ -1,0 +1,466 @@
+{
+  "diagnostics": [],
+  "footers": [
+    {
+      "field_kinds": [
+        "PAGE"
+      ],
+      "paragraph_count": 1,
+      "part": "word/footer1.xml",
+      "style_ids": [
+        "Normal"
+      ]
+    }
+  ],
+  "generated_at": "2026-09-20T23:47:34+08:00",
+  "headers": [
+    {
+      "field_kinds": [],
+      "paragraph_count": 1,
+      "part": "word/header1.xml",
+      "style_ids": [
+        "Normal"
+      ]
+    }
+  ],
+  "numbering": {
+    "abstract_numbering_count": 1,
+    "exists": true,
+    "migration_supported": false,
+    "numbering_instance_count": 1,
+    "style_ids": [
+      "Heading1"
+    ]
+  },
+  "page": {
+    "section_count": 1,
+    "sections": [
+      {
+        "break_type": "nextPage",
+        "index": 1,
+        "margins": {
+          "bottom": {
+            "cm": 2.54,
+            "twips": 1440
+          },
+          "footer": {
+            "cm": 1.27,
+            "twips": 720
+          },
+          "header": {
+            "cm": 1.27,
+            "twips": 720
+          },
+          "left": {
+            "cm": 3.175,
+            "twips": 1800
+          },
+          "right": {
+            "cm": 3.175,
+            "twips": 1800
+          },
+          "top": {
+            "cm": 2.54,
+            "twips": 1440
+          }
+        },
+        "page_numbering": {
+          "start": "1"
+        },
+        "size": {
+          "height_twips": 16838,
+          "name": "A4",
+          "orientation": "portrait",
+          "width_twips": 11906
+        }
+      }
+    ]
+  },
+  "roles": {
+    "Heading1": "Heading1",
+    "Heading2": "Heading2",
+    "Heading3": "Heading3",
+    "Normal": "Normal",
+    "Title": "Title"
+  },
+  "schema_version": "1.0",
+  "source_path": "G:\\Workflows\\DocumentFactory\\testcases\\template\\template_demo.docx",
+  "source_sha256": "d4dd7faf0ac4d56ce13d1e28b5813ae7cd6f3e59b223f78f7adfce319ad39909",
+  "styles": {
+    "Heading1": {
+      "based_on": "Normal",
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": true,
+        "color": "000000",
+        "east_asia": "黑体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Times New Roman",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 16.0
+      },
+      "kind": "paragraph",
+      "name": "heading 1",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "both",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": "200",
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": "120",
+          "before": "240",
+          "line": "360",
+          "lineRule": "auto"
+        }
+      },
+      "style_id": "Heading1"
+    },
+    "Heading2": {
+      "based_on": "Normal",
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": true,
+        "color": "000000",
+        "east_asia": "黑体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Times New Roman",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 14.0
+      },
+      "kind": "paragraph",
+      "name": "heading 2",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "both",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": "200",
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": "0",
+          "before": "0",
+          "line": "360",
+          "lineRule": "auto"
+        }
+      },
+      "style_id": "Heading2"
+    },
+    "Heading3": {
+      "based_on": "Normal",
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": true,
+        "color": "000000",
+        "east_asia": "黑体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Times New Roman",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 12.0
+      },
+      "kind": "paragraph",
+      "name": "heading 3",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "both",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": "200",
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": "0",
+          "before": "0",
+          "line": "360",
+          "lineRule": "auto"
+        }
+      },
+      "style_id": "Heading3"
+    },
+    "Normal": {
+      "based_on": null,
+      "custom": false,
+      "default": true,
+      "font": {
+        "bold": false,
+        "color": null,
+        "east_asia": "仿宋",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Times New Roman",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 12.0
+      },
+      "kind": "paragraph",
+      "name": "Normal",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "both",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": "200",
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": "0",
+          "before": "0",
+          "line": "360",
+          "lineRule": "auto"
+        }
+      },
+      "style_id": "Normal"
+    },
+    "TableBody": {
+      "based_on": null,
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": false,
+        "color": null,
+        "east_asia": "宋体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Arial",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 10.0
+      },
+      "kind": "paragraph",
+      "name": "表格正文",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "left",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": null,
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": null,
+          "before": null,
+          "line": null,
+          "lineRule": null
+        }
+      },
+      "style_id": "TableBody"
+    },
+    "TableHeader": {
+      "based_on": null,
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": true,
+        "color": null,
+        "east_asia": "黑体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Arial",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 11.0
+      },
+      "kind": "paragraph",
+      "name": "表格表头",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "center",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": null,
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": null,
+          "before": null,
+          "line": null,
+          "lineRule": null
+        }
+      },
+      "style_id": "TableHeader"
+    },
+    "Title": {
+      "based_on": "Normal",
+      "custom": false,
+      "default": false,
+      "font": {
+        "bold": true,
+        "color": null,
+        "east_asia": "方正小标宋简体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Times New Roman",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 18.0
+      },
+      "kind": "paragraph",
+      "name": "Title",
+      "numbering": null,
+      "paragraph": {
+        "alignment": "center",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": "200",
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": "0",
+          "before": "0",
+          "line": "360",
+          "lineRule": "auto"
+        }
+      },
+      "style_id": "Title"
+    }
+  },
+  "table_defaults": {
+    "body": {
+      "font": {
+        "bold": false,
+        "color": null,
+        "east_asia": "宋体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Arial",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 10.0
+      },
+      "paragraph": {
+        "alignment": "left",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": null,
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": null,
+          "before": null,
+          "line": null,
+          "lineRule": null
+        }
+      },
+      "source_style_id": "TableBody",
+      "source_table_index": 1
+    },
+    "header": {
+      "font": {
+        "bold": true,
+        "color": null,
+        "east_asia": "黑体",
+        "east_asia_source": "rFonts:eastAsia",
+        "italic": false,
+        "latin": "Arial",
+        "latin_source": "rFonts:ascii",
+        "size_pt": 11.0
+      },
+      "paragraph": {
+        "alignment": "center",
+        "indent": {
+          "firstLine": null,
+          "firstLineChars": null,
+          "hanging": null,
+          "hangingChars": null,
+          "left": null,
+          "right": null
+        },
+        "spacing": {
+          "after": null,
+          "before": null,
+          "line": null,
+          "lineRule": null
+        }
+      },
+      "source_style_id": "TableHeader",
+      "source_table_index": 1
+    }
+  },
+  "table_styles": {
+    "GridTable": {
+      "based_on": null,
+      "borders": {
+        "bottom": {
+          "sz": "4",
+          "val": "single"
+        },
+        "insideH": {
+          "sz": "4",
+          "val": "single"
+        },
+        "insideV": {
+          "sz": "4",
+          "val": "single"
+        },
+        "left": {
+          "sz": "4",
+          "val": "single"
+        },
+        "right": {
+          "sz": "4",
+          "val": "single"
+        },
+        "top": {
+          "sz": "4",
+          "val": "single"
+        }
+      },
+      "conditionals": {
+        "firstRow": {
+          "borders": {},
+          "paragraph": {
+            "alignment": null,
+            "indent": {
+              "firstLine": null,
+              "firstLineChars": null,
+              "hanging": null,
+              "hangingChars": null,
+              "left": null,
+              "right": null
+            },
+            "spacing": {
+              "after": null,
+              "before": null,
+              "line": null,
+              "lineRule": null
+            }
+          },
+          "run_properties": {
+            "b": true
+          }
+        }
+      },
+      "name": "网格表",
+      "style_id": "GridTable"
+    }
+  },
+  "template_name": "template_demo"
+}

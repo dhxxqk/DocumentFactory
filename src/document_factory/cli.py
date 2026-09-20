@@ -7,6 +7,7 @@ from .lint_engine import lint
 from .renderer import render
 from .report_writer import write_report
 from .normalizer import normalize
+from .template import analyze_template, apply_template
 
 
 def main(argv=None):
@@ -29,8 +30,35 @@ def main(argv=None):
     command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
     command.add_argument("--output", type=Path)
     command.add_argument("--report", type=Path)
+    template_command = subcommands.add_parser("template")
+    template_subcommands = template_command.add_subparsers(dest="template_command", required=True)
+    analyze_command = template_subcommands.add_parser("analyze")
+    analyze_command.add_argument("template", type=Path)
+    analyze_command.add_argument("--output", type=Path)
+    apply_command = template_subcommands.add_parser("apply")
+    apply_command.add_argument("--template", type=Path, required=True)
+    apply_command.add_argument("--input", type=Path, required=True)
+    apply_command.add_argument("--output", type=Path)
+    apply_command.add_argument("--report", type=Path)
+    apply_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
     args = parser.parse_args(argv)
     try:
+        if args.command == "template":
+            if args.template_command == "analyze":
+                output = args.output or Path("reports") / f"{args.template.stem}_profile.json"
+                profile = analyze_template(args.template, output)
+                print("STATUS=PASS")
+                print(f"PROFILE={Path(output).resolve()}")
+                print(f"STYLES={len(profile.styles)}")
+                print(f"TABLE_STYLES={len(profile.table_styles)}")
+                return 0
+            result = apply_template(args.template, args.input, args.output, args.report, args.rules)
+            print(f"STATUS={result.status}")
+            print(f"OUTPUT={result.output_path}")
+            print(f"REPORT={result.report_path}")
+            print(f"MAPPINGS={len(result.mappings)}")
+            print(f"CHANGED={len(result.changes)}")
+            return 0 if result.status == "PASS" else 1
         if args.command == "normalize":
             result = normalize(args.input, args.rules, args.output, args.report)
             print(f"STATUS={result.status}")

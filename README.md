@@ -1,6 +1,6 @@
-# DocumentFactory v0.3-alpha
+# DocumentFactory v0.4-alpha
 
-确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 可确定格式规范化 → 修复后验证 → 中文 Markdown / JSON 报告，并通过本地 stdio MCP 向 DeepSeek Harness 等 Agent 暴露薄适配接口。`lint`、`render`、`audit` 继续只读；`normalize` 绝不覆盖输入，只生成新的 DOCX。DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。
+确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 规则或模板驱动的可确定格式规范化 → 修复后验证 → Markdown / JSON 报告，并通过本地 stdio MCP 向 DeepSeek Harness 等 Agent 暴露薄适配接口。`lint`、`render`、`audit` 继续只读；`normalize` 和 `template apply` 绝不覆盖输入，只生成新的 DOCX。DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。
 
 本项目位于任务书指定的 `G:\Workflows\DocumentFactory`。规范主源为 `specs/电网科技项目实施方案文档格式规范_V1.4.md`；`rules/grid_tech_v1_4.yaml` 是人工核对后的机器映射，每条规则记录规范章节和严重等级。规则修改应先核对 Markdown，不能把机器配置作为新的格式规范。
 
@@ -80,6 +80,26 @@ print(result.output_path, result.report_path, result.source_unchanged)
 
 `NormalizationResult` 提供 `status`、输入/输出/报告路径、输入/输出 SHA-256、前后计数、逐项 `changes`、剩余问题和 `source_unchanged`；`to_dict()` 可直接用于 MCP/Agent 的 JSON 序列化。
 
+## Template Engine
+
+v0.4-alpha 增加模板分析与确定性格式迁移。Analyzer 从模板 DOCX 提取页面、页眉页脚、段落样式、表格样式/可确定默认格式和编号使用事实，生成 schema 版本化、可人工编辑并可纳入版本控制的 JSON Profile。Apply 只把目标中已经明确使用 `Normal`、`Title`、`Heading 1/2/3` 的对象映射到模板同角色样式，并迁移表格字体、字号和对齐；不会猜测标题、改写文字、删除段落或调整顺序。
+
+```powershell
+# 分析模板，生成可复用 Profile
+& .\.venv\Scripts\python.exe -X utf8 -m document_factory template analyze `
+  'testcases\template\template_demo.docx' `
+  --output 'reports\template_demo_profile.json'
+
+# 应用模板，输出新 DOCX 和迁移报告
+& .\.venv\Scripts\python.exe -X utf8 -m document_factory template apply `
+  --template 'testcases\template\template_demo.docx' `
+  --input 'testcases\template\target_demo.docx' `
+  --output 'output\template\target_demo_formatted.docx' `
+  --report 'reports\template_apply_report.md'
+```
+
+Python 接口为 `analyze_template(...)`、`TemplateProfile.save()/load()` 和 `apply_template(...)`。模板层复用现有 `docx_reader`、`StyleResolver`、normalizer 的 OOXML 写入/原子落盘能力及 lint，不维护第二套级联或审计逻辑。Apply 报告分别列出 Profile 验证和现有规则 lint 计数；模板迁移 PASS 不代表目标同时符合电网 V1.4 规则。
+
 ## MCP stdio Server 与 DSH
 
 安装 `mcp` extra 后可直接启动本地 stdio Server：
@@ -141,14 +161,15 @@ src/document_factory/
   table_analyzer.py            表格专用样式、继承、缩进、间距、行距及字体
   lint_engine.py              规则加载、正文/标题/Run 检查及结果聚合
   normalizer.py               确定性 OOXML 规范化、原子落盘、前后 lint 与 Validation Report
+  template/                   Template Analyzer、Profile、Extractor 与最小 Apply
   mcp_server.py               官方 MCP SDK stdio Server 与三个 Core 薄适配工具
   renderer.py                 后端探测、私有副本、PDF 和 PNG、失败状态
   _word_export.py             有界 Word COM 工作进程
   report_writer.py            中文 Markdown 和完整机器可读 JSON
   output_paths.py             输出路径边界检查
-  cli.py / __main__.py        lint / render / audit / normalize 命令
+  cli.py / __main__.py        lint / render / audit / normalize / template 命令
 integrations/dsh/             官方 DSH MCP client patch 模板与配置说明
-tests/                         最小 OOXML fixtures 与正式样本回归
+tests/                         最小 OOXML fixtures、模板迁移与正式样本回归
 output/                        逐页渲染、隔离临时文件、测试 fixtures（不纳入 Git）
 reports/                       审计报告、任务报告、基线 SHA-256、pytest 结果
 ```
@@ -178,6 +199,8 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 
 规范化只处理现有 StyleResolver 明确认定的 Heading 1/2/3、明确使用“正文”样式的段落/Run，以及明确使用表格表头、表格正文、表格正文-居中样式的对象。不会把 Normal、疑似标题或疑似表头自动重分类，不会修改编号和 TOC。
 
+模板迁移第一版只支持明确角色的段落样式，以及可确定的表格字体、字号和对齐。页面、页眉页脚、边框与编号会进入 Profile 供检查和后续版本使用，但 Apply 暂不迁移这些属性；不处理 AI 语义理解、文字改写、章节重排、复杂编号、图片布局或 Word 模板生成。
+
 不完整模拟 Word 排版、条件表格样式、复杂文字脚本、全部主题语言映射、浮动对象、文本框阅读顺序、修订结构、AlternateContent 和所有字段语法。遇到相关对象时输出诊断；条件表格格式可能影响字体，须结合后续渲染复核。支持标准 `word/document.xml` 包布局，不支持重定位的主文档 part；不会执行包中的宏、关系目标或外部导入内容。
 
 不判定封面实际占几页、表格是否实际跨页、重复表头在视觉上是否出现、字体是否在排版引擎中被替换、图片中的字体与清晰度。本文档的结构检查结果不等同于视觉质量合格。
@@ -196,4 +219,4 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 
 ## 下一阶段边界
 
-v0.3-alpha 已具备供下一阶段 WorkBuddy 评估复用的 stdio MCP Core 契约，但本版本没有实现 WorkBuddy 接入。也不实现 GUI、WPS/Word 插件、HTTP MCP、云服务或 LLM API；不得让 Agent 绕过 DocumentFactory Core 直接修改 OOXML。
+v0.4-alpha 的 MCP 仍保持 v0.3-alpha 的三个工具，没有提前暴露模板工具。Template Engine Core 稳定后，后续任务可评估增加薄适配的 `apply_template` MCP tool；本版本不实现 WorkBuddy、GUI、WPS/Word 插件、HTTP MCP、云服务或 LLM API，也不得让 Agent 绕过 DocumentFactory Core 直接修改 OOXML。

@@ -106,6 +106,92 @@ def _set_properties(parent, child_name, wanted, remove, changes, *, object_type,
     return True
 
 
+def _set_toggle(parent, child_name, wanted, changes, *, object_type, location, prop, rule_id, rules, order):
+    """Set an OOXML on/off property through the shared normalization recorder."""
+    child = parent.find(f"w:{child_name}", NS)
+    before = None if child is None else child.get(q("val"), "1") not in ("0", "false", "off")
+    wanted = bool(wanted)
+    if before is wanted:
+        return False
+    child = child if child is not None else _ensure(parent, child_name, order)
+    child.set(q("val"), "1" if wanted else "0")
+    _record(changes, object_type, location, prop, before, wanted, rule_id, rules)
+    return True
+
+
+def apply_format_profile(
+    parent, profile, changes, *, object_type, location, rules, rule_id, prefix="", table_basic=False,
+    include_paragraph=True, include_run=True,
+):
+    """Apply an exact, already-resolved format profile through the normalizer writer."""
+    changed = False
+    if include_paragraph:
+        paragraph = profile.get("paragraph", {})
+        ppr = _ensure(parent, "pPr", ["pPr", "rPr"] if _local(parent) == "style" else ["pPr"])
+        if paragraph.get("alignment") is not None:
+            changed |= _set_properties(
+                ppr, "jc", {"val": paragraph["alignment"]}, set(), changes,
+                object_type=object_type, location=location, prop=f"{prefix}alignment", rule_id=rule_id,
+                rules=rules, order=PPR_ORDER,
+            )
+        if not table_basic:
+            spacing = {key: value for key, value in paragraph.get("spacing", {}).items() if value is not None}
+            if spacing:
+                changed |= _set_properties(
+                    ppr, "spacing", spacing, set(), changes,
+                    object_type=object_type, location=location, prop=f"{prefix}spacing", rule_id=rule_id,
+                    rules=rules, order=PPR_ORDER,
+                )
+            indent = {key: value for key, value in paragraph.get("indent", {}).items() if value is not None}
+            if indent:
+                changed |= _set_properties(
+                    ppr, "ind", indent, set(), changes,
+                    object_type=object_type, location=location, prop=f"{prefix}indent", rule_id=rule_id,
+                    rules=rules, order=PPR_ORDER,
+                )
+
+    if not include_run:
+        return changed
+    font = profile.get("font", {})
+    rpr = _ensure(parent, "rPr", ["pPr", "rPr"] if _local(parent) == "style" else ["rPr"])
+    wanted_fonts = {
+        key: value for key, value in {
+            "eastAsia": font.get("east_asia"), "ascii": font.get("latin"), "hAnsi": font.get("latin"),
+        }.items() if value is not None
+    }
+    remove_fonts = set()
+    if font.get("east_asia") is not None:
+        remove_fonts.add("eastAsiaTheme")
+    if font.get("latin") is not None:
+        remove_fonts.update(("asciiTheme", "hAnsiTheme"))
+    if wanted_fonts:
+        changed |= _set_properties(
+            rpr, "rFonts", wanted_fonts, remove_fonts, changes,
+            object_type=object_type, location=location, prop=f"{prefix}font", rule_id=rule_id,
+            rules=rules, order=RPR_ORDER,
+        )
+    if font.get("size_pt") is not None:
+        changed |= _set_properties(
+            rpr, "sz", {"val": int(float(font["size_pt"]) * 2)}, set(), changes,
+            object_type=object_type, location=location, prop=f"{prefix}font_size_pt", rule_id=rule_id,
+            rules=rules, order=RPR_ORDER,
+        )
+    if font.get("color") is not None:
+        changed |= _set_properties(
+            rpr, "color", {"val": font["color"]}, {"themeColor", "themeTint", "themeShade"}, changes,
+            object_type=object_type, location=location, prop=f"{prefix}color", rule_id=rule_id,
+            rules=rules, order=RPR_ORDER,
+        )
+    for key, child_name in (("bold", "b"), ("italic", "i")):
+        if font.get(key) is not None:
+            changed |= _set_toggle(
+                rpr, child_name, font[key], changes,
+                object_type=object_type, location=location, prop=f"{prefix}{key}", rule_id=rule_id,
+                rules=rules, order=RPR_ORDER,
+            )
+    return changed
+
+
 def _style_element(document, style_id):
     root = document.parts.get("word/styles.xml")
     if root is None:

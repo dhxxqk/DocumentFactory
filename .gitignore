@@ -27,3 +27,4 @@ output/*
 !output/.gitkeep
 reports/*.json
 !reports/BASELINE_HASHES.json
+!reports/template_demo_profile.json
