@@ -120,3 +120,10 @@ MCP 层不需要也不应复制 OOXML、StyleResolver、规则目标、lint 或 
 | 任务报告 | `reports/TASK_DOC_002_REPORT.md` |
 
 生成的 DOCX 位于 `output/normalized/`，按仓库既有 `.gitignore` 不纳入 Git；机器 JSON 报告同样按既有策略保留在本地、不纳入 Git。Markdown 证据和任务报告纳入 Git。
+
+## 9. Git 提交与推送
+
+- 功能提交：`886e74f33d880dca74cd0099f80fd182666afda8`（`feat: add deterministic DOCX normalization pipeline`）。
+- 2026-09-20T12:03:02+08:00 前已两次执行 `git push origin master`，均失败。
+- 真实失败原因：当前环境无法连接 `github.com:443`，Git 返回 `Failed to connect to github.com port 443 ... Couldn't connect to server`。此前一次 `git fetch origin` 也因连接被重置失败。
+- 因此本次结果为：本地提交成功，**未成功 push**。没有声称远端已更新，也没有 force push。
