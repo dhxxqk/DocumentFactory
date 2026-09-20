@@ -1,5 +1,16 @@
 # 更新记录
 
+## 0.3.0-alpha — 2026-09-20
+
+- 新增基于官方 MCP Python SDK 2.x 的本地 stdio Server 与 `document-factory-mcp` 入口。
+- 第一版仅暴露 `format_document`、`audit_document`、`list_presets`，作为既有 Core 的薄适配层。
+- MCP 返回简洁结构化计数、摘要与 deliverables，不复制 OOXML/lint/normalize 逻辑或返回完整 findings。
+- 增加官方 MCP client 的真实 subprocess 协议测试，覆盖 initialize、tools/list、三个工具、中文/空格路径、产物、输入保护和错误传播。
+- 增加 DSH 官方 `@deepseek-ai/dsh-mcp-client` stdio patch 模板及 web/headless 配置说明。
+- 正式样本通过 MCP 实测 ERROR 42→3、WARNING 20→20，并生成新 DOCX 与 Markdown Validation Report。
+- 本机 DSH headless 因缺少 `DEEPSEEK_API_KEY` 在模型回合前返回 `MISSING_CREDENTIAL`；Agent 自动调用与 present 验收据实保留为条件项。
+- 版本更新为 Python `0.3.0a1`（产品标识 v0.3-alpha）。
+
 ## 0.2.0-alpha — 2026-09-20
 
 - 新增规则驱动的确定性 DOCX normalization Core 与 Python `normalize(...)` 结构化接口。

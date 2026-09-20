@@ -1,0 +1,14 @@
+# Set DOCUMENT_FACTORY_PYTHON and DOCUMENT_FACTORY_ROOT before using this patch.
+- insert:
+    - id: mcp-documentfactory
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: documentfactory
+        transport: stdio
+        command: !!js process.env.DOCUMENT_FACTORY_PYTHON
+        args: ['-m', 'document_factory.mcp_server']
+        cwd: !!js process.env.DOCUMENT_FACTORY_ROOT
+        env:
+          PYTHONUTF8: '1'
+        toolCallTimeoutMs: 120000
+        failOnStartupError: true

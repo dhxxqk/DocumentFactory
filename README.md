@@ -1,6 +1,6 @@
-# DocumentFactory v0.2-alpha
+# DocumentFactory v0.3-alpha
 
-确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 可确定格式规范化 → 修复后验证 → 中文 Markdown / JSON 报告，并保留 v0.1 的 PDF / PNG 可选渲染能力。`lint`、`render`、`audit` 继续只读；`normalize` 绝不覆盖输入，只生成新的 DOCX。不调用 LLM、OCR 或自动排版服务。
+确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 可确定格式规范化 → 修复后验证 → 中文 Markdown / JSON 报告，并通过本地 stdio MCP 向 DeepSeek Harness 等 Agent 暴露薄适配接口。`lint`、`render`、`audit` 继续只读；`normalize` 绝不覆盖输入，只生成新的 DOCX。DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。
 
 本项目位于任务书指定的 `G:\Workflows\DocumentFactory`。规范主源为 `specs/电网科技项目实施方案文档格式规范_V1.4.md`；`rules/grid_tech_v1_4.yaml` 是人工核对后的机器映射，每条规则记录规范章节和严重等级。规则修改应先核对 Markdown，不能把机器配置作为新的格式规范。
 
@@ -11,7 +11,7 @@
 ```powershell
 Set-Location 'G:\Workflows\DocumentFactory'
 python -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install -e '.[test,word]'
+& .\.venv\Scripts\python.exe -m pip install -e '.[test,word,mcp]'
 & .\.venv\Scripts\python.exe -X utf8 -m document_factory --version
 ```
 
@@ -80,6 +80,34 @@ print(result.output_path, result.report_path, result.source_unchanged)
 
 `NormalizationResult` 提供 `status`、输入/输出/报告路径、输入/输出 SHA-256、前后计数、逐项 `changes`、剩余问题和 `source_unchanged`；`to_dict()` 可直接用于 MCP/Agent 的 JSON 序列化。
 
+## MCP stdio Server 与 DSH
+
+安装 `mcp` extra 后可直接启动本地 stdio Server：
+
+```powershell
+& .\.venv\Scripts\python.exe -X utf8 -m document_factory.mcp_server
+# 或
+& .\.venv\Scripts\document-factory-mcp.exe
+```
+
+第一版严格只暴露三个工具：
+
+| MCP tool | 用途 |
+|---|---|
+| `format_document` | 调用现有 `normalize(...)`，返回新 DOCX、Validation Report 与前后计数 |
+| `audit_document` | 调用现有 `lint`/`write_report`，只检查且保持输入不变 |
+| `list_presets` | 从明确 registry 返回可用规范；当前为 `grid_tech_v1_4` |
+
+MCP Server 不包含 OOXML、lint 或 normalize 的副本，也不提供 shell/XML 修改入口。工具结果只返回简洁摘要和 deliverables；完整 findings 留在 Markdown/JSON 报告。
+
+DSH 使用官方 `@deepseek-ai/dsh-mcp-client`、stdio 和 `serverName: documentfactory` 后，工具名为：
+
+- `mcp__documentfactory__format_document`
+- `mcp__documentfactory__audit_document`
+- `mcp__documentfactory__list_presets`
+
+可复用 patch 与配置说明见 `integrations/dsh/`。修改用户 DSH 配置前必须备份，并分别通过 web/headless 的 `--dump-config` 核验。完成 `format_document` 后，DSH Agent 必须调用 `present` 交付 DOCX 与 Markdown；after 仍有 ERROR 时不得宣称全部合格。
+
 ## 渲染后端
 
 按 LibreOffice → Microsoft Word COM 的顺序尝试，支持 `--backend 'LibreOffice'` 或 `--backend 'Word COM'` 指定后端。
@@ -113,11 +141,13 @@ src/document_factory/
   table_analyzer.py            表格专用样式、继承、缩进、间距、行距及字体
   lint_engine.py              规则加载、正文/标题/Run 检查及结果聚合
   normalizer.py               确定性 OOXML 规范化、原子落盘、前后 lint 与 Validation Report
+  mcp_server.py               官方 MCP SDK stdio Server 与三个 Core 薄适配工具
   renderer.py                 后端探测、私有副本、PDF 和 PNG、失败状态
   _word_export.py             有界 Word COM 工作进程
   report_writer.py            中文 Markdown 和完整机器可读 JSON
   output_paths.py             输出路径边界检查
-  cli.py / __main__.py        lint / render / audit 命令
+  cli.py / __main__.py        lint / render / audit / normalize 命令
+integrations/dsh/             官方 DSH MCP client patch 模板与配置说明
 tests/                         最小 OOXML fixtures 与正式样本回归
 output/                        逐页渲染、隔离临时文件、测试 fixtures（不纳入 Git）
 reports/                       审计报告、任务报告、基线 SHA-256、pytest 结果
@@ -142,7 +172,7 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 
 如正式规范缺失，规则加载会拒绝审计；如正式样本缺失，对应回归测试明确 skip，不能将其作为完整验收通过。允许生成的最小 OOXML fixtures 仅用于自动测试，不是规范或 TEST_CASE_001 的替代品。
 
-已验证依赖版本记录在 `reports/ENVIRONMENT.json`。可用 `python -m pip install -e '.[test,word]'` 在另一 Windows 环境重建依赖；原生 Office 后端和字体必须另行具备。
+已验证依赖版本记录在任务报告。可用 `python -m pip install -e '.[test,word,mcp]'` 在另一 Windows 环境重建依赖；原生 Office 后端、字体、DSH 及其模型凭据必须另行具备。
 
 ## 已知边界
 
@@ -164,8 +194,6 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 - [Word Documents.Open 的 ReadOnly 参数](https://learn.microsoft.com/en-us/office/vba/api/word.documents.open)
 
 
-## TASK_DOC_003 MCP 接入准备
+## 下一阶段边界
 
-v0.2-alpha 已完成入口无关的 `normalize(...)` Core 和稳定结构化结果，可在 TASK_DOC_003 中增加薄 MCP 适配：参数校验后调用 Core，将 `NormalizationResult.to_dict()` 返回给调用方即可。MCP 层不应复制 OOXML 判断、格式目标、lint 或报告逻辑，也不应让 Agent 直接决定底层 XML 修改。
-
-当前版本没有实现 MCP Server、GUI、WPS/Word 插件、HTTP API、云服务或 LLM API；这些能力不属于 TASK_DOC_002。
+v0.3-alpha 已具备供下一阶段 WorkBuddy 评估复用的 stdio MCP Core 契约，但本版本没有实现 WorkBuddy 接入。也不实现 GUI、WPS/Word 插件、HTTP MCP、云服务或 LLM API；不得让 Agent 绕过 DocumentFactory Core 直接修改 OOXML。
