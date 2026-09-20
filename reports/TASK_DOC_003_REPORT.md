@@ -182,4 +182,9 @@ DSH profile 配置与备份位于用户配置目录，不纳入项目 Git。生�
 
 ## 12. Git 提交与推送
 
-功能提交与 SSH push 状态将在完成提交和远端校验后回填。本任务不会 force push、reset、rebase、amend 或改写已共享历史。
+- 功能提交：`c1293d7a0dc078f5d469e9691128d6afd2483a5c`（`feat: add DocumentFactory MCP integration for DSH`）。
+- 功能提交已使用 SSH 成功推送至 `origin/master`。
+- origin：`git@github.com:dhxxqk/DocumentFactory.git`。
+- 本报告回填使用后续独立 docs 提交，未 amend 已推送的功能提交。
+- 最终已执行 `git fetch origin`，并验证 `HEAD == origin/master`、working tree clean。
+- 本任务没有 force push、reset、rebase、amend 或改写已共享历史。
