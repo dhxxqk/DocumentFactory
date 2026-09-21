@@ -1,5 +1,13 @@
 # 更新记录
 
+## Product direction update — 2026-09-21
+
+- 明确采用“内容源 + 发布层”双层模型：Markdown 用于 AI、Git、结构化内容母版，不作为面向普通同事的最终交付格式。
+- 正式交付以 DOCX 为主，PDF 用于只读发布与归档，HTML 作为可选浏览器预览格式。
+- 明确 DocumentFactory 不应做简单 Markdown → Word 语法转换，而应执行“Markdown 语义 → 文档语义角色 → 规则/模板映射 → DOCX → Validation”的确定性流程。
+- 长期支持同一份内容源切换公司模板、项目建议书模板、需求规格说明书模板等多种正式输出，保持内容与排版解耦。
+- 后续架构增加 Semantic Parser、统一 Document Structure Model 与 Publisher 方向；现阶段不改变 v0.4-alpha 已有 Core 行为。
+
 ## 0.4.0-alpha — 2026-09-20
 
 - 新增 Template Analyzer，提取页面、页眉页脚、Paragraph Style、表格样式/默认格式和编号使用事实。
