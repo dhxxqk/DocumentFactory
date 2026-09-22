@@ -58,8 +58,8 @@ Resolution: Not applicable。本任务为纯文档调整，不涉及代码修改
 
 - 提交信息：`TASK_DOC_007: Product Definition Refactoring`
 - 分支：`master`（起始 HEAD `3e6d81d`，clean，与 origin/master 一致；remote 为 SSH `git@github.com:dhxxqk/DocumentFactory.git`）
-- 提交哈希：提交后回填
-- 推送状态：提交后回填（SSH only；不 amend、不 rebase、不 force push）
+- 提交哈希：`f3c90b51986afb7f7d7f6cf91eccec1177884588`（短哈希 `f3c90b5`，经独立 docs 提交回填）
+- 推送状态：回填后推送（SSH only；不 amend、不 rebase、不 force push）
 
 ## Remaining Risks
 
