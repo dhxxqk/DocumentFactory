@@ -60,7 +60,7 @@ Resolution: Not applicable。本任务为纯文档/治理任务，不涉及代�
 - 提交信息：`TASK_DOC_005: Introduce Agent Governance Layer`
 - 分支：`master`（工作区起始状态 clean，HEAD = `f911473`，与 `origin/master` 一致）
 - 提交哈希：`308733439ddf7b515b5d21f799da3aefc04aef31`（短哈希 `3087334`，经独立 docs 提交回填）
-- 推送状态：未推送（任务书第五阶段仅要求提交；如需推送须另行确认，使用 SSH）
+- 推送状态：已推送至 `origin/master`（SSH）；任务主提交 `3087334` 及其后 docs 回填提交均在远端，推送后复核 `HEAD == origin/master`，working tree clean
 
 ## Remaining Risks
 
