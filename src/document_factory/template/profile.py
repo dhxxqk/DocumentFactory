@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import DocumentFactoryError
-from ..normalizer import _atomic_text
+from ..operations import atomic_text
 
 
 @dataclass
@@ -34,7 +34,7 @@ class TemplateProfile:
         destination = Path(path).resolve()
         if destination.suffix.lower() != ".json":
             raise DocumentFactoryError("Template Profile 必须使用 .json 扩展名")
-        _atomic_text(destination, json.dumps(self.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        atomic_text(destination, json.dumps(self.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return destination
 
     @classmethod

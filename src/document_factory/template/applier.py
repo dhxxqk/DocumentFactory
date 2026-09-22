@@ -1,18 +1,22 @@
-"""Apply a Template Profile through the existing normalization write primitives."""
+"""Apply a Template Profile through the shared Formatting Operation Layer."""
 from __future__ import annotations
 
 from datetime import datetime
 import json
 from pathlib import Path
 from typing import Any
-from ..docx_reader import NS, read_docx, sha256
+
+from ..docx_reader import read_docx, sha256
 from ..lint_engine import lint
 from ..models import DocumentFactoryError, TemplateApplyResult
-from ..normalizer import (
-    _atomic_text,
-    _style_element,
-    _write_package,
-    apply_format_profile,
+from ..operations import (
+    OperationContext,
+    apply_alignment,
+    apply_font,
+    apply_paragraph_format,
+    atomic_text,
+    find_style_element,
+    write_package,
 )
 from ..output_paths import checked_output
 from ..style_resolver import StyleResolver
@@ -20,19 +24,37 @@ from .analyzer import analyze_template
 from .extractor import extract_roles, extract_style, paragraph_format
 
 
-TEMPLATE_RULES = {"rules": {"TEMPLATE": {"source": "Template Profile 1.0"}}}
 SUPPORTED_ROLES = ("Normal", "Title", "Heading1", "Heading2", "Heading3")
+
+
+def _ctx(changes, object_type, location, prefix=""):
+    return OperationContext(
+        changes=changes,
+        object_type=object_type,
+        location=location,
+        rule_id="TEMPLATE",
+        source="Template Profile 1.0",
+        prefix=prefix,
+    )
 
 
 def _apply_format(
     parent, profile, changes, *, object_type, location, prefix="", table_basic=False,
     include_paragraph=True, include_run=True,
 ):
-    return apply_format_profile(
-        parent, profile, changes, object_type=object_type, location=location,
-        rules=TEMPLATE_RULES, rule_id="TEMPLATE", prefix=prefix, table_basic=table_basic,
-        include_paragraph=include_paragraph, include_run=include_run,
-    )
+    ctx = _ctx(changes, object_type, location, prefix)
+    changed = False
+    if include_paragraph:
+        if table_basic:
+            # Tables only receive alignment at paragraph level in this version.
+            alignment = profile.get("paragraph", {}).get("alignment")
+            if alignment is not None:
+                changed |= apply_alignment(parent, alignment, ctx)
+        else:
+            changed |= apply_paragraph_format(parent, profile, ctx)
+    if include_run:
+        changed |= apply_font(parent, profile.get("font", {}), ctx)
+    return changed
 
 
 def _apply_profile(document, profile):
@@ -47,7 +69,7 @@ def _apply_profile(document, profile):
         if template_style_id is None or target_style_id is None or template_style_id not in profile.styles:
             continue
         style_profile = profile.styles[template_style_id]
-        element = _style_element(document, target_style_id)
+        element = find_style_element(document, target_style_id)
         if element is None:
             continue
         location = f"Style {document.styles[target_style_id].name}"
@@ -200,7 +222,7 @@ def _write_report(result, profile, before_lint, after_lint, generated):
         "- 页面、页眉、页脚和编号仅分析，不在本版迁移。",
         "- 不修改文本、段落数量、章节顺序、图片布局、TOC 或复杂编号。", "",
     ]
-    _atomic_text(Path(result.report_path), "\n".join(lines))
+    atomic_text(Path(result.report_path), "\n".join(lines))
 
 
 def apply_template(template_path, input_path, output_path=None, report_path=None, rules_path=None):
@@ -230,7 +252,7 @@ def apply_template(template_path, input_path, output_path=None, report_path=None
     changes, changed_parts, mappings = _apply_profile(before_lint.document, profile)
     if sha256(source) != input_hash or sha256(template) != template_hash:
         raise DocumentFactoryError("INPUT_CHANGED：Template Apply 期间模板或输入文件发生变化")
-    _write_package(source, output, before_lint.document, changed_parts)
+    write_package(source, output, before_lint.document, changed_parts)
     if sha256(source) != input_hash or sha256(template) != template_hash:
         raise DocumentFactoryError("INPUT_CHANGED：Template Apply 期间模板或输入文件发生变化")
     output_document = read_docx(output)

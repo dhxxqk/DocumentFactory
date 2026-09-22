@@ -1,4 +1,4 @@
-# DocumentFactory v0.4-alpha
+# DocumentFactory v0.5-alpha
 
 确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 规则或模板驱动的可确定格式规范化 → 修复后验证 → Markdown / JSON 报告，并通过本地 stdio MCP 向 DeepSeek Harness 等 Agent 暴露薄适配接口。`lint`、`render`、`audit` 继续只读；`normalize` 和 `template apply` 绝不覆盖输入，只生成新的 DOCX。DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。
 
@@ -98,7 +98,7 @@ v0.4-alpha 增加模板分析与确定性格式迁移。Analyzer 从模板 DOCX 
   --report 'reports\template_apply_report.md'
 ```
 
-Python 接口为 `analyze_template(...)`、`TemplateProfile.save()/load()` 和 `apply_template(...)`。模板层复用现有 `docx_reader`、`StyleResolver`、normalizer 的 OOXML 写入/原子落盘能力及 lint，不维护第二套级联或审计逻辑。Apply 报告分别列出 Profile 验证和现有规则 lint 计数；模板迁移 PASS 不代表目标同时符合电网 V1.4 规则。
+Python 接口为 `analyze_template(...)`、`TemplateProfile.save()/load()` 和 `apply_template(...)`。模板层复用现有 `docx_reader`、`StyleResolver`、共享 Formatting Operation Layer（`document_factory.operations`）的 OOXML 写入/原子落盘能力及 lint，不维护第二套级联或审计逻辑；规则引擎与模板引擎都只负责判定，确定性修改统一由 operations 层执行。Apply 报告分别列出 Profile 验证和现有规则 lint 计数；模板迁移 PASS 不代表目标同时符合电网 V1.4 规则。
 
 ## MCP stdio Server 与 DSH
 
@@ -160,8 +160,9 @@ src/document_factory/
   section_analyzer.py          A4、方向、页边距、前置标题及首章分页证据
   table_analyzer.py            表格专用样式、继承、缩进、间距、行距及字体
   lint_engine.py              规则加载、正文/标题/Run 检查及结果聚合
-  normalizer.py               确定性 OOXML 规范化、原子落盘、前后 lint 与 Validation Report
-  template/                   Template Analyzer、Profile、Extractor 与最小 Apply
+  operations/                 Formatting Operation Layer：font/paragraph/style/table/document 确定性操作与原子落盘
+  normalizer.py               规则判定与规范化编排，底层修改委托 operations，前后 lint 与 Validation Report
+  template/                   Template Analyzer、Profile、Extractor 与最小 Apply（经 operations 执行）
   mcp_server.py               官方 MCP SDK stdio Server 与三个 Core 薄适配工具
   renderer.py                 后端探测、私有副本、PDF 和 PNG、失败状态
   _word_export.py             有界 Word COM 工作进程

@@ -1,19 +1,33 @@
-"""Deterministic DOCX normalization built on the v0.1 reader and lint model."""
+"""Deterministic DOCX normalization: rule decisions, operations execution, validation.
+
+The rule engine owns *decisions* (which object is a heading/body/table cell,
+which rule applies, when a direct override is safe to repair). Every actual
+OOXML mutation goes through the shared Formatting Operation Layer
+(`document_factory.operations`); this module contains no low-level XML writers.
+"""
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
 import json
-import os
 import re
-import tempfile
-import zipfile
-
-from lxml import etree
 
 from . import __version__
-from .docx_reader import NS, q, read_docx, sha256
+from .docx_reader import read_docx, sha256
 from .lint_engine import lint, load_rules
 from .models import DocumentFactoryError, NormalizationResult
+from .operations import (
+    OperationContext,
+    apply_alignment,
+    apply_color,
+    apply_east_asian_font,
+    apply_font_size,
+    apply_indent,
+    apply_latin_font,
+    apply_spacing,
+    atomic_text,
+    find_style_element,
+    write_package,
+)
 from .output_paths import checked_output
 from .style_resolver import StyleResolver
 
@@ -27,237 +41,108 @@ UNSUPPORTED_CAPABILITIES = [
     "视觉美化以及任何无法被现有 lint 再验证的修改",
 ]
 
-PPR_ORDER = [
-    "pStyle", "keepNext", "keepLines", "pageBreakBefore", "framePr", "widowControl", "numPr",
-    "suppressLineNumbers", "pBdr", "shd", "tabs", "suppressAutoHyphens", "kinsoku", "wordWrap",
-    "overflowPunct", "topLinePunct", "autoSpaceDE", "autoSpaceDN", "bidi", "adjustRightInd",
-    "snapToGrid", "spacing", "ind", "contextualSpacing", "mirrorIndents", "suppressOverlap", "jc",
-    "textDirection", "textAlignment", "textboxTightWrap", "outlineLvl", "divId", "cnfStyle", "rPr",
-    "sectPr", "pPrChange",
-]
-RPR_ORDER = [
-    "rStyle", "rFonts", "b", "bCs", "i", "iCs", "caps", "smallCaps", "strike", "dstrike",
-    "outline", "shadow", "emboss", "imprint", "noProof", "snapToGrid", "vanish", "webHidden",
-    "color", "spacing", "w", "kern", "position", "sz", "szCs", "highlight", "u", "effect",
-    "bdr", "shd", "fitText", "vertAlign", "rtl", "cs", "em", "lang", "eastAsianLayout",
-    "specVanish", "oMath", "rPrChange",
-]
 
-
-def _local(element):
-    return etree.QName(element).localname
-
-
-def _ensure(parent, name, order=None):
-    child = parent.find(f"w:{name}", NS)
-    if child is not None:
-        return child
-    child = etree.Element(q(name))
-    if (name == "pPr" and _local(parent) == "p") or (name == "rPr" and _local(parent) == "r"):
-        parent.insert(0, child)
-        return child
-    if order and name in order:
-        target = order.index(name)
-        for index, current in enumerate(parent):
-            current_name = _local(current)
-            if current_name in order and order.index(current_name) > target:
-                parent.insert(index, child)
-                break
-        else:
-            parent.append(child)
-    else:
-        parent.append(child)
-    return child
-
-
-def _attributes(element):
-    if element is None:
-        return {}
-    return {etree.QName(key).localname: value for key, value in element.attrib.items()}
-
-
-def _record(changes, object_type, location, prop, before, after, rule_id, rules):
-    changes.append({
-        "object_type": object_type,
-        "location": location,
-        "property": prop,
-        "before": before,
-        "after": after,
-        "rule": rule_id,
-        "source": rules["rules"][rule_id]["source"],
-    })
-
-
-def _set_properties(parent, child_name, wanted, remove, changes, *, object_type, location, prop, rule_id, rules, order):
-    child = parent.find(f"w:{child_name}", NS)
-    before = _attributes(child)
-    after = dict(before)
-    for key in remove:
-        after.pop(key, None)
-    after.update({key: str(value) for key, value in wanted.items()})
-    if before == after:
-        return False
-    child = child if child is not None else _ensure(parent, child_name, order)
-    for key in remove:
-        child.attrib.pop(q(key), None)
-    for key, value in wanted.items():
-        child.set(q(key), str(value))
-    _record(changes, object_type, location, prop, before, after, rule_id, rules)
-    return True
-
-
-def _set_toggle(parent, child_name, wanted, changes, *, object_type, location, prop, rule_id, rules, order):
-    """Set an OOXML on/off property through the shared normalization recorder."""
-    child = parent.find(f"w:{child_name}", NS)
-    before = None if child is None else child.get(q("val"), "1") not in ("0", "false", "off")
-    wanted = bool(wanted)
-    if before is wanted:
-        return False
-    child = child if child is not None else _ensure(parent, child_name, order)
-    child.set(q("val"), "1" if wanted else "0")
-    _record(changes, object_type, location, prop, before, wanted, rule_id, rules)
-    return True
-
-
-def apply_format_profile(
-    parent, profile, changes, *, object_type, location, rules, rule_id, prefix="", table_basic=False,
-    include_paragraph=True, include_run=True,
-):
-    """Apply an exact, already-resolved format profile through the normalizer writer."""
-    changed = False
-    if include_paragraph:
-        paragraph = profile.get("paragraph", {})
-        ppr = _ensure(parent, "pPr", ["pPr", "rPr"] if _local(parent) == "style" else ["pPr"])
-        if paragraph.get("alignment") is not None:
-            changed |= _set_properties(
-                ppr, "jc", {"val": paragraph["alignment"]}, set(), changes,
-                object_type=object_type, location=location, prop=f"{prefix}alignment", rule_id=rule_id,
-                rules=rules, order=PPR_ORDER,
-            )
-        if not table_basic:
-            spacing = {key: value for key, value in paragraph.get("spacing", {}).items() if value is not None}
-            if spacing:
-                changed |= _set_properties(
-                    ppr, "spacing", spacing, set(), changes,
-                    object_type=object_type, location=location, prop=f"{prefix}spacing", rule_id=rule_id,
-                    rules=rules, order=PPR_ORDER,
-                )
-            indent = {key: value for key, value in paragraph.get("indent", {}).items() if value is not None}
-            if indent:
-                changed |= _set_properties(
-                    ppr, "ind", indent, set(), changes,
-                    object_type=object_type, location=location, prop=f"{prefix}indent", rule_id=rule_id,
-                    rules=rules, order=PPR_ORDER,
-                )
-
-    if not include_run:
-        return changed
-    font = profile.get("font", {})
-    rpr = _ensure(parent, "rPr", ["pPr", "rPr"] if _local(parent) == "style" else ["rPr"])
-    wanted_fonts = {
-        key: value for key, value in {
-            "eastAsia": font.get("east_asia"), "ascii": font.get("latin"), "hAnsi": font.get("latin"),
-        }.items() if value is not None
-    }
-    remove_fonts = set()
-    if font.get("east_asia") is not None:
-        remove_fonts.add("eastAsiaTheme")
-    if font.get("latin") is not None:
-        remove_fonts.update(("asciiTheme", "hAnsiTheme"))
-    if wanted_fonts:
-        changed |= _set_properties(
-            rpr, "rFonts", wanted_fonts, remove_fonts, changes,
-            object_type=object_type, location=location, prop=f"{prefix}font", rule_id=rule_id,
-            rules=rules, order=RPR_ORDER,
-        )
-    if font.get("size_pt") is not None:
-        changed |= _set_properties(
-            rpr, "sz", {"val": int(float(font["size_pt"]) * 2)}, set(), changes,
-            object_type=object_type, location=location, prop=f"{prefix}font_size_pt", rule_id=rule_id,
-            rules=rules, order=RPR_ORDER,
-        )
-    if font.get("color") is not None:
-        changed |= _set_properties(
-            rpr, "color", {"val": font["color"]}, {"themeColor", "themeTint", "themeShade"}, changes,
-            object_type=object_type, location=location, prop=f"{prefix}color", rule_id=rule_id,
-            rules=rules, order=RPR_ORDER,
-        )
-    for key, child_name in (("bold", "b"), ("italic", "i")):
-        if font.get(key) is not None:
-            changed |= _set_toggle(
-                rpr, child_name, font[key], changes,
-                object_type=object_type, location=location, prop=f"{prefix}{key}", rule_id=rule_id,
-                rules=rules, order=RPR_ORDER,
-            )
-    return changed
-
-
-def _style_element(document, style_id):
-    root = document.parts.get("word/styles.xml")
-    if root is None:
-        return None
-    values = root.xpath('./w:style[@w:styleId=$sid]', sid=style_id, namespaces=NS)
-    return values[0] if values else None
+def _ctx(changes, object_type, location, rules, rule_id, prefix=""):
+    return OperationContext(
+        changes=changes,
+        object_type=object_type,
+        location=location,
+        rule_id=rule_id,
+        source=rules["rules"][rule_id]["source"],
+        prefix=prefix,
+    )
 
 
 def _normalize_rpr(parent, target, changes, *, object_type, location, rules, prefix="", heading=False):
+    """Rule-engine composition: translate a resolved rule target to font ops."""
     changed = False
-    rpr = _ensure(parent, "rPr", ["pPr", "rPr"] if _local(parent) == "style" else ["rPr"])
     if target.get("chinese_font"):
-        changed |= _set_properties(
-            rpr, "rFonts", {"eastAsia": target["chinese_font"]}, {"eastAsiaTheme"}, changes,
-            object_type=object_type, location=location, prop=f"{prefix}chinese_font", rule_id="STYLE005" if object_type == "Style" and heading else "TABLE008" if prefix.startswith("table") else "FONT001", rules=rules, order=RPR_ORDER,
+        rule_id = "STYLE005" if object_type == "Style" and heading else "TABLE008" if prefix.startswith("table") else "FONT001"
+        changed |= apply_east_asian_font(
+            parent, target["chinese_font"],
+            _ctx(changes, object_type, location, rules, rule_id, prefix),
+            prop="chinese_font",
         )
     if target.get("latin_font"):
-        changed |= _set_properties(
-            rpr, "rFonts", {"ascii": target["latin_font"], "hAnsi": target["latin_font"]}, {"asciiTheme", "hAnsiTheme"}, changes,
-            object_type=object_type, location=location, prop=f"{prefix}latin_font", rule_id="TABLE008" if prefix.startswith("table") else "FONT002", rules=rules, order=RPR_ORDER,
+        rule_id = "TABLE008" if prefix.startswith("table") else "FONT002"
+        changed |= apply_latin_font(
+            parent, target["latin_font"],
+            _ctx(changes, object_type, location, rules, rule_id, prefix),
+            prop="latin_font",
         )
     size = target.get("font_size_pt", target.get("size_pt"))
     if size is not None:
-        changed |= _set_properties(
-            rpr, "sz", {"val": int(float(size) * 2)}, set(), changes,
-            object_type=object_type, location=location, prop=f"{prefix}font_size_pt", rule_id="STYLE005" if object_type == "Style" and heading else "TABLE008" if prefix.startswith("table") else "FONT003", rules=rules, order=RPR_ORDER,
+        rule_id = "STYLE005" if object_type == "Style" and heading else "TABLE008" if prefix.startswith("table") else "FONT003"
+        changed |= apply_font_size(
+            parent, size,
+            _ctx(changes, object_type, location, rules, rule_id, prefix),
         )
     if heading:
-        changed |= _set_properties(
-            rpr, "color", {"val": target["color"]}, {"themeColor", "themeTint", "themeShade"}, changes,
-            object_type=object_type, location=location, prop=f"{prefix}color", rule_id="STYLE004" if object_type == "Style" else "FONT004", rules=rules, order=RPR_ORDER,
+        changed |= apply_color(
+            parent, target["color"],
+            _ctx(
+                changes, object_type, location, rules,
+                "STYLE004" if object_type == "Style" else "FONT004", prefix,
+            ),
         )
     return changed
 
 
 def _normalize_body_ppr(parent, config, changes, *, object_type, location, rules, prefix=""):
-    ppr = _ensure(parent, "pPr", ["pPr", "rPr"] if _local(parent) == "style" else ["pPr"])
-    changed = _set_properties(
-        ppr, "ind", {"firstLineChars": int(config["first_line_indent_chars"] * 100)}, {"firstLine", "hanging", "hangingChars"}, changes,
-        object_type=object_type, location=location, prop=f"{prefix}indent", rule_id="BODY002", rules=rules, order=PPR_ORDER,
+    """Rule-engine composition: body paragraph indent/spacing/alignment ops."""
+    changed = apply_indent(
+        parent, {"firstLineChars": int(config["first_line_indent_chars"] * 100)},
+        _ctx(changes, object_type, location, rules, "BODY002", prefix),
+        remove=("firstLine", "hanging", "hangingChars"),
     )
-    changed |= _set_properties(
-        ppr, "spacing", {"before": int(config["space_before_pt"] * 20), "after": int(config["space_after_pt"] * 20), "line": int(config["line_spacing"] * 240), "lineRule": "auto"},
-        {"beforeLines", "afterLines", "beforeAutospacing", "afterAutospacing"}, changes,
-        object_type=object_type, location=location, prop=f"{prefix}spacing", rule_id="BODY003", rules=rules, order=PPR_ORDER,
+    changed |= apply_spacing(
+        parent,
+        {
+            "before": int(config["space_before_pt"] * 20),
+            "after": int(config["space_after_pt"] * 20),
+            "line": int(config["line_spacing"] * 240),
+            "lineRule": "auto",
+        },
+        _ctx(changes, object_type, location, rules, "BODY003", prefix),
+        remove=("beforeLines", "afterLines", "beforeAutospacing", "afterAutospacing"),
     )
-    changed |= _set_properties(
-        ppr, "jc", {"val": config["alignment"]}, set(), changes,
-        object_type=object_type, location=location, prop=f"{prefix}alignment", rule_id="BODY002", rules=rules, order=PPR_ORDER,
+    changed |= apply_alignment(
+        parent, config["alignment"],
+        _ctx(changes, object_type, location, rules, "BODY002", prefix),
     )
     return changed
 
 
 def _normalize_table_ppr(parent, config, changes, *, object_type, location, rules, prefix="table_"):
-    ppr = _ensure(parent, "pPr", ["pPr", "rPr"] if _local(parent) == "style" else ["pPr"])
-    changed = _set_properties(
-        ppr, "ind", {"firstLine": int(config["first_line_indent"]), "left": int(config["left_indent"]), "right": int(config["right_indent"])},
-        {"firstLineChars", "hanging", "hangingChars", "leftChars", "rightChars", "start", "startChars", "end", "endChars"}, changes,
-        object_type=object_type, location=location, prop=f"{prefix}indent", rule_id="TABLE004", rules=rules, order=PPR_ORDER,
+    """Rule-engine composition: table paragraph indent/spacing ops."""
+    changed = apply_indent(
+        parent,
+        {
+            "firstLine": int(config["first_line_indent"]),
+            "left": int(config["left_indent"]),
+            "right": int(config["right_indent"]),
+        },
+        _ctx(changes, object_type, location, rules, "TABLE004", prefix),
+        remove=(
+            "firstLineChars", "hanging", "hangingChars", "leftChars", "rightChars",
+            "start", "startChars", "end", "endChars",
+        ),
     )
     line = config["normalization_line_spacing"]
-    line_attrs = {"line": 240, "lineRule": "auto"} if line == "single" else {"line": int(config["normalization_exact_line_twips"]), "lineRule": "exact"}
-    changed |= _set_properties(
-        ppr, "spacing", {"before": int(config["space_before_pt"] * 20), "after": int(config["space_after_pt"] * 20), **line_attrs},
-        {"beforeLines", "afterLines", "beforeAutospacing", "afterAutospacing"}, changes,
-        object_type=object_type, location=location, prop=f"{prefix}spacing", rule_id="TABLE007", rules=rules, order=PPR_ORDER,
+    line_attrs = (
+        {"line": 240, "lineRule": "auto"}
+        if line == "single"
+        else {"line": int(config["normalization_exact_line_twips"]), "lineRule": "exact"}
+    )
+    changed |= apply_spacing(
+        parent,
+        {
+            "before": int(config["space_before_pt"] * 20),
+            "after": int(config["space_after_pt"] * 20),
+            **line_attrs,
+        },
+        _ctx(changes, object_type, location, rules, "TABLE007", prefix),
+        remove=("beforeLines", "afterLines", "beforeAutospacing", "afterAutospacing"),
     )
     return changed
 
@@ -300,20 +185,19 @@ def _normalize_run(document, resolver, paragraph, run, index, role, target, chan
         return False
     effective = resolver.run(paragraph, run)
     location = f"{paragraph.location} / Run {index}"
-    rpr = run.element.find("w:rPr", NS)
     direct = run.properties
     changed = False
-    has_cn = bool(re.search(r"[\u3400-\u9fff\U00020000-\U0002fa1f]", run.text))
-    has_latin = bool(re.search(r"[A-Za-z0-9\u00c0-\u024f]", run.text))
+    has_cn = bool(re.search(r"[㐀-鿿\U00020000-\U0002fa1f]", run.text))
+    has_latin = bool(re.search(r"[A-Za-z0-9À-ɏ]", run.text))
     if has_cn:
         actual, _ = resolver.font(effective, "cn")
         slot = direct.get("rFonts", {})
         if actual is None or actual.casefold() not in [value.casefold() for value in rules.get("font_aliases", {}).get(target["chinese_font"], [target["chinese_font"]])] or "eastAsiaTheme" in slot:
             if "eastAsia" in slot or "eastAsiaTheme" in slot or _has_character_override(document, run, "rFonts"):
-                rpr = rpr if rpr is not None else _ensure(run.element, "rPr", ["rPr"])
-                changed |= _set_properties(
-                    rpr, "rFonts", {"eastAsia": target["chinese_font"]}, {"eastAsiaTheme"}, changes,
-                    object_type="Run", location=location, prop="chinese_font", rule_id="FONT001", rules=rules, order=RPR_ORDER,
+                changed |= apply_east_asian_font(
+                    run.element, target["chinese_font"],
+                    _ctx(changes, "Run", location, rules, "FONT001"),
+                    prop="chinese_font",
                 )
     if has_latin and target.get("latin_font"):
         slot = direct.get("rFonts", {})
@@ -321,26 +205,25 @@ def _normalize_run(document, resolver, paragraph, run, index, role, target, chan
         aliases = [value.casefold() for value in rules.get("font_aliases", {}).get(target["latin_font"], [target["latin_font"]])]
         if actual_ascii is None or actual_ascii.casefold() not in aliases or any(key in slot for key in ("asciiTheme", "hAnsiTheme")):
             if any(key in slot for key in ("ascii", "hAnsi", "asciiTheme", "hAnsiTheme")) or _has_character_override(document, run, "rFonts"):
-                rpr = rpr if rpr is not None else _ensure(run.element, "rPr", ["rPr"])
-                changed |= _set_properties(
-                    rpr, "rFonts", {"ascii": target["latin_font"], "hAnsi": target["latin_font"]}, {"asciiTheme", "hAnsiTheme"}, changes,
-                    object_type="Run", location=location, prop="latin_font", rule_id="FONT002", rules=rules, order=RPR_ORDER,
+                changed |= apply_latin_font(
+                    run.element, target["latin_font"],
+                    _ctx(changes, "Run", location, rules, "FONT002"),
+                    prop="latin_font",
                 )
-    expected_size = int(float(target.get("font_size_pt", target.get("size_pt"))) * 2)
+    size = target.get("font_size_pt", target.get("size_pt"))
+    expected_size = int(float(size) * 2)
     if effective.get("sz") != str(expected_size) and ("sz" in direct or _has_character_override(document, run, "sz")):
-        rpr = rpr if rpr is not None else _ensure(run.element, "rPr", ["rPr"])
-        changed |= _set_properties(
-            rpr, "sz", {"val": expected_size}, set(), changes,
-            object_type="Run", location=location, prop="font_size_pt", rule_id="FONT003", rules=rules, order=RPR_ORDER,
+        changed |= apply_font_size(
+            run.element, size,
+            _ctx(changes, "Run", location, rules, "FONT003"),
         )
     if role == "heading":
         color = effective.get("color", {})
         direct_color = direct.get("color")
         if (color.get("val", "").upper() != target["color"] or any(key.startswith("theme") for key in color)) and (direct_color is not None or _has_character_override(document, run, "color")):
-            rpr = rpr if rpr is not None else _ensure(run.element, "rPr", ["rPr"])
-            changed |= _set_properties(
-                rpr, "color", {"val": target["color"]}, {"themeColor", "themeTint", "themeShade"}, changes,
-                object_type="Run", location=location, prop="color", rule_id="FONT004", rules=rules, order=RPR_ORDER,
+            changed |= apply_color(
+                run.element, target["color"],
+                _ctx(changes, "Run", location, rules, "FONT004"),
             )
     return changed
 
@@ -357,13 +240,13 @@ def _apply_normalization(document, rules):
             if level:
                 heading_styles[paragraph.style_id] = level
     for style_id, level in heading_styles.items():
-        element = _style_element(document, style_id)
+        element = find_style_element(document, style_id)
         if element is not None and _normalize_rpr(element, rules[f"heading{level}"], changes, object_type="Style", location=f"Style {resolver.name(style_id)}", rules=rules, heading=True):
             changed_parts.add("word/styles.xml")
 
     table_names = rules["tables"]["required_styles"] + rules["tables"]["optional_styles"]
     for style in document.styles.values():
-        element = _style_element(document, style.style_id)
+        element = find_style_element(document, style.style_id)
         if element is None or style.kind != "paragraph":
             continue
         if style.name == rules["body"]["style_name"]:
@@ -396,40 +279,6 @@ def _apply_normalization(document, rules):
         if changed:
             changed_parts.add("word/document.xml")
     return changes, changed_parts
-
-
-def _write_package(source, destination, document, changed_parts):
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    handle, temp_name = tempfile.mkstemp(prefix=f".{destination.stem}_", suffix=".tmp", dir=destination.parent)
-    os.close(handle)
-    temp = Path(temp_name)
-    try:
-        if not changed_parts:
-            temp.write_bytes(source.read_bytes())
-        else:
-            with zipfile.ZipFile(source, "r") as incoming, zipfile.ZipFile(temp, "w") as outgoing:
-                for info in incoming.infolist():
-                    payload = incoming.read(info.filename)
-                    if info.filename in changed_parts:
-                        payload = etree.tostring(document.parts[info.filename], encoding="UTF-8", xml_declaration=True)
-                    outgoing.writestr(info, payload)
-        os.replace(temp, destination)
-    finally:
-        if temp.exists():
-            temp.unlink()
-
-
-def _atomic_text(path, text):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    handle, temp_name = tempfile.mkstemp(prefix=f".{path.stem}_", suffix=".tmp", dir=path.parent)
-    os.close(handle)
-    temp = Path(temp_name)
-    try:
-        temp.write_text(text, encoding="utf-8")
-        os.replace(temp, path)
-    finally:
-        if temp.exists():
-            temp.unlink()
 
 
 def _write_validation_report(result, before, after, rules, generated):
@@ -480,8 +329,8 @@ def _write_validation_report(result, before, after, rules, generated):
         lines.append("| - | - | - | - | - | - | 无剩余 ERROR / WARNING / UNSUPPORTED |")
     lines += ["", "## 6. 本轮明确不自动修复", ""] + [f"- {item}" for item in UNSUPPORTED_CAPABILITIES]
     lines += ["", "## 7. 机器可读结果", "", f"同名 JSON：`{json_path}`", ""]
-    _atomic_text(report, "\n".join(lines))
-    _atomic_text(json_path, json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True))
+    atomic_text(report, "\n".join(lines))
+    atomic_text(json_path, json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 def _escape(value):
@@ -516,7 +365,7 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
     changes, changed_parts = _apply_normalization(before.document, rules)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
-    _write_package(source, output, before.document, changed_parts)
+    write_package(source, output, before.document, changed_parts)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     # read_docx is intentionally called before lint so an invalid or partial ZIP can never be reported as success.

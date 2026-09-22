@@ -1,5 +1,14 @@
 # 更新记录
 
+## 0.5.0-alpha — 2026-09-22
+
+- 新增 Formatting Operation Layer（`src/document_factory/operations/`）：确定性、只执行、输入显式的公共格式操作底座，供规则引擎、模板引擎及未来 AI 调用方共享。
+- 操作按对象分为 font（中西文字体、字号、粗体、斜体、下划线、颜色）、paragraph（对齐、行距、段前后、缩进）、style（Normal/Title/Heading1-3）、table（表格字体与对齐）、document（页面属性；页眉页脚预留未迁移）。
+- 私有 OOXML 写入内核（有序元素插入、属性/开关写入、变更记录）与原子落盘（`write_package` / `atomic_text`）从 normalizer 下沉到 operations 层；normalizer 只保留规则判定与引擎编排，不再承担底层格式操作。
+- Template Applier / Template Profile 不再导入 normalizer 任何私有函数，同时移除 `TEMPLATE_RULES` 伪规则 hack；规则流与模板流的变更记录结构、Rule 归属、报告字段保持不变。
+- 纯架构重构：CLI 命令、MCP 三个工具、Template Profile schema、退出码与输出契约均未改变；既有 80 项测试全部通过，Template Demo 文本/段落/编号 XML 保持一致。
+- 版本更新为 Python `0.5.0a1`（产品标识 v0.5-alpha）。
+
 ## Product direction update — 2026-09-21
 
 - 明确采用“内容源 + 发布层”双层模型：Markdown 用于 AI、Git、结构化内容母版，不作为面向普通同事的最终交付格式。
