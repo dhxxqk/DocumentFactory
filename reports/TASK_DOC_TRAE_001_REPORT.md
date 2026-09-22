@@ -1,9 +1,11 @@
 # TASK_DOC_TRAE_001：DocumentFactory 项目接管与基线审计报告
 
-- 实际生成时间（含时区）：2026-09-22T20:24:59+08:00
+- 实际生成时间（含时区）：2026-09-22T20:24:59+08:00（报告内容于审计过程中据实回填，见第 2 节）
 - 执行者：Trae
 - 审计起始基线：`893a4694e849312b91b3485c3060c12c3d8bd57e`
 - 任务性质：只检查、不修改（除本报告外无代码变更）
+
+> 审计期间（push 前）远端 master 从 `893a469` 前进了 2 个文档提交（`1829835`、`5153784`，2026-09-21 的「Markdown 内容源 + 发布层」决策）。已按安全流程 fetch → 阅读 → 普通 merge 整合，未 rebase / force / amend；相关影响已回填到第 10、12 节。
 
 ## 1. RESULT
 
@@ -48,6 +50,14 @@ b919b94 docs: add TASK_DOC_003 DSH MCP integration task
 ```
 
 未执行 reset --hard、force push、rebase、amend 等任何危险操作。
+
+**审计期间的远端整合（如实记录）：**
+
+1. 首次 `git push origin master` 被拒绝：远端含本地没有的提交（非 fast-forward）。
+2. `git fetch origin` 后确认远端前进为 `1829835 docs: define markdown source and publishing model`、`5153784 docs: record source and publishing layer decision`，仅改动 `CHANGELOG.md` 与 `docs/DOCUMENTFACTORY_PRODUCT_DESIGN_V1.md`，与本报告无文件冲突。
+3. 完整阅读新文档（确认方向更新）后，执行普通 `git merge origin/master`，生成合并提交 `5f6431e`，保留双方完整历史，未改写已推送提交。
+
+最终 HEAD / origin/master 一致性以 push 后的复核为准（见第 2 节末与第 18 步要求）。
 
 ## 3. 环境与版本
 
@@ -248,6 +258,7 @@ Demo：`testcases/template/template_demo.docx` + `testcases/template/target_demo
   6. **Template Library 与模板选择**：「去年德阳项目建议书」的检索与匹配；
   7. **迁移后视觉验证**：渲染逐页核对。
 - 此外未实现：TOC 自动修复、章节增删/重排、文字改写、图片布局迁移、GUI、WorkBuddy、任何 LLM/云调用。
+- **审计期间新增确认的方向（当前仍未实现，仅为 Accepted 设计）**：Markdown / 结构化内容作为内容母版，经「Markdown 语义 → 文档语义角色 → 规则/模板映射 → 正式 DOCX → 验证」生成文档，同一内容源切换多个模板，以及 DOCX → PDF / HTML 发布层（远端 2026-09-21 产品设计更新，CHANGELOG 已记录）。这进一步明确 DocumentFactory 不是简单的 Markdown→Word 语法转换器。
 
 ## 11. WPS 样式集差异分析
 
@@ -315,6 +326,14 @@ WPS「样式集」本质：在 GUI 中把一组命名字符/段落样式（标�
 - 验收：Agent 可经 MCP 完成「选模板→迁移→验证→present」全链路，返回结果与 CLI/Python 完全一致。
 
 **WorkBuddy 排在最后**：它是入口/体验层，价值依赖完整的迁移 + 验证 + 模板库；在 Template MCP 与 Structure Mapping 成熟前接入只会重复 DSH 已验证过的接入工作。
+
+### 审计期间新增方向对路线的影响
+
+远端 2026-09-21 决策新增两条候选主线：**(a) Markdown / 结构化内容 → 统一 Document Structure Model → 按语义角色生成 DOCX；(b) DOCX → PDF / HTML 发布层**。结合源码后的排序建议：
+
+- **(a) 应与任务 4 合并设计而非单列**：Markdown Semantic Parser（`#`→Title/H1、表格→Table 角色等）与 DOCX Structure Mapping 应汇入同一个 Document Structure Model。Markdown 是结构最干净的输入，建议在任务 4 建立 Structure Model 后，紧接着用 Markdown Parser 作为该模型的第一个「干净供给方」，从而低成本验证「一份内容、多个模板」，再回头啃 DOCX 侧的模糊推断。
+- **(b) 发布层（PDF/HTML）应在渲染环境（任务 2）之后**：PDF 发布直接复用任务 2 打通的渲染后端，属于在稳定 DOCX 之上的薄输出；HTML 为可选轻量发布。不宜在 DOCX 生成与验证尚未扎实前提前铺开。
+- 修订后的总体次序：迁移深化（1）＋渲染环境（2）→ 编号迁移（3）→ Structure Model 与 Mapping（4）→ Markdown 内容源接入同一模型 → Template Library＋Template MCP（5）→ PDF/HTML 发布；WorkBuddy 仍在最后。
 
 ### 是否应进入 Document Migration Engine
 
