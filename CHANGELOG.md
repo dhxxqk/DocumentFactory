@@ -1,5 +1,13 @@
 # 更新记录
 
+## Product definition v1.0 — 2026-09-22
+
+- 明确产品边界：DocumentFactory 只解决 Word / DOCX 的生成、转换与格式治理，定位为面向 AI 生成内容的 DOCX 工厂。
+- 新增权威产品定义 `docs/PRODUCT_DEFINITION.md` v1.0（定位、痛点、核心能力、非目标、技术路线、Roadmap、验收标准）。
+- README 第一屏重写并新增 Product Scope 与三阶段 Roadmap；MCP 描述收窄为“AI Agent 调用 DOCX 格式治理能力”的接口。
+- PPT 生成、图片生成、内容创作、项目知识管理、通用 Agent 记忆系统与通用 Agent 入口（WorkBuddy 等）明确为非目标，在独立项目中实现；历史讨论文档加边界注记但保留原文。
+- 纯文档调整，无代码改动，89 项测试保持通过。
+
 ## 0.5.0-alpha — 2026-09-22
 
 - 新增 Formatting Operation Layer（`src/document_factory/operations/`）：确定性、只执行、输入显式的公共格式操作底座，供规则引擎、模板引擎及未来 AI 调用方共享。

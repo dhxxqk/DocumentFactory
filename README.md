@@ -1,6 +1,36 @@
 # DocumentFactory v0.5-alpha
 
-确定性的 DOCX 文档质量核心：OOXML 解析 → 结构审计 → 规则或模板驱动的可确定格式规范化 → 修复后验证 → Markdown / JSON 报告，并通过本地 stdio MCP 向 DeepSeek Harness 等 Agent 暴露薄适配接口。`lint`、`render`、`audit` 继续只读；`normalize` 和 `template apply` 绝不覆盖输入，只生成新的 DOCX。DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。
+DocumentFactory 是一个面向 AI 生成内容的 DOCX 文档生成、格式规范化和质量验证引擎。
+
+通过 OOXML 解析、规则驱动审计、模板迁移、确定性格式修复和渲染验证，解决 AI 生成 Word 文档过程中出现的格式漂移、模板失效和排版不一致问题。
+
+DocumentFactory 不负责内容生成，由 GPT、DeepSeek 等 AI Agent 提供内容，DocumentFactory 负责保证 DOCX 输出的一致性和可验证性。`lint`、`render`、`audit` 只读；`normalize` 和 `template apply` 绝不覆盖输入，只生成新的 DOCX；DocumentFactory 本身不调用 LLM、OCR 或自动排版服务。完整产品定义见 [docs/PRODUCT_DEFINITION.md](docs/PRODUCT_DEFINITION.md)。
+
+## Product Scope
+
+DocumentFactory 当前专注于 DOCX 文档处理：**这是一个 DOCX 工厂，不是 PPT 工厂，也不是通用 AI 办公平台。**
+
+### 支持范围
+
+- DOCX 结构解析
+- Word 模板分析
+- 文档格式规则检查
+- 文档格式自动修复
+- DOCX 模板迁移
+- DOCX 渲染验证
+- MCP 接口供 AI Agent 调用
+
+### 不支持范围
+
+以下能力不属于 DocumentFactory：
+
+- PPT 生成与模板设计
+- 图片生成
+- 内容创作
+- 项目知识管理
+- 通用 Agent 记忆系统
+
+这些能力将在独立项目中实现。
 
 本项目位于任务书指定的 `G:\Workflows\DocumentFactory`。规范主源为 `specs/电网科技项目实施方案文档格式规范_V1.4.md`；`rules/grid_tech_v1_4.yaml` 是人工核对后的机器映射，每条规则记录规范章节和严重等级。规则修改应先核对 Markdown，不能把机器配置作为新的格式规范。
 
@@ -101,6 +131,8 @@ v0.4-alpha 增加模板分析与确定性格式迁移。Analyzer 从模板 DOCX 
 Python 接口为 `analyze_template(...)`、`TemplateProfile.save()/load()` 和 `apply_template(...)`。模板层复用现有 `docx_reader`、`StyleResolver`、共享 Formatting Operation Layer（`document_factory.operations`）的 OOXML 写入/原子落盘能力及 lint，不维护第二套级联或审计逻辑；规则引擎与模板引擎都只负责判定，确定性修改统一由 operations 层执行。Apply 报告分别列出 Profile 验证和现有规则 lint 计数；模板迁移 PASS 不代表目标同时符合电网 V1.4 规则。
 
 ## MCP stdio Server 与 DSH
+
+MCP 接口用于让 AI Agent 调用 DOCX 格式治理能力（审计、规范化、规范查询）；DocumentFactory 不因此成为通用 Agent 平台，不提供对话、记忆、任务编排等能力。
 
 安装 `mcp` extra 后可直接启动本地 stdio Server：
 
@@ -218,6 +250,30 @@ reports/                       审计报告、任务报告、基线 SHA-256、py
 - [Word Documents.Open 的 ReadOnly 参数](https://learn.microsoft.com/en-us/office/vba/api/word.documents.open)
 
 
+## Roadmap
+
+### Phase 1：DOCX Core（已完成）
+
+- DOCX 解析
+- 格式审计
+- 模板迁移
+- 自动修复
+
+### Phase 2：DOCX Generation（计划）
+
+- Markdown / 结构化内容生成 DOCX
+- 模板驱动文档生成
+- 自动验证
+
+### Phase 3：Enterprise Rule Packages（计划）
+
+- 电网规范
+- 企业模板
+- 论文格式
+- 等规则包支持
+
+路线中不包含 PPT 路线与通用 AI 工作流 / Agent 平台路线；PPT 生成、通用 Agent 入口（如 WorkBuddy）、知识管理与记忆系统均属未来独立项目。
+
 ## 下一阶段边界
 
-v0.4-alpha 的 MCP 仍保持 v0.3-alpha 的三个工具，没有提前暴露模板工具。Template Engine Core 稳定后，后续任务可评估增加薄适配的 `apply_template` MCP tool；本版本不实现 WorkBuddy、GUI、WPS/Word 插件、HTTP MCP、云服务或 LLM API，也不得让 Agent 绕过 DocumentFactory Core 直接修改 OOXML。
+v0.5-alpha 的 MCP 仍保持三个工具，没有提前暴露模板工具。Template Engine Core 稳定后，后续任务可评估增加薄适配的 `apply_template` MCP tool；本版本不实现 GUI、WPS/Word 插件、HTTP MCP、云服务或 LLM API，也不得让 Agent 绕过 DocumentFactory Core 直接修改 OOXML。WorkBuddy 等通用 Agent 入口不属于本项目，将在独立项目中实现。

@@ -1,8 +1,10 @@
 # DocumentFactory 产品设计方向 V1
 
-状态：Accepted  
+状态：Accepted（历史讨论文档，原文保留）  
 首次日期：2026-09-20  
 最近更新：2026-09-21
+
+> **边界注记（2026-09-22，TASK_DOC_007）：** 本文档为历史方向讨论，保留原文以记录决策演进。当前权威产品定义以 [PRODUCT_DEFINITION.md](PRODUCT_DEFINITION.md) v1.0 为准：DocumentFactory 只解决 Word / DOCX 的生成、转换与格式治理。本文档第 4 节出现的 WorkBuddy 等通用 Agent 入口，以及 PPT 生成、图片生成、项目知识管理、通用 Agent 记忆系统等能力，**均不属于本项目，未来在独立项目中实现**。第 6 节的 TASK 编号为当时的历史规划，已不代表当前编号序列。
 
 ## 1. 产品定位
 
