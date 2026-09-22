@@ -100,8 +100,8 @@ Resolution: Not applicable。
 
 - 提交信息：`TASK_DOC_006: refactor: introduce formatting operation layer`
 - 分支：`master`（起始 HEAD `2f3a809`，clean，与 origin/master 一致；remote 为 SSH `git@github.com:dhxxqk/DocumentFactory.git`）
-- 提交哈希：提交后回填
-- 推送状态：提交后回填（SSH only；不 amend、不 rebase、不 force push）
+- 提交哈希：`41510621fe240738e4ec8bcc149e97ead92ae411`（短哈希 `4151062`，经独立 docs 提交回填）
+- 推送状态：回填后推送（SSH only；不 amend、不 rebase、不 force push）
 
 ## Remaining Risks
 
