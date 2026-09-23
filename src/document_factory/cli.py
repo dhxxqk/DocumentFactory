@@ -9,6 +9,7 @@ from .report_writer import write_report
 from .normalizer import normalize
 from .template import analyze_template, apply_template
 from .template_runner import run_template
+from .generation import GenerationRequest, generate_document
 
 
 def main(argv=None):
@@ -48,6 +49,11 @@ def main(argv=None):
     run_command.add_argument("--output", type=Path)
     run_command.add_argument("--report", type=Path)
     run_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
+    generate_command = subcommands.add_parser("generate")
+    generate_command.add_argument("--template", required=True)
+    generate_command.add_argument("--input", type=Path, required=True)
+    generate_command.add_argument("--output", type=Path)
+    generate_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
     args = parser.parse_args(argv)
     try:
         if args.command == "template":
@@ -83,6 +89,27 @@ def main(argv=None):
             print(f"BEFORE_ERROR={result.before_counts['ERROR']}")
             print(f"AFTER_ERROR={result.after_counts['ERROR']}")
             print(f"CHANGED={len(result.changes)}")
+            return 1 if result.status == "FAIL" else 0
+        if args.command == "generate":
+            request = GenerationRequest(
+                template_id=args.template,
+                content_source="markdown",
+                input_data={"file": str(args.input)},
+                output_path=str(args.output) if args.output else None,
+                metadata={"rules_path": str(args.rules)},
+            )
+            result = generate_document(request)
+            print(f"STATUS={result.status}")
+            if result.output_path:
+                print(f"OUTPUT={result.output_path}")
+            if result.report_path:
+                print(f"REPORT={result.report_path}")
+            if result.execution_result is not None:
+                print(f"OPERATIONS={result.execution_result.operations_count}")
+                print(f"WARNINGS={len(result.execution_result.warnings)}")
+                print(f"ERRORS={len(result.execution_result.errors)}")
+            for err in result.errors:
+                print(f"错误：{err}", file=sys.stderr)
             return 1 if result.status == "FAIL" else 0
         ctx = lint(args.input, args.rules) if args.command != "render" else None
         result = render(args.input, args.output_dir, timeout=args.timeout, dpi=args.dpi, backend=args.backend) if args.command != "lint" else None

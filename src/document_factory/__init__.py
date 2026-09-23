@@ -13,6 +13,12 @@ from .templates import (
     load_template,
     load_template_from_yaml,
 )
+from .generation import (
+    DocumentGenerationService,
+    GenerationRequest,
+    GenerationResult,
+    generate_document,
+)
 
 __all__ = [
     "__version__",
@@ -29,4 +35,8 @@ __all__ = [
     "list_templates",
     "load_template",
     "load_template_from_yaml",
+    "DocumentGenerationService",
+    "GenerationRequest",
+    "GenerationResult",
+    "generate_document",
 ]
