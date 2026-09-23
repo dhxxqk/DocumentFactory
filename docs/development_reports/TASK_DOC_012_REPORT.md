@@ -124,7 +124,7 @@ DEFAULT_TECHNICAL_DOCUMENT_V1（默认规范：页面/正文/标题/表格/题�
 
 ## 7. Commit 与哈希回填
 
-- 实现 commit：`<TASK_DOC_012 实现哈希>`
-- 回填 commit：提交后以独立 docs commit 回填本占位
+- 实现 commit：`2bbd6dc`
+- 回填 commit：本哈希以独立 docs commit 回填
   （消息：docs: backfill TASK_DOC_012 commit hash）
 - 重编号 commit：`9461c87`（TASK_DOC_012→013，与本任务一同推送）
