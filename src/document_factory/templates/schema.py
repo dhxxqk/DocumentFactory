@@ -81,6 +81,7 @@ class TableRule:
     latin_font: str
     font_size_pt: float
     alignment: str
+    style_names: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data):
@@ -92,7 +93,14 @@ class TableRule:
         if missing:
             from ..models import DocumentFactoryError
             raise DocumentFactoryError(f"tables 规则缺少字段: {', '.join(missing)}")
-        return cls(**{k: data[k] for k in required})
+        return cls(
+            header_font=data["header_font"],
+            body_font=data["body_font"],
+            latin_font=data["latin_font"],
+            font_size_pt=data["font_size_pt"],
+            alignment=data["alignment"],
+            style_names=list(data.get("style_names") or []),
+        )
 
 
 @dataclass(frozen=True)

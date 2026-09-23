@@ -8,6 +8,7 @@ from .renderer import render
 from .report_writer import write_report
 from .normalizer import normalize
 from .template import analyze_template, apply_template
+from .template_runner import run_template
 
 
 def main(argv=None):
@@ -41,6 +42,12 @@ def main(argv=None):
     apply_command.add_argument("--output", type=Path)
     apply_command.add_argument("--report", type=Path)
     apply_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
+    run_command = template_subcommands.add_parser("run")
+    run_command.add_argument("--template-id", required=True)
+    run_command.add_argument("--input", type=Path, required=True)
+    run_command.add_argument("--output", type=Path)
+    run_command.add_argument("--report", type=Path)
+    run_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
     args = parser.parse_args(argv)
     try:
         if args.command == "template":
@@ -52,6 +59,15 @@ def main(argv=None):
                 print(f"STYLES={len(profile.styles)}")
                 print(f"TABLE_STYLES={len(profile.table_styles)}")
                 return 0
+            if args.template_command == "run":
+                result = run_template(args.template_id, args.input, args.output, args.report, args.rules)
+                print(f"STATUS={result.status}")
+                print(f"OUTPUT={result.output_path}")
+                print(f"REPORT={result.report_path}")
+                print(f"OPERATIONS={result.operations_count}")
+                print(f"WARNINGS={len(result.warnings)}")
+                print(f"ERRORS={len(result.errors)}")
+                return 1 if result.status == "FAIL" else 0
             result = apply_template(args.template, args.input, args.output, args.report, args.rules)
             print(f"STATUS={result.status}")
             print(f"OUTPUT={result.output_path}")

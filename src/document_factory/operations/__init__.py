@@ -16,7 +16,7 @@ Public API:
 """
 from ._oxml import OperationContext
 from ._package import atomic_text, write_package
-from .document import HEADER_FOOTER_MIGRATION_SUPPORTED, PageFormat, apply_section_properties
+from .document import HEADER_FOOTER_MIGRATION_SUPPORTED, PAGE_SIZES, PageFormat, apply_section_properties
 from .font import (
     FontProfile,
     apply_bold,
@@ -43,6 +43,7 @@ __all__ = [
     "atomic_text",
     "write_package",
     "HEADER_FOOTER_MIGRATION_SUPPORTED",
+    "PAGE_SIZES",
     "PageFormat",
     "apply_section_properties",
     "FontProfile",

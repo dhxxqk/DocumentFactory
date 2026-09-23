@@ -3,6 +3,7 @@ __version__ = "0.5.0a1"
 
 from .normalizer import normalize
 from .template import analyze_template, apply_template, TemplateProfile
+from .template_runner import ExecutionResult, run_template
 from .templates import (
     TemplateAlreadyRegisteredError,
     TemplateDefinition,
@@ -19,6 +20,8 @@ __all__ = [
     "TemplateProfile",
     "analyze_template",
     "apply_template",
+    "ExecutionResult",
+    "run_template",
     "TemplateDefinition",
     "TemplateAlreadyRegisteredError",
     "TemplateNotFoundError",

@@ -12,6 +12,14 @@ from ._oxml import SECTPR_ORDER, set_properties
 
 HEADER_FOOTER_MIGRATION_SUPPORTED = False
 
+# Page size constants in twips (1 inch = 1440 twips). Width/height are the
+# portrait values; landscape callers swap the pair.
+PAGE_SIZES = {
+    "A4": (11906, 16838),
+    "A3": (16838, 23811),
+    "Letter": (12240, 15840),
+}
+
 
 @dataclass(frozen=True)
 class PageFormat:

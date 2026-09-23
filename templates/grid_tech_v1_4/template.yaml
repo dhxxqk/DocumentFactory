@@ -70,6 +70,9 @@ rules:
     latin_font: Times New Roman
     font_size_pt: 10.5
     alignment: center
+    style_names:
+      - 表格表头
+      - 表格正文
 
   font_aliases:
     仿宋: [仿宋, FangSong]

@@ -146,5 +146,27 @@ class TemplateApplyResult:
         return asdict(self)
 
 
+@dataclass
+class ExecutionResult:
+    status: str
+    template_id: str
+    input_path: str
+    output_path: str
+    report_path: str
+    input_sha256: str
+    output_sha256: str
+    operations_count: int
+    before_counts: dict[str, int]
+    after_counts: dict[str, int]
+    changes: list[dict[str, Any]] = field(default_factory=list)
+    changed_parts: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    source_unchanged: bool = True
+
+    def to_dict(self):
+        return asdict(self)
+
+
 class DocumentFactoryError(Exception):
     """Expected, user-readable input or execution failure."""
