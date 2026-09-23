@@ -166,7 +166,7 @@ TOC005（updateFields 设置）。另有 8 个封面/前置非空段保留原格
 
 ## 8. Commit 与哈希回填
 
-- 实现 commit：`<TASK_DOC_012 实现哈希>`
+- 实现 commit：`934ec2f`
   （TASK_DOC_012: Implement document format conversion pipeline）
 - 回填 commit：`docs: backfill TASK_DOC_012 commit hash`
 - 推送：`git push origin master`
