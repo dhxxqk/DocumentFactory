@@ -1,4 +1,7 @@
-# Document Format Conversion Pipeline 设计文档（TASK_DOC_012）
+# Document Format Conversion Pipeline 设计文档（TASK_DOC_013）
+
+> 编号说明：本任务开发时编号为 TASK_DOC_012，2026-09-23 路线调整后
+> 顺延为 TASK_DOC_013（TASK_DOC_012 改由"默认技术文档规范"占用）。
 
 ## 1. 背景与目标
 

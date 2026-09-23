@@ -1,4 +1,9 @@
-# TASK_DOC_012 — Document Format Conversion & Validation Pipeline
+# TASK_DOC_013 — Document Format Conversion & Validation Pipeline
+
+> **编号说明（2026-09-23 路线调整）**：本任务开发时编号为 TASK_DOC_012，
+> 已推送的实现 commit（`934ec2f`、`51494b1`）消息仍保留 TASK_DOC_012 字样，
+> 属正常历史痕迹，不改写远端历史。路线调整后，"默认技术文档规范"占用
+> TASK_DOC_012，本格式转换流水线顺延为 **TASK_DOC_013**。
 
 ## 1. 任务概述
 
@@ -167,8 +172,10 @@ TOC005（updateFields 设置）。另有 8 个封面/前置非空段保留原格
 ## 8. Commit 与哈希回填
 
 - 实现 commit：`934ec2f`
-  （TASK_DOC_012: Implement document format conversion pipeline）
-- 回填 commit：`docs: backfill TASK_DOC_012 commit hash`
+  （提交时编号为 TASK_DOC_012: Implement document format conversion pipeline）
+- 回填 commit：`51494b1`（提交时消息为 docs: backfill TASK_DOC_012 commit hash）
+- 重编号 commit：本文档与相关引用由 TASK_DOC_012 改为 TASK_DOC_013
+  （路线调整，历史 commit 消息不追溯修改）
 - 推送：`git push origin master`
 
 ## 9. 完成后的能力

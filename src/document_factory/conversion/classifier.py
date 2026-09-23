@@ -1,6 +1,6 @@
 """Deterministic paragraph role classification for format conversion.
 
-TASK_DOC_012 的关键边界：转换**不重新生成内容、不做 AI 语义理解**。
+TASK_DOC_013 的关键边界：转换**不重新生成内容、不做 AI 语义理解**。
 分类器只用可复现的确定性规则判定段落角色：
 
 - 标题：手工编号模式（一、/（一）/1.1 等）+ 短文本 + 无句末标点；
