@@ -80,8 +80,8 @@ Resolution: Not applicable。原 133 项基线（TASK_DOC_008 后）全部保留
 
 - 提交信息：`TASK_DOC_009: Implement template execution pipeline foundation`
 - 分支：`master`（起始 HEAD `9ad07bd`，clean，与 origin/master 一致；remote 为 SSH `git@github.com:dhxxqk/DocumentFactory.git`）
-- 提交哈希：（提交后回填）
-- 推送状态：（提交后回填）
+- 提交哈希：`9cedd35`（16 文件 +1222 / -2）
+- 推送状态：已推送至 `origin/master`（SSH，范围 `9ad07bd..9cedd35`）；推送后复核 `HEAD == origin/master`、working tree clean；不 amend、不 rebase、不 force push
 
 ## Remaining Risks
 
