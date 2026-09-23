@@ -10,6 +10,7 @@ from .normalizer import normalize
 from .template import analyze_template, apply_template
 from .template_runner import run_template
 from .generation import GenerationRequest, generate_document
+from .conversion import convert_document
 
 
 def main(argv=None):
@@ -54,6 +55,12 @@ def main(argv=None):
     generate_command.add_argument("--input", type=Path, required=True)
     generate_command.add_argument("--output", type=Path)
     generate_command.add_argument("--rules", type=Path, default=Path("rules/grid_tech_v1_4.yaml"))
+    convert_command = subcommands.add_parser("convert")
+    convert_command.add_argument("--template-id", required=True)
+    convert_command.add_argument("--input", type=Path, required=True)
+    convert_command.add_argument("--output", type=Path)
+    convert_command.add_argument("--report", type=Path)
+    convert_command.add_argument("--rules", type=Path, default=None)
     args = parser.parse_args(argv)
     try:
         if args.command == "template":
@@ -108,6 +115,24 @@ def main(argv=None):
                 print(f"OPERATIONS={result.execution_result.operations_count}")
                 print(f"WARNINGS={len(result.execution_result.warnings)}")
                 print(f"ERRORS={len(result.execution_result.errors)}")
+            for err in result.errors:
+                print(f"错误：{err}", file=sys.stderr)
+            return 1 if result.status == "FAIL" else 0
+        if args.command == "convert":
+            result = convert_document(
+                args.input, args.template_id, args.output, args.report, args.rules
+            )
+            print(f"STATUS={result.status}")
+            print(f"OUTPUT={result.output_path}")
+            print(f"REPORT={result.report_path}")
+            print(f"TEMPLATE={result.template_id}")
+            print(f"REASSIGNED={result.reassignment_count}")
+            print(f"CREATED_STYLES={len(result.created_styles)}")
+            print(f"CHANGED={len(result.changes)}")
+            print(f"CONTENT_PRESERVED={result.content_preserved}")
+            print(f"BEFORE_ERROR={result.before_counts['ERROR']}")
+            print(f"AFTER_ERROR={result.after_counts['ERROR']}")
+            print(f"UNRESOLVED={len(result.unresolved)}")
             for err in result.errors:
                 print(f"错误：{err}", file=sys.stderr)
             return 1 if result.status == "FAIL" else 0

@@ -19,6 +19,14 @@ from .generation import (
     GenerationResult,
     generate_document,
 )
+from .analyzer import DocumentProfile, analyze_document
+from .conversion import (
+    ConversionResult,
+    DocumentFormatConverter,
+    DocumentInputProvider,
+    convert_document,
+    load_input_docx,
+)
 
 __all__ = [
     "__version__",
@@ -39,4 +47,11 @@ __all__ = [
     "GenerationRequest",
     "GenerationResult",
     "generate_document",
+    "DocumentProfile",
+    "analyze_document",
+    "ConversionResult",
+    "DocumentFormatConverter",
+    "DocumentInputProvider",
+    "convert_document",
+    "load_input_docx",
 ]
