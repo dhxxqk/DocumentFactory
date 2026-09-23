@@ -1,0 +1,5463 @@
+{
+  "after_findings": [
+    {
+      "actual": {
+        "h": "16838",
+        "orient": "portrait",
+        "w": "11906"
+      },
+      "expected": "A4",
+      "location": "Section 1",
+      "message": "纸张尺寸按 twip 比较（允许单位转换舍入）",
+      "object_type": "Section",
+      "rule_id": "PAGE001",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": "portrait",
+      "expected": "portrait",
+      "location": "Section 1",
+      "message": "默认纵向",
+      "object_type": "Section",
+      "rule_id": "PAGE002",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "top": {
+          "cm": 2.7993,
+          "twips": "1587"
+        }
+      },
+      "expected": {
+        "top": 2.8
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "bottom": {
+          "cm": 2.6,
+          "twips": "1474"
+        }
+      },
+      "expected": {
+        "bottom": 2.6
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "left": {
+          "cm": 2.7993,
+          "twips": "1587"
+        }
+      },
+      "expected": {
+        "left": 2.8
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "right": {
+          "cm": 2.6,
+          "twips": "1474"
+        }
+      },
+      "expected": {
+        "right": 2.6
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "pageBreakBefore": false,
+        "precedingPageBreak": false,
+        "sectionBreak": false
+      },
+      "expected": "第一个 Heading 1 前有明确新页结构",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "结构存在分页依据；不推断真实页码",
+      "object_type": "Paragraph",
+      "rule_id": "FRONT003",
+      "severity": "INFO",
+      "source": "源文档§前置规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 1",
+        "styleId": "Heading1"
+      },
+      "expected": "Heading 1",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 1",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "32",
+      "expected": 16,
+      "location": "Style heading 1",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 2 / 课题概述",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 2",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 2",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "Style heading 2",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 3",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 3",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "Style heading 3",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 23 / 任务分解",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": [
+        "Body"
+      ],
+      "expected": "正文",
+      "location": "Document",
+      "message": "文档必须建立专用正文段落样式",
+      "object_type": "Document",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "Style 正文",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "Style 正文",
+      "message": "检查行距单位与值",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "Style 正文",
+      "message": "正文应两端对齐",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "Style 正文",
+      "message": "正文段间距",
+      "object_type": "Style",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:hAnsi"
+      },
+      "expected": "Times New Roman",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "Style 正文",
+      "message": "正文样式小四（半磅单位）",
+      "object_type": "Style",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 2 / 课题概述",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 23 / 任务分解",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": [],
+      "expected": "真实完整 Word TOC Field",
+      "location": "Document",
+      "message": "按 fldSimple / begin-instrText-separate-end 检测目录域",
+      "object_type": "Document",
+      "rule_id": "TOC001",
+      "severity": "ERROR",
+      "source": "源文档§目录规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": "true",
+      "expected": true,
+      "location": "word/settings.xml",
+      "message": "应设置打开 Word 时更新域；本审计不修改域",
+      "object_type": "word/settings.xml",
+      "rule_id": "TOC005",
+      "severity": "INFO",
+      "source": "源文档§目录规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "32",
+      "expected": 16,
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    }
+  ],
+  "before_findings": [
+    {
+      "actual": {
+        "h": "16838",
+        "w": "11906"
+      },
+      "expected": "A4",
+      "location": "Section 1",
+      "message": "纸张尺寸按 twip 比较（允许单位转换舍入）",
+      "object_type": "Section",
+      "rule_id": "PAGE001",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": "portrait",
+      "expected": "portrait",
+      "location": "Section 1",
+      "message": "默认纵向",
+      "object_type": "Section",
+      "rule_id": "PAGE002",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "top": {
+          "cm": 2.7993,
+          "twips": "1587"
+        }
+      },
+      "expected": {
+        "top": 2.8
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "bottom": {
+          "cm": 2.6,
+          "twips": "1474"
+        }
+      },
+      "expected": {
+        "bottom": 2.6
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "left": {
+          "cm": 2.7993,
+          "twips": "1587"
+        }
+      },
+      "expected": {
+        "left": 2.8
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "right": {
+          "cm": 2.6,
+          "twips": "1474"
+        }
+      },
+      "expected": {
+        "right": 2.6
+      },
+      "location": "Section 1",
+      "message": "默认页边距",
+      "object_type": "Section",
+      "rule_id": "PAGE003",
+      "severity": "INFO",
+      "source": "源文档§页面设置",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "pageBreakBefore": false,
+        "precedingPageBreak": false,
+        "sectionBreak": false
+      },
+      "expected": "第一个 Heading 1 前有明确新页结构",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "结构存在分页依据；不推断真实页码",
+      "object_type": "Paragraph",
+      "rule_id": "FRONT003",
+      "severity": "INFO",
+      "source": "源文档§前置规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 1",
+        "styleId": "Heading1"
+      },
+      "expected": "Heading 1",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 1",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "32",
+      "expected": 16,
+      "location": "Style heading 1",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 2 / 课题概述",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 2",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 2",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "Style heading 2",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": {
+        "themeColor": null,
+        "val": "000000"
+      },
+      "location": "Style heading 3",
+      "message": "标题样式本身必须显式纯黑，不允许直接格式掩盖主题色",
+      "object_type": "Style",
+      "rule_id": "STYLE004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "Style heading 3",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "Style heading 3",
+      "message": "标题样式字号（当前值单位：半磅）",
+      "object_type": "Style",
+      "rule_id": "STYLE005",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 |",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 2",
+        "styleId": "Heading2"
+      },
+      "expected": "Heading 2",
+      "location": "word/document.xml / Paragraph 23 / 任务分解",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "name": "heading 3",
+        "styleId": "Heading3"
+      },
+      "expected": "Heading 3",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证",
+      "message": "真实内置 Heading 段落样式",
+      "object_type": "Paragraph",
+      "rule_id": "STYLE003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "正文",
+      "expected": "正文",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "专用正文样式",
+      "object_type": "Paragraph",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "检查行距单位与值",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "正文应两端对齐",
+      "object_type": "Paragraph",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。",
+      "message": "正文段间距",
+      "object_type": "Paragraph",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": [
+        "Body"
+      ],
+      "expected": "正文",
+      "location": "Document",
+      "message": "文档必须建立专用正文段落样式",
+      "object_type": "Document",
+      "rule_id": "BODY001",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "firstLineChars": "200"
+      },
+      "expected": {
+        "firstLineChars": 200
+      },
+      "location": "Style 正文",
+      "message": "首行缩进必须为 2 字符",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "1.5 倍行距（line=360, lineRule=auto）",
+      "location": "Style 正文",
+      "message": "检查行距单位与值",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "both",
+      "expected": "both",
+      "location": "Style 正文",
+      "message": "正文应两端对齐",
+      "object_type": "Style",
+      "rule_id": "BODY002",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "after": "0",
+        "before": "0",
+        "line": "360",
+        "lineRule": "auto"
+      },
+      "expected": "段前/段后原则上 0",
+      "location": "Style 正文",
+      "message": "正文段间距",
+      "object_type": "Style",
+      "rule_id": "BODY003",
+      "severity": "INFO",
+      "source": "源文档§正文规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:hAnsi"
+      },
+      "expected": "Times New Roman",
+      "location": "Style 正文",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Style",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "Style 正文",
+      "message": "正文样式小四（半磅单位）",
+      "object_type": "Style",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo）",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 2 / 课题概述",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 23 / 任务分解",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": {
+        "reason": "无编号绑定",
+        "valid": false
+      },
+      "expected": "有效 Word 自动编号",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证",
+      "message": "解析 paragraph numPr、样式编号、numbering.xml",
+      "object_type": "Paragraph",
+      "rule_id": "NUM002",
+      "severity": "ERROR",
+      "source": "源文档§编号规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": [],
+      "expected": "真实完整 Word TOC Field",
+      "location": "Document",
+      "message": "按 fldSimple / begin-instrText-separate-end 检测目录域",
+      "object_type": "Document",
+      "rule_id": "TOC001",
+      "severity": "ERROR",
+      "source": "源文档§目录规则",
+      "status": "FAIL"
+    },
+    {
+      "actual": "true",
+      "expected": true,
+      "location": "word/settings.xml",
+      "message": "应设置打开 Word 时更新域；本审计不修改域",
+      "object_type": "word/settings.xml",
+      "rule_id": "TOC005",
+      "severity": "INFO",
+      "source": "源文档§目录规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "32",
+      "expected": 16,
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 1 / 课题实施方案（Demo） / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 2 / 课题概述 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 3 / 本课题围绕电能替代背景下新型负荷特性分析与中长期发展趋势预测技术，研发支撑电网中长期规划的负荷预测模块。课题总体目标是建立统一数据输入、集成 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 4 / 研究目标与总体思路 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 5 / 总体研究目标 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 6 / 构建覆盖中长期与典型区域两个层次的负荷预测模块，提升规划方案匹配度。模块应支持多源数据融合与不确定性分析，输出可用于电网规划的数据集与预测结 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 7 / 具体研究目标 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 8 / - 中长期负荷预测模块研发目标：实现年度电量与负荷预测，量化不确定性区间。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 9 / - 典型区域验证目标：在选定区域完成数据接入、模型校准与结果比对。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 10 / - 规划方案匹配度提升目标：提升预测结果与电网规划方案的匹配度指标。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 11 / 课题总体技术方案 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 12 / 总体技术路线 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 13 / 以数据驱动为核心，依次完成数据准备、特性分析、模型研发、区域验证与成果固化。各阶段输入输出明确，形成可追溯的数据、模型与结果流转链路。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 14 / 业务处理流程 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 15 / 业务处理流程覆盖项目与数据准备、特性分析、模型研发、区域验证、成果固化五个阶段。每个阶段的核心工作、主要输入与主要输出如下表所示。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 16 / | 阶段 | 核心工作 | 主要输入 | 主要输出 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 17 / | --- | --- | --- | --- | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 18 / | 1 项目与数据准备 | 建立分析项目，导入区域基础数据 | 区域基础资料、历史负荷 | 可分析数据集、数据质量报告 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 19 / | 2 特性分析 | 新型负荷特性建模 | 处理后数据集 | 特性分析报告、典型曲线 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 20 / | 3 模型研发 | 中长期负荷预测模型研发 | 特性分析结果、历史样本 | 预测模型、不确定性区间 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 21 / | 4 区域验证 | 典型区域模型校准与比对 | 区域实测数据、预测模型 | 验证报告、匹配度指标 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "Times New Roman",
+        "origin": "rFonts:ascii"
+      },
+      "expected": "Times New Roman",
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT002",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 22 / | 5 成果固化 | 文档与接口固化 | 验证报告、模型成果 | 实施方案、接口说明 | / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "28",
+      "expected": 14,
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 23 / 任务分解 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 24 / 任务1：中长期负荷预测模块研发 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 25 / 统一数据输入、集成特性分析与预测功能，输出中长期负荷预测模块、数据模板与不确定性区间。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "黑体",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "黑体",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "val": "000000"
+      },
+      "expected": "000000",
+      "location": "word/document.xml / Paragraph 26 / 任务2：典型区域验证 / Run 1",
+      "message": "标题 Run 有效颜色",
+      "object_type": "Run",
+      "rule_id": "FONT004",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "font": "仿宋",
+        "origin": "rFonts:eastAsia"
+      },
+      "expected": "仿宋",
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。 / Run 1",
+      "message": "按文字脚本检查有效字体",
+      "object_type": "Run",
+      "rule_id": "FONT001",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    },
+    {
+      "actual": "24",
+      "expected": 12,
+      "location": "word/document.xml / Paragraph 27 / 在典型区域完成数据接入、模型校准与结果比对，输出验证报告与匹配度指标。 / Run 1",
+      "message": "Run 有效字号（当前值单位：半磅），包含字符样式和直接格式",
+      "object_type": "Run",
+      "rule_id": "FONT003",
+      "severity": "INFO",
+      "source": "源文档§字体规则",
+      "status": "PASS"
+    }
+  ],
+  "document_factory_version": "0.5.0a1",
+  "execution": {
+    "after_counts": {
+      "ERROR": 12,
+      "INFO": 186,
+      "WARNING": 0
+    },
+    "before_counts": {
+      "ERROR": 12,
+      "INFO": 186,
+      "WARNING": 0
+    },
+    "changed_parts": [
+      "word/document.xml",
+      "word/styles.xml"
+    ],
+    "changes": [
+      {
+        "after": {
+          "ascii": "Times New Roman",
+          "eastAsia": "黑体",
+          "hAnsi": "Times New Roman"
+        },
+        "before": {
+          "eastAsia": "黑体"
+        },
+        "location": "Style heading 1",
+        "object_type": "Style",
+        "property": "h1_font",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": true,
+        "before": null,
+        "location": "Style heading 1",
+        "object_type": "Style",
+        "property": "h1_bold",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": {
+          "ascii": "Times New Roman",
+          "eastAsia": "黑体",
+          "hAnsi": "Times New Roman"
+        },
+        "before": {
+          "eastAsia": "黑体"
+        },
+        "location": "Style heading 2",
+        "object_type": "Style",
+        "property": "h2_font",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": true,
+        "before": null,
+        "location": "Style heading 2",
+        "object_type": "Style",
+        "property": "h2_bold",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": {
+          "ascii": "Times New Roman",
+          "eastAsia": "黑体",
+          "hAnsi": "Times New Roman"
+        },
+        "before": {
+          "eastAsia": "黑体"
+        },
+        "location": "Style heading 3",
+        "object_type": "Style",
+        "property": "h3_font",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": true,
+        "before": null,
+        "location": "Style heading 3",
+        "object_type": "Style",
+        "property": "h3_bold",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      },
+      {
+        "after": {
+          "h": "16838",
+          "orient": "portrait",
+          "w": "11906"
+        },
+        "before": {
+          "h": "16838",
+          "w": "11906"
+        },
+        "location": "Section properties",
+        "object_type": "Section",
+        "property": "page_page_size",
+        "rule": "TEMPLATE_RUN",
+        "source": "Template GRID_RESEARCH_IMPLEMENTATION_PLAN_V1"
+      }
+    ],
+    "errors": [],
+    "input_path": "C:\\Users\\清能互联-覃恳\\AppData\\Local\\Temp\\df_gen_80mlf57f\\demo_draft.docx",
+    "input_sha256": "93820159a2230316397ca25fe701c7323f984a566624bc432d13e49f7b7ef5a9",
+    "operations_count": 7,
+    "output_path": "C:\\Users\\清能互联-覃恳\\AppData\\Local\\Temp\\df_demo_k6k0grur\\output\\demo.docx",
+    "output_sha256": "d00e3ad5b4fba9720dc2cfae8cbb4307691037c10cd6adf11621f18d8f4346cd",
+    "report_path": "C:\\Users\\清能互联-覃恳\\AppData\\Local\\Temp\\df_demo_k6k0grur\\reports\\demo_GENERATION_REPORT.md",
+    "source_unchanged": true,
+    "status": "FAIL",
+    "template_id": "GRID_RESEARCH_IMPLEMENTATION_PLAN_V1",
+    "warnings": [
+      "未找到表格样式（表格表头, 表格正文），跳过表格规则"
+    ]
+  },
+  "generated_at": "2026-09-23T17:20:45+08:00",
+  "schema_version": "1.0"
+}
