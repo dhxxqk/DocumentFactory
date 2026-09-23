@@ -1,0 +1,97 @@
+version: '1.0.0'
+spec_version: V1
+# DocumentFactory 默认技术文档规范的扁平 Lint 契约（TASK_DOC_012）。
+# 与模板分片（templates/default_technical_document_v1/rules/*.yaml）参数
+# 同构，供 lint_engine / converter 直接消费；不含任何业务信息。
+# 规范性来源为默认规范定义文件（非某一份业务文档）。
+# 字号：三号 16pt、四号 14pt、小四 12pt、五号 10.5pt。
+source: templates/default_technical_document_v1/definition/style_definition.yaml
+document:
+  page_size: A4
+  page_size_twips: [11906, 16838]
+  orientation: portrait
+  margins_cm: {top: 2.8, bottom: 2.6, left: 2.8, right: 2.6}
+  tolerance_twips: 3
+body:
+  style_name: 正文
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12
+  first_line_indent_chars: 2
+  line_spacing: 1.5
+  space_before_pt: 0
+  space_after_pt: 0
+  alignment: both
+heading1: {word_style: Heading 1, chinese_font: 黑体, size_pt: 16, color: '000000'}
+heading2: {word_style: Heading 2, chinese_font: 黑体, size_pt: 14, color: '000000'}
+heading3: {word_style: Heading 3, chinese_font: 黑体, size_pt: 12, color: '000000'}
+toc:
+  required: true
+  levels: [1, 2]
+  expected_field_logic: 'TOC \o "1-2" \h \z \u'
+  update_fields: true
+numbering:
+  automatic_multilevel_required: true
+  manual_heading_number_forbidden: true
+  manual_patterns:
+    - '^\s*\d+(?:\.\d+){0,2}(?=[\s、．.)）一-鿿]|$)'
+    - '^\s*[一二三四五六七八九十百]+、'
+    - '^\s*[（(][一二三四五六七八九十百]+[）)]'
+tables:
+  required_styles: [表格表头, 表格正文]
+  optional_styles: [表格正文-居中]
+  header_strategy: first_row_or_repeat
+  cover_style_pattern: '^(封面|cover)'
+  first_line_indent: 0
+  left_indent: 0
+  right_indent: 0
+  space_before_pt: 0
+  space_after_pt: 0
+  header_font: 黑体
+  body_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 10.5
+  line_spacing_allowed: [single, exact]
+  normalization_line_spacing: single
+font_aliases:
+  仿宋: [仿宋, FangSong]
+  黑体: [黑体, SimHei]
+  Times New Roman: [Times New Roman]
+rules:
+  PAGE001: {source: '默认规范§页面设置', severity: ERROR}
+  PAGE002: {source: '默认规范§页面设置', severity: WARNING}
+  PAGE003: {source: '默认规范§页面设置', severity: ERROR}
+  STYLE001: {source: '默认规范§字体规则', severity: ERROR}
+  STYLE002: {source: '默认规范§字体规则', severity: ERROR}
+  STYLE003: {source: '默认规范§字体规则', severity: ERROR}
+  STYLE004: {source: '默认规范§字体规则', severity: ERROR}
+  STYLE005: {source: '默认规范§字体规则', severity: ERROR}
+  BODY001: {source: '默认规范§正文规则', severity: ERROR}
+  BODY002: {source: '默认规范§正文规则', severity: ERROR}
+  BODY003: {source: '默认规范§正文规则', severity: WARNING}
+  NUM001: {source: '默认规范§编号规则', severity: ERROR}
+  NUM002: {source: '默认规范§编号规则', severity: ERROR}
+  NUM003: {source: '默认规范§编号规则', severity: ERROR}
+  TOC001: {source: '默认规范§目录规则', severity: ERROR}
+  TOC002: {source: '默认规范§目录规则', severity: ERROR}
+  TOC003: {source: '默认规范§目录规则', severity: WARNING}
+  TOC004: {source: '默认规范§目录规则', severity: WARNING}
+  TOC005: {source: '默认规范§目录规则', severity: WARNING}
+  TABLE001: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE002: {source: '默认规范§表格规则', severity: WARNING}
+  TABLE003: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE004: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE005: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE006: {source: '默认规范§表格规则', severity: WARNING}
+  TABLE007: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE008: {source: '默认规范§表格规则', severity: ERROR}
+  TABLE009: {source: '默认规范§表格规则', severity: INFO}
+  TABLE010: {source: '默认规范§表格规则', severity: ERROR}
+  FONT001: {source: '默认规范§字体规则', severity: ERROR}
+  FONT002: {source: '默认规范§字体规则', severity: ERROR}
+  FONT003: {source: '默认规范§字体规则', severity: ERROR}
+  FONT004: {source: '默认规范§字体规则', severity: ERROR}
+  FRONT001: {source: '默认规范§前置规则', severity: ERROR}
+  FRONT002: {source: '默认规范§前置规则', severity: ERROR}
+  FRONT003: {source: '默认规范§前置规则', severity: WARNING}
+  STRUCT001: {source: '默认规范§结构规则', severity: WARNING}

@@ -1,0 +1,138 @@
+# DocumentFactory 默认技术文档格式规范 V1
+# （DEFAULT_TECHNICAL_DOCUMENT_V1 / style_definition.yaml）
+#
+# 本文件是 DocumentFactory 全部技术类文档模板的规范性来源（normative
+# source），只描述与具体项目无关的通用格式事实。任何业务模板
+# （科研实施方案、技术方案、验收报告、总结报告等）均继承同目录
+# template.yaml 组装出的规则，业务差异仅允许在子模板中扩展，不允许
+# 在本文件中写入项目名称、编号、单位名称或特定章节命名。
+#
+# 参数口径与企业通用技术报告实践一致（字号：三号 16pt、四号 14pt、
+# 小四 12pt、五号 10.5pt；1 cm = 1440/2.54 twips）。
+
+meta:
+  specification_id: DEFAULT_TECHNICAL_DOCUMENT_V1
+  name: DocumentFactory默认技术文档规范
+  version: "1.0"
+  category: [technical_document, default]
+  created_at: "2026-09-23"
+  business_content: none
+  inheritable: true
+
+# ---------------------------------------------------------------- page
+page:
+  size: A4
+  size_twips: [11906, 16838]               # 21.0 cm × 29.7 cm
+  orientation: portrait
+  margins_cm: {top: 2.8, bottom: 2.6, left: 2.8, right: 2.6}
+  tolerance_twips: 3
+  header_distance_cm: 1.4
+  footer_distance_cm: 1.4
+  section_break: nextPage
+  page_number_format: decimal
+  different_first_page: true
+
+header_footer:
+  # 默认规范不提供页眉文本：页眉内容属于业务身份，由业务模板定义。
+  header_text: business_defined
+  header_font_inherits: Normal
+  footer_page_number_field: PAGE
+  footer_page_number_alignment: center
+  first_page_header_footer: empty
+
+# --------------------------------------------------------------- body
+body:
+  style_name: 正文
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12                          # 小四
+  first_line_indent_chars: 2
+  line_spacing: 1.5
+  space_before_pt: 0
+  space_after_pt: 0
+  alignment: both                           # 两端对齐
+
+normal_default:
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12
+  color: "000000"
+
+font_aliases:
+  仿宋: [仿宋, FangSong]
+  黑体: [黑体, SimHei]
+  Times New Roman: [Times New Roman]
+
+font_size_scale: {三号: 16, 四号: 14, 小四: 12, 五号: 10.5}
+
+# ------------------------------------------------------------ headings
+# 仅定义三级标题的样式；标题文字与编号由业务模板/文档作者决定。
+headings:
+  h1: {word_style: Heading 1, chinese_font: 黑体, latin_font: Times New Roman,
+       size_pt: 16, color: "000000", bold: true, alignment: left}
+  h2: {word_style: Heading 2, chinese_font: 黑体, latin_font: Times New Roman,
+       size_pt: 14, color: "000000", bold: true, alignment: left}
+  h3: {word_style: Heading 3, chinese_font: 黑体, latin_font: Times New Roman,
+       size_pt: 12, color: "000000", bold: true, alignment: left}
+heading_policy:
+  supported_levels: 3
+  keep_with_next: true
+  numbering: business_defined
+
+# -------------------------------------------------------------- tables
+tables:
+  table_style: TableGrid
+  header_font: 黑体
+  body_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 10.5                        # 五号
+  header_alignment: center
+  header_bold: true
+  body_alignment: start
+  first_line_indent: 0
+  left_indent: 0
+  right_indent: 0
+  space_before_pt: 0
+  space_after_pt: 0
+  line_spacing_allowed: [single, exact]
+  normalization_line_spacing: single
+  required_styles: [表格表头, 表格正文]
+  optional_styles: [表格正文-居中]
+  header_strategy: first_row_or_repeat
+
+# ------------------------------------------------------------- figures
+figure:
+  caption_style: caption
+  caption_style_name: 题注
+  chinese_font: 黑体
+  latin_font: Times New Roman
+  font_size_pt: 10.5
+  bold: false
+  color: "000000"
+  alignment: center
+  line_spacing: single
+  space_before_pt: 6
+  space_after_pt: 6
+  numbering:
+    figure_prefix: 图
+    table_prefix: 表
+    pattern: "{prefix}{chapter}-{sequence} {title}"
+    per_chapter_sequence: true
+  placement:
+    figure_caption: below
+    table_caption: above
+    inline: false
+    horizontal_alignment: center
+
+# ------------------------------------------------------------ de-business 原则
+extension_policy:
+  allowed_in_child_templates:
+    - 模板身份信息（id/name/version/category/description）
+    - 页眉业务文本与封面/目录/签字页等前置部件规则
+    - 业务章节结构、编号体系的具体取值
+    - 对通用格式事实的收紧或扩展（须显式覆盖并说明理由）
+  forbidden_in_this_specification:
+    - 具体项目名称与编号
+    - 具体单位/公司名称
+    - 特定业务章节名称与章节顺序
+    - 任何只能用于单一项目的固定文本

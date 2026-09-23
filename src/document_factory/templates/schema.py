@@ -150,6 +150,8 @@ class TemplateDefinition:
     description: str
     rules: TemplateRules
     metadata: dict[str, Any] = field(default_factory=dict)
+    #: 父模板 id：rules/metadata 经 loader 深合并继承（None = 独立模板）
+    extends: str | None = None
     source_path: str | None = None
 
     @classmethod
@@ -173,6 +175,7 @@ class TemplateDefinition:
             description=data["description"],
             rules=TemplateRules.from_dict(data["rules"]),
             metadata=dict(data.get("metadata") or {}),
+            extends=data.get("extends"),
             source_path=str(source_path) if source_path else None,
         )
 

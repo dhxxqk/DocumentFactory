@@ -1,0 +1,26 @@
+# 默认技术文档规范 — 图表/题注规则分片（TASK_DOC_012）
+# 资产层事实：TemplateRunner v1 尚不执行题注部件，此处作为
+# 规范化事实储备，供后续图注/表注引擎消费。
+figure:
+  caption_style: caption
+  caption_style_name: 题注
+  chinese_font: 黑体
+  latin_font: Times New Roman
+  font_size_pt: 10.5               # 五号
+  bold: false
+  color: "000000"
+  alignment: center
+  line_spacing: single
+  space_before_pt: 6
+  space_after_pt: 6
+  # 编号采用“章-序”：图N-M / 表N-M（N=章号，M=章内序号）
+  numbering:
+    figure_prefix: 图
+    table_prefix: 表
+    pattern: "{prefix}{chapter}-{sequence} {title}"
+    per_chapter_sequence: true
+  placement:
+    figure_caption: below          # 图题在图下方
+    table_caption: above           # 表题在表上方
+    inline: false                  # 图形嵌入、不浮于文字上方
+    horizontal_alignment: center

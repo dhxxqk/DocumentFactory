@@ -1,0 +1,23 @@
+# 默认技术文档规范 — 表格规则分片（TASK_DOC_012）
+tables:
+  header_font: 黑体
+  body_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 10.5               # 五号
+  alignment: center                # 表头居中
+  style_names:                     # TemplateRunner 实际治理的段落样式
+    - 表格表头
+    - 表格正文
+  optional_style_names:            # 允许出现，不强制
+    - 表格正文-居中
+  header_bold: true
+  body_alignment: start
+  first_line_indent: 0
+  left_indent: 0
+  right_indent: 0
+  space_before_pt: 0
+  space_after_pt: 0
+  line_spacing_allowed: [single, exact]
+  normalization_line_spacing: single
+  table_style: TableGrid           # OOXML 表样式（带边框网格）
+  header_strategy: first_row_or_repeat

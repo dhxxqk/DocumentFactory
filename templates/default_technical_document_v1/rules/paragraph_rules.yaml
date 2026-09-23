@@ -1,0 +1,30 @@
+# 默认技术文档规范 — 正文与默认字体规则分片（TASK_DOC_012）
+body:
+  style_name: 正文
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12                  # 小四
+  first_line_indent_chars: 2
+  line_spacing: 1.5
+  space_before_pt: 0
+  space_after_pt: 0
+  alignment: both
+
+# Normal 默认段落样式（docDefaults 基线）
+normal_default:
+  chinese_font: 仿宋
+  latin_font: Times New Roman
+  font_size_pt: 12
+  color: "000000"
+
+font_aliases:
+  仿宋: [仿宋, FangSong]
+  黑体: [黑体, SimHei]
+  Times New Roman: [Times New Roman]
+
+# 中文字号 → pt 映射（规范统一口径）
+font_size_scale:
+  三号: 16
+  四号: 14
+  小四: 12
+  五号: 10.5

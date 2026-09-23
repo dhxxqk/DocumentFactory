@@ -1,0 +1,28 @@
+# 默认技术文档规范 — 页面规则分片（TASK_DOC_012）
+# 本文件只含通用页面格式事实，不含任何业务页眉文本。
+page:
+  page_size: A4
+  page_size_twips: [11906, 16838]   # 21.0 × 29.7 cm
+  orientation: portrait
+  margins_cm:
+    top: 2.8
+    bottom: 2.6
+    left: 2.8
+    right: 2.6
+  tolerance_twips: 3
+  header_distance_cm: 1.4
+  footer_distance_cm: 1.4
+
+# 分节与页码（资产层事实；TemplateRunner v1 仅治理 pgSz/pgMar，
+# 页眉页脚部件与页码域的自动套用留待后续引擎扩展）。
+section_policy:
+  break_type: nextPage
+  page_number_format: decimal
+  different_first_page: true        # 首页页眉页脚留空
+header_policy:
+  text: 由业务模板定义，默认规范不提供任何项目/单位名称
+  font_inherits: Normal
+footer_policy:
+  page_number_field: PAGE
+  alignment: center
+  first_page: empty

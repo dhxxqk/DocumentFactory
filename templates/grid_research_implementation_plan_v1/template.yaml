@@ -1,18 +1,25 @@
 id: GRID_RESEARCH_IMPLEMENTATION_PLAN_V1
 name: 科研课题实施方案模板
 version: "1.0"
+# TASK_DOC_012：本模板不再内嵌通用格式规则，改为继承默认技术文档规范，
+# 仅保留业务身份、业务来源与业务扩展信息。通用格式事实（页面/正文/标题/
+# 表格/题注）一律以 DEFAULT_TECHNICAL_DOCUMENT_V1 为准；若出现业务特殊
+# 格式，在本文件内联 rules 中显式覆盖（深合并优先级高于父模板）。
+extends: DEFAULT_TECHNICAL_DOCUMENT_V1
 category:
   - report
   - research
 description: |
-  基于真实科研课题实施方案文档（课题4实施方案 V1.1.4）提取的确定性业务模板。
-  该模板定义目标格式事实，供 Formatting Operation Layer 直接消费，生成结构
-  正确的科研实施方案 DOCX 输出。源文档格式事实与电网科技项目实施方案文档格式
-  规范 V1.4 一致：A4 纵向、页边距 2.8/2.6/2.8/2.6 cm；正文仿宋 12pt、1.5 倍
-  行距、首行缩进 2 字符、两端对齐；标题黑体 16/14/12pt；表格表头黑体、表格正文
-  仿宋、10.5pt、居中。字号映射：三号=16pt、四号=14pt、小四=12pt、五号=10.5pt。
+  基于真实科研课题实施方案文档（课题4实施方案 V1.1.4）提取的确定性业务模板，
+  继承 DocumentFactory 默认技术文档规范 V1 并扩展科研实施方案业务身份。
+  父规范提供：A4 纵向、页边距 2.8/2.6/2.8/2.6 cm；正文仿宋 12pt、1.5 倍
+  行距、首行缩进 2 字符、两端对齐；标题黑体 16/14/12pt；表格表头黑体、
+  表格正文仿宋、10.5pt、居中。源业务文档格式事实与上述默认规范一致。
+  字号映射：三号=16pt、四号=14pt、小四=12pt、五号=10.5pt。
 
 metadata:
+  kind: business_extension
+  business_content: research_implementation_plan
   source: templates/grid_research_implementation_plan_v1/source/课题4实施方案_V1.1.4.docx
   source_format_version: V1.1.4
   spec_version: V1.4
@@ -20,66 +27,4 @@ metadata:
   author: dhxxqk
   created_at: "2026-09-23"
   extraction_method: docx_reader + 手工核对样式/段落/表格/页眉页脚
-
-rules:
-  page:
-    page_size: A4
-    orientation: portrait
-    margins_cm:
-      top: 2.8
-      bottom: 2.6
-      left: 2.8
-      right: 2.6
-    tolerance_twips: 3
-
-  body:
-    style_name: 正文
-    chinese_font: 仿宋
-    latin_font: Times New Roman
-    font_size_pt: 12
-    first_line_indent_chars: 2
-    line_spacing: 1.5
-    space_before_pt: 0
-    space_after_pt: 0
-    alignment: both
-
-  headings:
-    h1:
-      word_style: Heading 1
-      chinese_font: 黑体
-      latin_font: Times New Roman
-      size_pt: 16
-      color: "000000"
-      bold: true
-      alignment: left
-    h2:
-      word_style: Heading 2
-      chinese_font: 黑体
-      latin_font: Times New Roman
-      size_pt: 14
-      color: "000000"
-      bold: true
-      alignment: left
-    h3:
-      word_style: Heading 3
-      chinese_font: 黑体
-      latin_font: Times New Roman
-      size_pt: 12
-      color: "000000"
-      bold: true
-      alignment: left
-
-  tables:
-    header_font: 黑体
-    body_font: 仿宋
-    latin_font: Times New Roman
-    font_size_pt: 10.5
-    alignment: center
-    style_names:
-      - 表格表头
-      - 表格正文
-
-  font_aliases:
-    仿宋: [仿宋, FangSong]
-    黑体: [黑体, SimHei]
-    Times New Roman: [Times New Roman]
+  inherits: DEFAULT_TECHNICAL_DOCUMENT_V1

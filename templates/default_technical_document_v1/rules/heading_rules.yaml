@@ -1,0 +1,38 @@
+# 默认技术文档规范 — 标题规则分片（TASK_DOC_012）
+# 只定义 Heading Level 1-3 的格式；不内置任何业务章节号或章节名称。
+headings:
+  h1:
+    word_style: Heading 1
+    chinese_font: 黑体
+    latin_font: Times New Roman
+    size_pt: 16                     # 三号
+    color: "000000"
+    bold: true
+    alignment: left
+  h2:
+    word_style: Heading 2
+    chinese_font: 黑体
+    latin_font: Times New Roman
+    size_pt: 14                     # 四号
+    color: "000000"
+    bold: true
+    alignment: left
+  h3:
+    word_style: Heading 3
+    chinese_font: 黑体
+    latin_font: Times New Roman
+    size_pt: 12                     # 小四
+    color: "000000"
+    bold: true
+    alignment: left
+
+heading_policy:
+  supported_levels: 3
+  keep_with_next: true
+  # 编号体系（自动多级列表 / 手工编号）由业务模板或文档作者决定，
+  # 默认规范不预设任何章节号文本。
+  numbering: business_defined
+  outline:
+    h1: 0
+    h2: 1
+    h3: 2
