@@ -118,8 +118,8 @@
 
 ## 9. Commit 与哈希回填
 
-- 实现 commit：`<TASK_DOC_011 实现哈希>`（本提交）
-- 回填 commit：后续 `docs: backfill TASK_DOC_011 commit hash`
+- 实现 commit：`d21e998`（TASK_DOC_011: Add real template asset and validation pipeline）
+- 回填 commit：本次 `docs: backfill TASK_DOC_011 commit hash`
 - 推送：`git push origin master`
 
 ## 10. Remaining Risks
