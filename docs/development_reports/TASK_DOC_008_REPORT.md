@@ -95,8 +95,8 @@ Resolution: Not applicable。原 89 项基线（TASK_DOC_007 报告记录）全�
 
 - 提交信息：`TASK_DOC_008: Implement Template Library and Registry foundation`
 - 分支：`master`（起始 HEAD `723e9b2`，clean，与 origin/master 一致；remote 为 SSH `git@github.com:dhxxqk/DocumentFactory.git`）
-- 提交哈希：（提交后回填）
-- 推送状态：（提交后回填）
+- 提交哈希：`646f9c4`（`646f9c4...`，12 文件 +1301 / -1）
+- 推送状态：已推送至 `origin/master`（SSH，范围 `723e9b2..646f9c4`）；推送后复核 `HEAD == origin/master`、working tree clean；不 amend、不 rebase、不 force push
 
 ## Remaining Risks
 
