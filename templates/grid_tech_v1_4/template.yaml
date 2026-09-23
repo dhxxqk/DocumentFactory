@@ -1,0 +1,77 @@
+id: GRID_TECH_V1_4
+name: 电网科技项目实施方案模板
+version: "1.0"
+category:
+  - report
+  - government
+description: |
+  基于电网科技项目实施方案文档格式规范 V1.4 的确定性模板。该模板定义目标格式事实，
+  供 Formatting Operation Layer 直接消费，生成符合规范 V1.4 的 DOCX 输出。
+  字号映射：三号=16pt、四号=14pt、小四=12pt、五号=10.5pt。
+
+metadata:
+  source: specs/电网科技项目实施方案文档格式规范_V1.4.md
+  spec_version: V1.4
+  rule_file: rules/grid_tech_v1_4.yaml
+  author: dhxxqk
+  created_at: "2026-09-23"
+
+rules:
+  page:
+    page_size: A4
+    orientation: portrait
+    margins_cm:
+      top: 2.8
+      bottom: 2.6
+      left: 2.8
+      right: 2.6
+    tolerance_twips: 3
+
+  body:
+    style_name: 正文
+    chinese_font: 仿宋
+    latin_font: Times New Roman
+    font_size_pt: 12
+    first_line_indent_chars: 2
+    line_spacing: 1.5
+    space_before_pt: 0
+    space_after_pt: 0
+    alignment: both
+
+  headings:
+    h1:
+      word_style: Heading 1
+      chinese_font: 黑体
+      latin_font: Times New Roman
+      size_pt: 16
+      color: "000000"
+      bold: true
+      alignment: left
+    h2:
+      word_style: Heading 2
+      chinese_font: 黑体
+      latin_font: Times New Roman
+      size_pt: 14
+      color: "000000"
+      bold: true
+      alignment: left
+    h3:
+      word_style: Heading 3
+      chinese_font: 黑体
+      latin_font: Times New Roman
+      size_pt: 12
+      color: "000000"
+      bold: true
+      alignment: left
+
+  tables:
+    header_font: 黑体
+    body_font: 仿宋
+    latin_font: Times New Roman
+    font_size_pt: 10.5
+    alignment: center
+
+  font_aliases:
+    仿宋: [仿宋, FangSong]
+    黑体: [黑体, SimHei]
+    Times New Roman: [Times New Roman]
