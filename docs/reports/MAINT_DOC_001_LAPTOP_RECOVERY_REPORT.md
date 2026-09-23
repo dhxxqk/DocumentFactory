@@ -110,5 +110,6 @@ RESULT: PASS（附已裁定偏差与既有条件项，见下）
 
 - 提交信息：`MAINT_DOC_001: Complete laptop environment recovery`
 - 分支：`master`
-- 提交哈希：待提交后回填（按 GIT_WORKFLOW.md §5 使用独立 docs 提交补记，不改写历史）
-- 推送：origin/master（SSH），推送结果待回填
+- 提交哈希：`9fc5529b6fb3c18263caa29bb9858a74dc369983`
+- 推送：origin/master（SSH），`f3a4866..9fc5529 master -> master`，推送后 `HEAD` 与 `origin/master` 一致
+- SSH 接入备注：因用户路径含中文字符，git 默认 SSH 找不到密钥；通过 `GIT_SSH_COMMAND` 显式指定 `-i` 密钥路径与 `UserKnownHostsFile` 解决，不影响仓库内容
