@@ -223,27 +223,32 @@ table_rules.yaml），注释中注明来源分片，未发明任何规范事实�
 
 - 任务实现 commit：`TASK_DOC_FULL_NORMALIZATION_001: production-grade page/safe-normal/caption/table normalization with content integrity gate`
 - 分支：`master`；推送：`git push origin master`（SSH）
-- 任务 commit 哈希：**待回填**（按仓库惯例由随后的 `docs:` 回填 commit 写入）
+- 任务 commit 哈希：`d0cdc34fa0bcec2d75ed01b5eeeb6fc3d3814105`
+  （推送区间 `8ec741c..d0cdc34 master -> master`；推送后
+  `HEAD == origin/master == d0cdc34`）
 - 回填 commit：`docs: backfill TASK_DOC_FULL_NORMALIZATION_001 commit hash`
+  （仅更新本报告的哈希/推送字段）
 - 推送后校验：`git rev-parse HEAD` == `git rev-parse origin/master`
 - 暂存方式：逐文件显式 `git add`，未使用 `git add -A`；
   reports/ 四川文件与 .trae/ 均不在暂存区。
-
-（以上哈希/推送结果在执行闭环后据实补全。）
 
 ## 九个交付字段
 
 | 字段 | 值 |
 | --- | --- |
 | TASK_STATUS | CONDITIONAL（功能/测试/双闸门 PASS；VISUAL_RENDER_GATE NOT_AVAILABLE） |
-| TASK_COMMIT | 待回填 |
+| TASK_COMMIT | d0cdc34fa0bcec2d75ed01b5eeeb6fc3d3814105 |
 | REPORT_PATH | docs/development_reports/TASK_DOC_FULL_NORMALIZATION_001_REPORT.md |
 | TEST_RESULT | 219 passed（基线 197 + 新增 22），0 failed |
 | FORMAT_EFFECT_GATE | PASS（四类对象目标格式命中，二次执行 0 修改且 SHA-256 一致） |
 | CONTENT_INTEGRITY_GATE | PASS（篡改必阻断；仅 document.xml/styles.xml 可变） |
-| HEAD | 待回填 |
-| ORIGIN_MASTER | 待回填 |
-| PUSH_STATUS | 待回填 |
+| HEAD | d0cdc34fa0bcec2d75ed01b5eeeb6fc3d3814105 |
+| ORIGIN_MASTER | d0cdc34fa0bcec2d75ed01b5eeeb6fc3d3814105 |
+| PUSH_STATUS | SUCCESS（8ec741c..d0cdc34 master -> master，HEAD == origin/master） |
+
+> 注：本表为任务代码 commit 的闭环快照。随后的 `docs:` 哈希回填 commit
+> 仅修改本报告，推送成功后 `HEAD` 与 `origin/master` 同步前进到该回填
+> commit（最终值以任务回报中的 HEAD / ORIGIN_MASTER 字段为准）。
 
 ## Remaining Risks
 
