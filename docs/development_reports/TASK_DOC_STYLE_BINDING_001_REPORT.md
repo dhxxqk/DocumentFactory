@@ -194,9 +194,12 @@ SHA-256 前缀 c51c833464170e2a，13,336,575 bytes
 
 - 提交信息：
   `TASK_DOC_STYLE_BINDING_001: bind body and table paragraph styles to default technical spec`
-- 显式暂存上述 11 个变更/新增文件；`reports/` 下 3 个既有未跟踪四川
+- 任务 commit 哈希：`ceda7ce995789768d8c1e8b9e8bb7672eb809eb2`
+  （推送区间 `33d84fa..ceda7ce master -> master`；推送后
+  `HEAD == origin/master == ceda7ce`）
+- 回填 commit：`docs: backfill TASK_DOC_STYLE_BINDING_001 commit hash`
+- 显式暂存上述 12 个变更/新增文件；`reports/` 下 3 个既有未跟踪四川
   报告与 `.trae/` 未暂存。
-- 推送 `origin/master` 并校验 `HEAD == origin/master`（见最终机器状态）。
 
 ## 12. Remaining Risks
 
