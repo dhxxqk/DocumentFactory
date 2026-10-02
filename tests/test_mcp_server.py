@@ -58,7 +58,8 @@ def test_official_client_stdio_initialize_list_and_real_calls(make_docx, tmp_pat
 
             presets = await client.call_tool("list_presets", {})
             assert not presets.is_error
-            assert presets.structured_content["default"] == "grid_tech_v1_4"
+            # TASK_DOC_STYLE_BINDING_001：MCP 默认规范改为 default_technical_document_v1。
+            assert presets.structured_content["default"] == "default_technical_document_v1"
             assert [item["id"] for item in presets.structured_content["presets"]] == [
                 "default_technical_document_v1",
                 "grid_tech_v1_4",
@@ -133,8 +134,9 @@ def test_list_presets_contains_default_technical_document_v1():
             listed = await client.call_tool("list_presets", {})
             assert not listed.is_error
             data = listed.structured_content
-            # 本轮不改变全局默认 preset。
-            assert data["default"] == GRID_PRESET
+            # TASK_DOC_STYLE_BINDING_001：默认 preset 切换为默认技术文档规范；
+            # grid_tech_v1_4 仍作为兼容 preset 保留。
+            assert data["default"] == DEFAULT_PRESET
             ids = [item["id"] for item in data["presets"]]
             assert DEFAULT_PRESET in ids
             assert GRID_PRESET in ids

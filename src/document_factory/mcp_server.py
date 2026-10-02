@@ -24,6 +24,9 @@ from .report_writer import write_report
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# TASK_DOC_STYLE_BINDING_001：默认规范统一为 default_technical_document_v1；
+# grid_tech_v1_4 保留为可显式调用的兼容 preset，不删除、不改变其行为。
+DEFAULT_PRESET = "default_technical_document_v1"
 PRESETS = {
     "default_technical_document_v1": {
         "id": "default_technical_document_v1",
@@ -103,11 +106,11 @@ def list_presets() -> dict[str, Any]:
                 "description": item["description"],
             }
         )
-    return {"presets": presets, "default": "grid_tech_v1_4"}
+    return {"presets": presets, "default": DEFAULT_PRESET}
 
 
 @mcp.tool(structured_output=True)
-def audit_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str, Any]:
+def audit_document(input_path: str, preset: str = DEFAULT_PRESET) -> dict[str, Any]:
     """只检查指定 DOCX，不修改输入；生成 Markdown 审计报告。用户说“检查但不要修改”时使用。"""
     source = _input_docx(input_path)
     preset_info = _preset(preset)
@@ -139,7 +142,7 @@ def audit_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str,
 
 
 @mcp.tool(structured_output=True)
-def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str, Any]:
+def format_document(input_path: str, preset: str = DEFAULT_PRESET) -> dict[str, Any]:
     """按已注册规范统一 DOCX 格式。直接调用 DocumentFactory normalize Core，并返回需用 DSH present 交付的 DOCX 与 Markdown。"""
     source = _input_docx(input_path)
     preset_info = _preset(preset)
@@ -172,6 +175,7 @@ def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str
         "normalization_stats": {
             "page": stats.get("page", {}),
             "objects": stats.get("objects", {}),
+            "style_binding": stats.get("style_binding", {}),
             "rules_applied": stats.get("rules_applied", {}),
             "changed_zip_parts": stats.get("changed_zip_parts", []),
         },

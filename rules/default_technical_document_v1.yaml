@@ -27,9 +27,12 @@ body:
   space_before_pt: 0
   space_after_pt: 0
   alignment: both
-  # 开关：仅默认规范启用保守 Normal 正文角色识别与直接格式规范化
-  # （保留 pStyle，不做样式重分类）。grid_tech_v1_4 无此键，行为不变。
+  # 开关：仅默认规范启用保守正文角色识别（显式 Normal 与无 pStyle 两类）。
+  # grid_tech_v1_4 无此键，行为不变。
   safe_normal_normalization: true
+  # 开关：仅默认规范启用正式“正文”样式创建与 pStyle 绑定（TASK_DOC_STYLE_BINDING_001）。
+  # grid_tech_v1_4 无此键，继续保留原 pStyle，字节级行为不变。
+  style_binding: true
 heading1: {word_style: Heading 1, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 16, bold: true, color: '000000', alignment: left}
 heading2: {word_style: Heading 2, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 14, bold: true, color: '000000', alignment: left}
 heading3: {word_style: Heading 3, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 12, bold: true, color: '000000', alignment: left}
@@ -51,9 +54,10 @@ caption:
   space_before_pt: 6
   space_after_pt: 6
   # 保守题注文本识别，仅用于格式角色，不修改编号文字。
-  # 对应 figure_rules.yaml numbering.pattern “{prefix}{chapter}-{sequence} …”。
+  # 对应 figure_rules.yaml numbering.pattern “{prefix}{chapter}-{sequence} …”：
+  # 编号后必须有空白再跟标题，避免把“图3-1显示……”这类正文句首引用误判为图题。
   patterns:
-    - '^\s*[图表]\s*\d+\s*[-–—]\s*\d+'
+    - '^\s*[图表]\s*\d+\s*[-–—]\s*\d+[\s　]+\S'
 toc:
   required: true
   levels: [1, 2]
@@ -89,6 +93,9 @@ tables:
   # 开关：仅默认规范启用普通内容表格直接格式规范化；
   # grid_tech_v1_4 无此键，仍只治理命名表格样式，行为不变。
   regular_table_normalization: true
+  # 开关：仅默认规范启用表格专用段落样式创建与 pStyle 绑定
+  # （TASK_DOC_STYLE_BINDING_001）；grid_tech_v1_4 无此键，行为不变。
+  style_binding: true
   line_spacing_allowed: [single, exact]
   normalization_line_spacing: single
 font_aliases:

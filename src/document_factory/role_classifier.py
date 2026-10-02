@@ -8,11 +8,17 @@ Roles (main document part only):
 
 - ``heading``            built-in non-custom Heading 1/2/3 paragraph
 - ``body_named``         paragraph explicitly using the spec's 正文 style
-- ``body_safe_normal``   high-confidence body text still carrying pStyle Normal
-                         (direct formatting only; pStyle is never rewritten)
+- ``body_safe_normal``   high-confidence body text carrying an explicit
+                         pStyle = Normal/常规 (rebound to 正文 when the
+                         spec enables style binding)
+- ``body_unstyled``      high-confidence body paragraph with NO explicit
+                         w:pStyle at all (reader defaults it to Normal);
+                         rebound to 正文 under the same conservative rules
 - ``caption``            题注/Caption styled or figure/table caption pattern
 - ``table_header``       first/repeated header row of a regular content table
 - ``table_body``         non-header row of a regular content table
+- ``table_center``       non-header cell whose paragraph is explicitly
+                         centered and holds a short field/number
 - ``table_named``        cell paragraph already using a named 表格* paragraph style
 - ``other``              everything else (never normalized)
 
@@ -41,7 +47,7 @@ class ParagraphRole:
     role: str = "other"
     level: int | None = None
     table_index: int | None = None
-    row_kind: str | None = None  # "header" / "body"
+    row_kind: str | None = None  # "header" / "body" / "center"
 
 
 @dataclass
@@ -68,6 +74,31 @@ def _contains(paragraph, *names):
         if paragraph.element.find(f".//w:{name}", NS) is not None:
             return True
     return False
+
+
+def _has_explicit_pstyle(paragraph):
+    """True only when the paragraph actually carries a w:pStyle element.
+
+    The reader fills ``paragraph.style_id`` with the document default style
+    when pStyle is absent, so the raw property bag is the only reliable way to
+    tell "explicit Normal" apart from "no pStyle at all".
+    """
+    return "pStyle" in paragraph.properties
+
+
+def _is_short_centered_cell(paragraph, max_chars=20):
+    """Conservative signal for the optional 表格正文-居中 variant.
+
+    Only an *explicitly* centered non-header cell with a short field/number
+    style text qualifies. Long centered strings and any punctuation-heavy
+    sentence stay with the regular 表格正文 role.
+    """
+    if paragraph.properties.get("jc") != "center":
+        return False
+    text = paragraph.text.strip()
+    if not text or len(text) > max_chars:
+        return False
+    return not bool(re.search(r"[。；！？，、：;,.?!]", text))
 
 
 def _all_runs_bold(resolver, paragraph):
@@ -213,24 +244,49 @@ def classify(document, resolver, rules):
                     if is_caption(paragraph):
                         classification.paragraph_roles[key] = ParagraphRole("caption")
                     else:
+                        center_available = bool(rules["tables"].get("optional_styles"))
+                        if (
+                            not is_header
+                            and center_available
+                            and _is_short_centered_cell(paragraph)
+                        ):
+                            cell_role, row_kind = "table_center", "center"
+                        else:
+                            cell_role = "table_header" if is_header else "table_body"
+                            row_kind = "header" if is_header else "body"
                         classification.paragraph_roles[key] = ParagraphRole(
-                            "table_header" if is_header else "table_body",
+                            cell_role,
                             table_index=paragraph.table,
-                            row_kind="header" if is_header else "body",
+                            row_kind=row_kind,
                         )
             continue
 
         # Main-body Normal paragraphs: only with high-confidence body signals.
-        if safe_normal_enabled and _is_safe_normal_body(
+        # The same confidence gate covers paragraphs that carry an explicit
+        # pStyle=Normal (body_safe_normal) and paragraphs with no pStyle at
+        # all (body_unstyled), which the reader otherwise reports as Normal.
+        if safe_normal_enabled and _is_confident_body(
             document, resolver, paragraph, name, style, first_h1, is_caption
         ):
-            classification.paragraph_roles[key] = ParagraphRole("body_safe_normal")
+            role_name = (
+                "body_unstyled"
+                if not _has_explicit_pstyle(paragraph)
+                else "body_safe_normal"
+            )
+            classification.paragraph_roles[key] = ParagraphRole(role_name)
 
     classification.table_classifications = table_info
     return classification
 
 
-def _is_safe_normal_body(document, resolver, paragraph, name, style, first_h1, is_caption):
+def _is_confident_body(document, resolver, paragraph, name, style, first_h1, is_caption):
+    """Shared high-confidence gate for Normal-named and pStyle-less body text.
+
+    Every signal must agree; ambiguous paragraphs stay ``other`` and are never
+    reformatted. The check deliberately does not look at whether the pStyle is
+    explicit: callers split ``body_safe_normal`` / ``body_unstyled`` after the
+    fact using the raw property bag.
+    """
     if is_caption(paragraph):
         return False
     if style is None or style.custom or name.casefold() not in NORMAL_STYLE_NAMES:

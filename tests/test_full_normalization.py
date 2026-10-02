@@ -222,20 +222,30 @@ def test_page03_landscape_section_is_preserved_and_reported(normalized):
 
 # ---------------------------------------------------------------- body (4)
 
-def test_body01_safe_normal_gets_direct_body_format_and_keeps_pstyle(normalized):
+# TASK_DOC_STYLE_BINDING_001：V1.4 要求正式正文真正绑定“正文”样式，
+# 旧版“保留 pStyle=Normal + 仅直接格式”的期望与规范冲突，按新行为判定。
+def test_body01_safe_normal_is_rebound_to_body_style_with_body_format(normalized):
     _, result, document = normalized
     paragraph = find_paragraph(document, "本系统采用模块化设计")
-    assert paragraph.style_id == "Normal"
+    # 旧行为 style_id == "Normal"（保留 pStyle）→ V1.4 必须绑定为正文。
+    assert paragraph.style_id == "Body"
+    assert paragraph.properties["pStyle"] == "Body"
     assert paragraph.properties["jc"] == "both"
     assert paragraph.properties["ind"] == {"firstLineChars": "200"}
     spacing = paragraph.properties["spacing"]
     assert spacing["line"] == "360" and spacing["lineRule"] == "auto"
     text_run = next(run for run in paragraph.runs if run.text.strip())
-    fonts = text_run.properties["rFonts"]
-    assert fonts["eastAsia"] == "仿宋"
-    assert fonts["ascii"] == "Times New Roman" and fonts["hAnsi"] == "Times New Roman"
-    assert text_run.properties["sz"] == "24"
-    assert result.normalization_stats["objects"]["body_safe_normal_paragraphs"] >= 2
+    # 绑定后有效字体来自正文样式；该 run 原本无直接 rFonts，无需冗余直接格式。
+    from document_factory.style_resolver import StyleResolver
+    effective = StyleResolver(document).run(paragraph, text_run)
+    assert effective["rFonts"]["eastAsia"] == "仿宋"
+    assert effective["rFonts"]["ascii"] == "Times New Roman"
+    assert effective["rFonts"]["hAnsi"] == "Times New Roman"
+    assert effective["sz"] == "24"
+    stats = result.normalization_stats
+    assert stats["objects"]["body_safe_normal_paragraphs"] >= 2
+    assert stats["style_binding"]["body_style_bound_count"] >= 2
+    assert stats["style_binding"]["body_style_created"] == 0  # fixture 已有正文样式
 
 
 def test_body02_normal_content_before_first_h1_is_untouched(tmp_path, monkeypatch):
@@ -256,6 +266,9 @@ def test_body02_normal_content_before_first_h1_is_untouched(tmp_path, monkeypatc
     front_run = next(r for r in front.runs if r.text.strip())
     assert "rFonts" not in front_run.properties
     body_p = find_paragraph(document, "章内正文")
+    # TASK_DOC_STYLE_BINDING_001：高置信正文绑定为正文，不再停留 Normal。
+    assert body_p.style_id == "Body"
+    assert body_p.properties["pStyle"] == "Body"
     assert body_p.properties["jc"] == "both"
     assert body_p.properties["ind"] == {"firstLineChars": "200"}
 
@@ -358,24 +371,36 @@ def test_caption03_caption_text_and_numbering_are_never_modified(normalized):
 
 # --------------------------------------------------------------- table (4)
 
-def test_table01_regular_header_and_body_rows_are_normalized(normalized):
+# TASK_DOC_STYLE_BINDING_001：普通内容表格必须真正绑定表格专用段落样式，
+# 旧版“单元格保留 Normal”的期望与 V1.4 冲突，按真实绑定结构判定。
+def test_table01_regular_header_and_body_rows_are_bound_and_normalized(normalized):
     _, result, document = normalized
     header = find_paragraph(document, "参数名称", table=2)
     body_cell = find_paragraph(document, "额定电压", table=2)
-    assert header.style_id == "Normal" and body_cell.style_id == "Normal"
+    assert header.style_id == "TableHeader" and header.properties["pStyle"] == "TableHeader"
+    assert body_cell.style_id == "TableBody" and body_cell.properties["pStyle"] == "TableBody"
     assert header.properties["jc"] == "center"
     assert body_cell.properties["jc"] == "start"
     header_run = next(r for r in header.runs if r.text.strip())
     body_run = next(r for r in body_cell.runs if r.text.strip())
+    # 表头 run 直接宋体被修复；表体 run 未直接指定字体时由表格正文样式提供有效字体。
     assert header_run.properties["rFonts"]["eastAsia"] == "黑体"
     assert header_run.properties["b"] is True
     assert header_run.properties["sz"] == "21"
-    assert body_run.properties["rFonts"]["eastAsia"] == "仿宋"
+    from document_factory.style_resolver import StyleResolver
+    resolver = StyleResolver(document)
+    assert resolver.run(body_cell, body_run)["rFonts"]["eastAsia"] == "仿宋"
+    assert resolver.run(header, header_run)["rFonts"]["eastAsia"] == "黑体"
     assert body_run.properties["sz"] == "21"
     objects = result.normalization_stats["objects"]
+    binding = result.normalization_stats["style_binding"]
     assert objects["regular_tables"] == 1
     assert objects["table_header_paragraphs"] == 2
     assert objects["table_body_paragraphs"] == 4
+    assert binding["table_header_bound_count"] == 2
+    assert binding["table_body_bound_count"] == 4
+    assert binding["table_header_style_created"] == 0
+    assert binding["table_body_style_created"] == 0
 
 
 def test_table02_cover_table_is_skipped(tmp_path, monkeypatch):
@@ -559,13 +584,26 @@ def test_grid_preset_new_behaviors_remain_opted_out(tmp_path, monkeypatch):
     result = norm(source, tmp_path, rules=GRID_RULES, name="grid")
     objects = result.normalization_stats["objects"]
     assert objects.get("body_safe_normal_paragraphs", 0) == 0
+    assert objects.get("body_unstyled_paragraphs", 0) == 0
     assert objects.get("caption_paragraphs", 0) == 0
     assert objects.get("regular_tables", 0) == 0
     assert objects.get("table_header_paragraphs", 0) == 0
     assert objects.get("table_body_paragraphs", 0) == 0
+    # TASK_DOC_STYLE_BINDING_001：grid preset 必须保持字节级旧行为——
+    # 不创建正文/表格样式、不发生任何 pStyle 重绑定。
+    binding = result.normalization_stats.get("style_binding", {})
+    assert all(value == 0 for value in binding.values())
     rules_applied = set(result.normalization_stats["rules_applied"])
     assert "CAPTION001" not in rules_applied and "CAPTION002" not in rules_applied
     assert not any(change["property"].startswith(("safe_normal_", "table_regular_"))
                    for change in result.changes)
+    assert not any(change["property"] in ("style", "style_create", "style_based_on")
+                   for change in result.changes)
+    # grid 下不得新建专用样式：输出的样式集合必须与输入完全一致。
+    before_styles = read_docx(source).parts["word/styles.xml"]
+    after_styles = read_docx(result.output_path).parts["word/styles.xml"]
+    before_ids = set(before_styles.xpath("./w:style/@w:styleId", namespaces=NS))
+    after_ids = set(after_styles.xpath("./w:style/@w:styleId", namespaces=NS))
+    assert after_ids == before_ids
     assert result.content_integrity["status"] == "PASS"
 

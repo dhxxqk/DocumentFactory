@@ -35,13 +35,14 @@ from .operations import (
     write_package,
 )
 from .output_paths import checked_output
+from . import style_binding
 from .style_resolver import StyleResolver
 
 
 UNSUPPORTED_CAPABILITIES = [
     "自动多级编号、numId、lvlOverride，以及手工编号转自动编号",
     "TOC 创建、重建或刷新",
-    "Normal 转正文、疑似标题转 Heading，以及编制说明、目录标题、封面等语义重分类",
+    "高置信正文之外的 Normal 段落、疑似标题、编制说明、目录标题、封面等语义重分类",
     "复杂条件表格样式、嵌套/合并单元格表格的直接格式规范化",
     "文本框、浮动对象、修订、RTL、复杂文字和图片中文字",
     "视觉美化以及任何无法被现有 lint 再验证的修改",
@@ -61,6 +62,16 @@ def _ctx(changes, object_type, location, rules, rule_id, prefix=""):
 
 def _cm_to_twips(value):
     return int(round(float(value) / 2.54 * 1440))
+
+
+_FONT_REPAIR_PROPERTIES = ("chinese_font", "latin_font", "font_size_pt")
+
+
+def _count_font_repairs(changes, start, binding_stats):
+    """Tally run-level CN/Latin/size repairs produced since ``start``."""
+    for item in changes[start:]:
+        if item["object_type"] == "Run" and item["property"].endswith(_FONT_REPAIR_PROPERTIES):
+            binding_stats["direct_font_override_repaired_count"] += 1
 
 
 def _normalize_rpr(parent, target, changes, *, object_type, location, rules, prefix="", heading=False):
@@ -426,6 +437,21 @@ def _normalize_named_styles(document, resolver, rules, changes, changed_parts, s
             target["chinese_font"] = rules["tables"]["header_font"] if style.name == table_names[0] else rules["tables"]["body_font"]
             changed = _normalize_table_ppr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules)
             changed |= _normalize_rpr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules, prefix="table_")
+            if rules["tables"].get("style_binding"):
+                if style.name == table_names[0]:
+                    alignment = rules["tables"].get("header_alignment")
+                    align_rule = "TABLE002"
+                elif style.name in rules["tables"].get("optional_styles", []):
+                    alignment = "center"
+                    align_rule = "TABLE003"
+                else:
+                    alignment = rules["tables"].get("body_alignment")
+                    align_rule = "TABLE003"
+                if alignment and resolver.style(style_id).get("jc") != alignment:
+                    changed |= apply_alignment(
+                        element, alignment,
+                        _ctx(changes, "Style", f"Style {style.name}", rules, align_rule),
+                    )
             if changed:
                 changed_parts.add("word/styles.xml")
 
@@ -439,11 +465,34 @@ def _apply_normalization(document, rules):
     stats = {
         "page": {"sections_total": 0, "sections_normalized": 0},
         "objects": Counter(),
+        "style_binding": Counter(),
         "warnings": warnings,
     }
+    binding_stats = stats["style_binding"]
+
+    body_binding_enabled = bool(rules["body"].get("style_binding"))
+    table_binding_enabled = bool(rules["tables"].get("style_binding"))
+    # Dedicated paragraph styles are scaffolded before style/paragraph
+    # normalization so every later fact lands on the real target styles.
+    binding = style_binding.ensure_binding_styles(document, rules, changes)
+    if binding.created:
+        changed_parts.add("word/styles.xml")
+    binding_stats["body_style_created"] = 1 if rules["body"]["style_name"] in binding.created else 0
+    binding_stats["table_header_style_created"] = 1 if rules["tables"]["required_styles"][0] in binding.created else 0
+    binding_stats["table_body_style_created"] = 1 if rules["tables"]["required_styles"][1] in binding.created else 0
+    center_name = rules["tables"]["optional_styles"][0] if rules["tables"].get("optional_styles") else None
+    binding_stats["table_center_style_created"] = 1 if center_name and center_name in binding.created else 0
 
     _normalize_sections(document, rules, changes, changed_parts, stats, warnings)
     _normalize_named_styles(document, resolver, rules, changes, changed_parts, stats)
+    # Re-sync registered style models: the resolver used by the paragraph
+    # loop must see the explicit facts just written onto the style elements.
+    for style_id in (
+        binding.body_id, binding.table_header_id,
+        binding.table_body_id, binding.table_center_id,
+    ):
+        if style_id is not None:
+            style_binding.sync_style_model(document, style_id)
 
     table_config = rules["tables"]
     caption_config = rules.get("caption") or {}
@@ -477,20 +526,45 @@ def _apply_normalization(document, rules):
             for index, run in enumerate(paragraph.runs, 1):
                 changed |= _normalize_run(document, resolver, paragraph, run, index, "heading", target, changes, rules)
 
-        elif role == "body_named":
+        elif role in ("body_named", "body_safe_normal", "body_unstyled"):
             target = dict(rules["body"])
-            stats["objects"]["body_named_paragraphs"] += 1
-            if any(name in paragraph.properties for name in ("ind", "spacing", "jc")):
-                changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules)
-            for index, run in enumerate(paragraph.runs, 1):
-                changed |= _normalize_run(document, resolver, paragraph, run, index, "body", target, changes, rules)
-
-        elif role == "body_safe_normal":
-            target = dict(rules["body"])
-            stats["objects"]["body_safe_normal_paragraphs"] += 1
-            changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules, prefix="safe_normal_")
-            for index, run in enumerate(paragraph.runs, 1):
-                changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="safe_normal_")
+            stats["objects"][f"{role}_paragraphs"] += 1
+            if role == "body_unstyled":
+                binding_stats["unstyled_body_detected_count"] += 1
+            run_start = len(changes)
+            if body_binding_enabled and binding.body_id:
+                # Formal V1.4 output: every formal body paragraph is really
+                # bound to the dedicated 正文 paragraph style.
+                rebound = style_binding.bind_paragraph_style(
+                    document, paragraph, binding.body_id, rules, changes, rule_id="BODY001",
+                )
+                if rebound:
+                    binding_stats["body_style_bound_count"] += 1
+                    if role == "body_unstyled":
+                        binding_stats["unstyled_body_bound_count"] += 1
+                # Explicit body pPr (indent/spacing/jc) on the paragraph itself
+                # so inherited/direct conflicts cannot survive, then repair the
+                # effective run fonts (run-level 宋体/theme overrides included).
+                changed |= _normalize_body_ppr(
+                    paragraph.element, target, changes,
+                    object_type="Paragraph", location=location, rules=rules,
+                )
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _apply_effective_run_target(
+                        document, resolver, paragraph, run, index, target, changes, rules,
+                    )
+                _count_font_repairs(changes, run_start, binding_stats)
+            elif role == "body_named":
+                # Legacy behaviour (binding disabled, e.g. grid preset).
+                if any(name in paragraph.properties for name in ("ind", "spacing", "jc")):
+                    changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules)
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _normalize_run(document, resolver, paragraph, run, index, "body", target, changes, rules)
+            else:
+                # Legacy behaviour (safe-normal detection without binding).
+                changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules, prefix="safe_normal_")
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="safe_normal_")
 
         elif role == "caption":
             stats["objects"]["caption_paragraphs"] += 1
@@ -505,21 +579,50 @@ def _apply_normalization(document, rules):
             for index, run in enumerate(paragraph.runs, 1):
                 changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="caption")
 
-        elif role in ("table_header", "table_body"):
+        elif role in ("table_header", "table_body", "table_center"):
             is_header = role == "table_header"
+            is_center = role == "table_center"
             regular_tables_seen.add(info.table_index)
-            stats["objects"]["table_header_paragraphs" if is_header else "table_body_paragraphs"] += 1
+            stats["objects"]["table_header_paragraphs" if is_header else "table_center_paragraphs" if is_center else "table_body_paragraphs"] += 1
             target = {
                 "chinese_font": table_config["header_font"] if is_header else table_config["body_font"],
                 "latin_font": table_config["latin_font"],
                 "font_size_pt": table_config["font_size_pt"],
                 "bold": table_config.get("header_bold") if is_header else None,
             }
+            if table_binding_enabled:
+                target_style_id = (
+                    binding.table_header_id if is_header
+                    else binding.table_center_id if is_center and binding.table_center_id
+                    else binding.table_body_id
+                )
+                if target_style_id is not None:
+                    bind_rule = "TABLE002" if is_header else "TABLE003"
+                    rebound = style_binding.bind_paragraph_style(
+                        document, paragraph, target_style_id, rules, changes, rule_id=bind_rule,
+                    )
+                    if rebound:
+                        if is_header:
+                            binding_stats["table_header_bound_count"] += 1
+                        elif is_center:
+                            binding_stats["table_center_bound_count"] += 1
+                        else:
+                            binding_stats["table_body_bound_count"] += 1
+            ppr_start = len(changes)
             changed |= _normalize_table_ppr(
                 paragraph.element, table_config, changes,
                 object_type="Paragraph", location=location, rules=rules, prefix="table_regular_",
             )
-            alignment = table_config.get("header_alignment") if is_header else table_config.get("body_alignment")
+            if table_binding_enabled:
+                for item in changes[ppr_start:]:
+                    if item["object_type"] == "Paragraph" and item["rule"] == "TABLE004":
+                        binding_stats["table_indent_repaired_count"] += 1
+                        break
+            alignment = (
+                table_config.get("header_alignment") if is_header
+                else "center" if is_center
+                else table_config.get("body_alignment")
+            )
             if alignment:
                 rule_id = "TABLE002" if is_header else "TABLE003"
                 if paragraph.properties.get("jc") != alignment:
@@ -527,8 +630,11 @@ def _apply_normalization(document, rules):
                         paragraph.element, alignment,
                         _ctx(changes, "Paragraph", location, rules, rule_id, "table_regular_"),
                     )
+            run_start = len(changes)
             for index, run in enumerate(paragraph.runs, 1):
                 changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="table_regular_")
+            if table_binding_enabled:
+                _count_font_repairs(changes, run_start, binding_stats)
 
         elif role == "table_named":
             name = resolver.name(paragraph.style_id)
@@ -587,16 +693,39 @@ def _write_validation_report(result, before, after, rules, generated):
     lines += [f"- {name}：{count}" for name, count in sorted(change_types.items())]
     page_stats = stats.get("page", {})
     objects = stats.get("objects", {})
+    style_binding_stats = stats.get("style_binding", {})
     lines += [
         "", "### 3.1 对象角色统计", "",
         f"- 页面节：{page_stats.get('sections_normalized', 0)}/{page_stats.get('sections_total', 0)} 个节被规范化",
         f"- 标题样式：{objects.get('heading_styles', 0)} 个；标题段落：{objects.get('heading_paragraphs', 0)} 个",
         f"- 具名正文（正文）段落：{objects.get('body_named_paragraphs', 0)} 个",
-        f"- Safe Normal 正文段落：{objects.get('body_safe_normal_paragraphs', 0)} 个（保留 pStyle，仅直接格式）",
+        f"- 显式 Normal 正文段落：{objects.get('body_safe_normal_paragraphs', 0)} 个（绑定为正文）",
+        f"- 无 pStyle 正文段落：{objects.get('body_unstyled_paragraphs', 0)} 个（识别并绑定为正文）",
         f"- 题注段落：{objects.get('caption_paragraphs', 0)} 个",
-        f"- 普通内容表格：{objects.get('regular_tables', 0)} 个；表头段落：{objects.get('table_header_paragraphs', 0)} 个；表体段落：{objects.get('table_body_paragraphs', 0)} 个",
+        f"- 普通内容表格：{objects.get('regular_tables', 0)} 个；表头段落：{objects.get('table_header_paragraphs', 0)} 个；表体段落：{objects.get('table_body_paragraphs', 0)} 个；居中表体段落：{objects.get('table_center_paragraphs', 0)} 个",
         f"- 具名表格样式段落：{objects.get('table_named_paragraphs', 0)} 个", "",
-        "### 3.2 按规则归因的修改次数", "",
+        "### 3.2 样式绑定统计（STYLE_BINDING）", "",
+        "| 指标 | 数量 |", "|---|---:|",
+    ]
+    style_binding_keys = [
+        ("body_style_created", "正文样式已创建（0=复用文档既有样式）"),
+        ("body_style_bound_count", "段落绑定为正文（pStyle 实际改写）"),
+        ("table_header_style_created", "表格表头样式已创建"),
+        ("table_body_style_created", "表格正文样式已创建"),
+        ("table_center_style_created", "表格正文-居中样式已创建"),
+        ("table_header_bound_count", "单元格绑定为表格表头"),
+        ("table_body_bound_count", "单元格绑定为表格正文"),
+        ("table_center_bound_count", "单元格绑定为表格正文-居中"),
+        ("unstyled_body_detected_count", "识别到无 pStyle 正文"),
+        ("unstyled_body_bound_count", "无 pStyle 正文已绑定为正文"),
+        ("direct_font_override_repaired_count", "Run 级字体/字号冲突修复"),
+        ("table_indent_repaired_count", "表格段落缩进清除"),
+    ]
+    for key, label in style_binding_keys:
+        lines.append(f"| {label} | {style_binding_stats.get(key, 0)} |")
+    lines += [
+        "",
+        "### 3.3 按规则归因的修改次数", "",
         "| Rule | 次数 |", "|---|---:|",
     ]
     lines += [f"| {rule_id} | {count} |" for rule_id, count in sorted(rule_counts.items())]
@@ -715,6 +844,7 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
         normalization_stats={
             "page": stats["page"],
             "objects": dict(stats["objects"]),
+            "style_binding": dict(stats["style_binding"]),
             "rules_applied": dict(Counter(change["rule"] for change in changes)),
             "changed_zip_parts": stats["changed_zip_parts"],
             "warnings": stats["warnings"],
