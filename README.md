@@ -148,7 +148,7 @@ MCP 接口用于让 AI Agent 调用 DOCX 格式治理能力（审计、规范化
 |---|---|
 | `format_document` | 调用现有 `normalize(...)`，返回新 DOCX、Validation Report 与前后计数 |
 | `audit_document` | 调用现有 `lint`/`write_report`，只检查且保持输入不变 |
-| `list_presets` | 从明确 registry 返回可用规范；当前为 `grid_tech_v1_4` |
+| `list_presets` | 从明确 registry 返回可用规范；当前为 `default_technical_document_v1`、`grid_tech_v1_4`（默认 preset 仍为 `grid_tech_v1_4`） |
 
 MCP Server 不包含 OOXML、lint 或 normalize 的副本，也不提供 shell/XML 修改入口。工具结果只返回简洁摘要和 deliverables；完整 findings 留在 Markdown/JSON 报告。
 

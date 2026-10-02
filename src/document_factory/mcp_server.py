@@ -25,12 +25,22 @@ from .report_writer import write_report
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PRESETS = {
+    "default_technical_document_v1": {
+        "id": "default_technical_document_v1",
+        "display_name": "DocumentFactory 默认技术文档规范 V1",
+        "rules_path": PROJECT_ROOT / "rules" / "default_technical_document_v1.yaml",
+        "description": (
+            "与业务无关的默认技术文档规范（正式 ID：DEFAULT_TECHNICAL_DOCUMENT_V1）："
+            "A4 纵向、仿宋正文、黑体多级标题、10.5pt 表格；确定性检查并规范化，"
+            "不含任何项目身份信息，不自动修复编号或 TOC。"
+        ),
+    },
     "grid_tech_v1_4": {
         "id": "grid_tech_v1_4",
         "display_name": "电网科技项目实施方案 V1.4",
         "rules_path": PROJECT_ROOT / "rules" / "grid_tech_v1_4.yaml",
         "description": "确定性检查并规范化已确认的 Heading、正文和表格样式；不自动修复编号或 TOC。",
-    }
+    },
 }
 
 SERVER_INSTRUCTIONS = """
