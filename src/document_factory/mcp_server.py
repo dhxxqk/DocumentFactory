@@ -150,10 +150,12 @@ def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str
     except DocumentFactoryError as exc:
         raise ToolError(f"DocumentFactory normalize 失败：{exc}") from exc
     after_error = result.after_counts["ERROR"]
+    integrity = result.content_integrity
+    stats = result.normalization_stats
     summary = (
         f"规范化完成：ERROR {result.before_counts['ERROR']} → {after_error}，"
         f"WARNING {result.before_counts['WARNING']} → {result.after_counts['WARNING']}，"
-        f"修改 {len(result.changes)} 项。"
+        f"修改 {len(result.changes)} 项；内容完整性闸门 {integrity.get('status', '未执行')}。"
         + ("输出仍有 ERROR，不能宣称全部合格；请查看 Validation Report。" if after_error else "输出未发现 ERROR；WARNING 仍需人工确认。")
     )
     return {
@@ -167,6 +169,22 @@ def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str
         "changed_count": len(result.changes),
         "remaining_error_count": after_error,
         "source_unchanged": result.source_unchanged,
+        "normalization_stats": {
+            "page": stats.get("page", {}),
+            "objects": stats.get("objects", {}),
+            "rules_applied": stats.get("rules_applied", {}),
+            "changed_zip_parts": stats.get("changed_zip_parts", []),
+        },
+        "content_integrity": {
+            "status": integrity.get("status"),
+            "media_file_count": integrity.get("media_file_count"),
+            "media_sha256_equal": integrity.get("media_sha256_equal"),
+            "paragraph_count_after": integrity.get("paragraph_count_after"),
+            "table_count_after": integrity.get("table_count_after"),
+            "section_count_after": integrity.get("section_count_after"),
+            "changed_zip_parts": integrity.get("changed_zip_parts", []),
+        },
+        "unresolved_counts": result.unresolved_counts,
         "summary": summary,
         "deliverables": [
             {"kind": "docx", "path": result.output_path, "label": "规范化后的 DOCX"},

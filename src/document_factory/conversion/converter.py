@@ -116,7 +116,7 @@ class DocumentFormatConverter:
             raise DocumentFactoryError(f"格式转换失败：{'; '.join(run_result.errors)}")
 
         # 5. 直接格式层：Run 字体/字号/颜色、表格段落（复用 normalizer 决策+操作）。
-        norm_changes, norm_parts = _apply_normalization(document, rules)
+        norm_changes, norm_parts, _norm_stats = _apply_normalization(document, rules)
         changes.extend(norm_changes)
         changed_parts |= norm_parts
 

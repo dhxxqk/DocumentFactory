@@ -32,6 +32,7 @@ from .paragraph import (
     ParagraphProfile,
     apply_alignment,
     apply_indent,
+    apply_keep_next,
     apply_paragraph_format,
     apply_spacing,
 )
@@ -58,6 +59,7 @@ __all__ = [
     "ParagraphProfile",
     "apply_alignment",
     "apply_indent",
+    "apply_keep_next",
     "apply_paragraph_format",
     "apply_spacing",
     "STYLE_ROLES",

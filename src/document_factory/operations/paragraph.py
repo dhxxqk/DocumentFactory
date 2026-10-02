@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ._oxml import PPR_ORDER, ensure_child, local, set_properties
+from ._oxml import PPR_ORDER, ensure_child, local, set_properties, set_toggle
 
 
 @dataclass(frozen=True)
@@ -53,6 +53,14 @@ def apply_indent(parent, attrs, ctx, *, prop="indent", remove=frozenset(),
         return False
     return set_properties(
         _ppr(parent), "ind", wanted, set(remove), ctx,
+        prop=prop, rule_id=rule_id, source=source, order=PPR_ORDER,
+    )
+
+
+def apply_keep_next(parent, wanted, ctx, *, prop="keep_next", rule_id=None, source=None):
+    """Set the w:keepNext paragraph toggle (keep paragraph on same page as next)."""
+    return set_toggle(
+        _ppr(parent), "keepNext", wanted, ctx,
         prop=prop, rule_id=rule_id, source=source, order=PPR_ORDER,
     )
 
