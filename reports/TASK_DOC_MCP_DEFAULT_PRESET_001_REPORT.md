@@ -211,8 +211,9 @@ Not applicable
 
 - 分支：`master`
 - 提交信息：`TASK_DOC_MCP_DEFAULT_PRESET_001: register default technical document preset in MCP`
-- 提交哈希：提交后回填（见后续 `docs: backfill ...` 提交）
-- 推送：提交后回填（SSH `git@github.com:dhxxqk/DocumentFactory.git`）
+- 提交哈希：`7b0e5bd6c582616e2232d66c87e73ccc14dc65d7`
+- 回填提交：本哈希回填随独立 docs 提交 `docs: backfill TASK_DOC_MCP_DEFAULT_PRESET_001 commit hash` 提交
+- 推送：任务提交与回填提交一并 `git push origin master`（SSH `git@github.com:dhxxqk/DocumentFactory.git`）；推送后 HEAD 与 `origin/master` 一致性以实际复核为准
 
 ## Remaining Risks
 
