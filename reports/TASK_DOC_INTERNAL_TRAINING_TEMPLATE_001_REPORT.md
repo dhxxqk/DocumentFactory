@@ -86,8 +86,9 @@ DEFAULT 模板及其余 2 套既有模板的语义与全部既有测试保持不
 - `templates/internal_training_document_v1/definition/template_structure_analysis.md`
 - `templates/internal_training_document_v1/validation/VALIDATION_CHECKLIST.md`
 - `rules/internal_training_document_v1.yaml`
-- `src/document_factory/integrity.py`（Content Integrity Gate）
 - `src/document_factory/analyzer/visible_format.py`（实际可见格式统计，只读）
+- `src/document_factory/integrity.py`（Content Integrity Gate；与远端
+  FULL_NORMALIZATION 任务的生产级实现合并统一，conversion/normalize 均接入）
 
 修改：`.gitignore`（排除 `local_samples/`）、`templates/schema.py`
 （TableRule 新增表头底纹/颜色/对齐保留字段）、`conversion/{classifier,
@@ -99,8 +100,15 @@ __init__}.py`、`section_analyzer.py`、`table_analyzer.py`、
 ## 6. 测试结果
 
 - 命令：`.\.venv\Scripts\python.exe -X utf8 -m pytest -q`
-- 结果：**192 passed**（既有测试全部保持绿色；未新增大规模测试，符合 MVP 约束）。
+- 结果：**231 passed**（合并远端并行任务后全量运行；未新增大规模测试，符合 MVP 约束）。
 - 模板注册校验：Registry 列出 4 套模板，新模板 `extends=None`。
+- 推送前整合：远端在本任务开发期间合入了 FULL_NORMALIZATION / STYLE_BINDING /
+  MCP_DEFAULT_PRESET 等并行任务。已按 GIT_WORKFLOW §4 执行普通 `git merge`
+  （merge 提交 `7208ba2`），Content Integrity Gate 改采用远端生产级实现
+  `verify_content_integrity`（能力为其超集：可见文本/Run 文本/表格结构与单元格
+  文本/域指令/超链接/页眉页脚/关系/media SHA-256/绘图计数），并将多节边距
+  variants 支持以**向后兼容**方式补入其 `_normalize_sections`（仅
+  `orientation_policy: preserve` 时生效，既有规则集行为不变）。
 
 ## 7. 实际应用验证（1 份真实文档，MVP Pilot）
 
@@ -123,14 +131,15 @@ __init__}.py`、`section_analyzer.py`、`table_analyzer.py`、
 
 ## 8. Content Integrity Gate 结果
 
-转换流水线内置指纹与校验（`integrity.py`），本份文档全部检查 **PASS**：
+转换流水线写包后执行生产级 `verify_content_integrity(source, output,
+changed_parts)`，本份文档结论 **PASS**：
 
-- 段落文本序列逐字一致；
-- 图片嵌入顺序（a:blip r:embed / v:imagedata r:id）一致；
-- 图片显示尺寸（wp:extent cx/cy）一致；
-- section 序列一致；表格数量一致；
-- 34 个 media 部件逐个 SHA-256 一致（`word/media/` 集合完全相同）；
-- document.xml.rels 图片关系目标一致；
+- 可见文本一致：是；Run 文本一致：是；
+- 表格结构一致、表格单元格文本一致：是；
+- 域指令一致、超链接显示文本一致、页眉页脚文本一致：是；
+- 关系部件一致：是；
+- media 部件 34 个，逐个 SHA-256 一致：是；
+- 段落/表格/节/绘图计数前后一致；
 - 输入文件 SHA-256 全程未变，输出为独立新文件。
 
 ## 9. 已知限制（MVP 暂缓项）
@@ -146,6 +155,7 @@ __init__}.py`、`section_analyzer.py`、`table_analyzer.py`、
 
 - 代码提交 SHA：`80ba4c63d55a1430ea3891c8a2390075a0532f63`
   （28 files changed，1181 insertions，41 deletions）。
-- 本报告由随后的 docs 提交一并入库。
+- 远端整合 merge 提交：`7208ba2`（普通 merge，保留双方完整历史）。
+- 本报告 SHA 回填由独立 docs 提交完成。
 - 真实文档与输出产物均未进入 Git；`git status` 已人工核验
   （`local_samples/`、`output/` 命中 .gitignore）。
