@@ -2,6 +2,8 @@
 __version__ = "0.5.0a1"
 
 from .normalizer import normalize
+from .role_classifier import Classification, ParagraphRole, classify as classify_roles
+from .integrity import verify_content_integrity
 from .template import analyze_template, apply_template, TemplateProfile
 from .template_runner import ExecutionResult, run_template
 from .templates import (
@@ -31,6 +33,10 @@ from .conversion import (
 __all__ = [
     "__version__",
     "normalize",
+    "classify_roles",
+    "Classification",
+    "ParagraphRole",
+    "verify_content_integrity",
     "TemplateProfile",
     "analyze_template",
     "apply_template",

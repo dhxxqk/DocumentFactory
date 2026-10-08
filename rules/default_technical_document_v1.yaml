@@ -11,6 +11,11 @@ document:
   page_size_twips: [11906, 16838]
   orientation: portrait
   margins_cm: {top: 2.8, bottom: 2.6, left: 2.8, right: 2.6}
+  # 机器映射补充（TASK_DOC_FULL_NORMALIZATION_001）：来源仅为
+  # templates/default_technical_document_v1/rules/page_rules.yaml 中
+  # 既有 header_distance_cm / footer_distance_cm 事实，不新增规范。
+  header_distance_cm: 1.4
+  footer_distance_cm: 1.4
   tolerance_twips: 3
 body:
   style_name: 正文
@@ -22,9 +27,37 @@ body:
   space_before_pt: 0
   space_after_pt: 0
   alignment: both
-heading1: {word_style: Heading 1, chinese_font: 黑体, size_pt: 16, color: '000000'}
-heading2: {word_style: Heading 2, chinese_font: 黑体, size_pt: 14, color: '000000'}
-heading3: {word_style: Heading 3, chinese_font: 黑体, size_pt: 12, color: '000000'}
+  # 开关：仅默认规范启用保守正文角色识别（显式 Normal 与无 pStyle 两类）。
+  # grid_tech_v1_4 无此键，行为不变。
+  safe_normal_normalization: true
+  # 开关：仅默认规范启用正式“正文”样式创建与 pStyle 绑定（TASK_DOC_STYLE_BINDING_001）。
+  # grid_tech_v1_4 无此键，继续保留原 pStyle，字节级行为不变。
+  style_binding: true
+heading1: {word_style: Heading 1, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 16, bold: true, color: '000000', alignment: left}
+heading2: {word_style: Heading 2, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 14, bold: true, color: '000000', alignment: left}
+heading3: {word_style: Heading 3, chinese_font: 黑体, latin_font: Times New Roman, size_pt: 12, bold: true, color: '000000', alignment: left}
+# 机器映射补充：来源 heading_rules.yaml 的 heading_policy.keep_with_next。
+heading_policy: {keep_with_next: true}
+# 机器映射补充（TASK_DOC_FULL_NORMALIZATION_001）：来源仅为
+# templates/default_technical_document_v1/rules/figure_rules.yaml
+# 中既有 figure/caption 事实，不新增规范。
+caption:
+  source: '默认规范§图表题注'
+  style_aliases: [caption, 题注]
+  chinese_font: 黑体
+  latin_font: Times New Roman
+  font_size_pt: 10.5
+  bold: false
+  color: '000000'
+  alignment: center
+  line_spacing: single
+  space_before_pt: 6
+  space_after_pt: 6
+  # 保守题注文本识别，仅用于格式角色，不修改编号文字。
+  # 对应 figure_rules.yaml numbering.pattern “{prefix}{chapter}-{sequence} …”：
+  # 编号后必须有空白再跟标题，避免把“图3-1显示……”这类正文句首引用误判为图题。
+  patterns:
+    - '^\s*[图表]\s*\d+\s*[-–—]\s*\d+[\s　]+\S'
 toc:
   required: true
   levels: [1, 2]
@@ -51,6 +84,18 @@ tables:
   body_font: 仿宋
   latin_font: Times New Roman
   font_size_pt: 10.5
+  # 机器映射补充（TASK_DOC_FULL_NORMALIZATION_001）：以下四项来源仅为
+  # templates/default_technical_document_v1/rules/table_rules.yaml
+  # 中既有 header_bold / alignment / body_alignment 事实，不新增规范。
+  header_bold: true
+  header_alignment: center
+  body_alignment: start
+  # 开关：仅默认规范启用普通内容表格直接格式规范化；
+  # grid_tech_v1_4 无此键，仍只治理命名表格样式，行为不变。
+  regular_table_normalization: true
+  # 开关：仅默认规范启用表格专用段落样式创建与 pStyle 绑定
+  # （TASK_DOC_STYLE_BINDING_001）；grid_tech_v1_4 无此键，行为不变。
+  style_binding: true
   line_spacing_allowed: [single, exact]
   normalization_line_spacing: single
 font_aliases:
@@ -87,6 +132,10 @@ rules:
   TABLE008: {source: '默认规范§表格规则', severity: ERROR}
   TABLE009: {source: '默认规范§表格规则', severity: INFO}
   TABLE010: {source: '默认规范§表格规则', severity: ERROR}
+  # 机器映射补充（TASK_DOC_FULL_NORMALIZATION_001）：题注规范化操作归因，
+  # 来源 figure_rules.yaml 既有 caption 事实；lint 暂不发射，仅规范化消费。
+  CAPTION001: {source: '默认规范§图表题注', severity: ERROR}
+  CAPTION002: {source: '默认规范§图表题注', severity: ERROR}
   FONT001: {source: '默认规范§字体规则', severity: ERROR}
   FONT002: {source: '默认规范§字体规则', severity: ERROR}
   FONT003: {source: '默认规范§字体规则', severity: ERROR}

@@ -24,7 +24,7 @@ from pathlib import Path
 
 from ..analyzer import analyze_document
 from ..docx_reader import read_docx, sha256
-from ..integrity import capture_fingerprint, verify_content
+from ..integrity import verify_content_integrity
 from ..lint_engine import lint, load_rules
 from ..models import DocumentFactoryError
 from ..normalizer import _apply_normalization
@@ -46,6 +46,10 @@ from .structure import (
 def _project_root() -> Path:
     # src/document_factory/conversion/converter.py -> parents[3] = project root
     return Path(__file__).resolve().parents[3]
+
+
+def _all_text(document) -> list[str]:
+    return [p.text for p in document.paragraphs if p.part == "word/document.xml"]
 
 
 class DocumentFormatConverter:
@@ -90,8 +94,7 @@ class DocumentFormatConverter:
         before = lint(source, rules)
         input_hash = document.sha256
         profile_before = analyze_document(document).to_dict()
-        # Content Integrity Gate：转换前快照（文本/图片/关系/section/表格）。
-        fingerprint = capture_fingerprint(source, document)
+        original_texts = _all_text(document)
 
         changes: list = []
         changed_parts: set[str] = set()
@@ -121,7 +124,7 @@ class DocumentFormatConverter:
             raise DocumentFactoryError(f"格式转换失败：{'; '.join(run_result.errors)}")
 
         # 5. 直接格式层：Run 字体/字号/颜色、表格段落（复用 normalizer 决策+操作）。
-        norm_changes, norm_parts = _apply_normalization(document, rules)
+        norm_changes, norm_parts, _norm_stats = _apply_normalization(document, rules)
         changes.extend(norm_changes)
         changed_parts |= norm_parts
 
@@ -131,8 +134,10 @@ class DocumentFormatConverter:
         )
         changed_parts |= header_parts
 
-        # 6. Content Integrity Gate（内存态）：文本/图片/关系/section 逐字逐字节一致。
-        verify_content(fingerprint, document=document)
+        # 6. 内容一致性守卫（内存态）：转换前后正文逐字一致。
+        content_preserved = _all_text(document) == original_texts
+        if not content_preserved:
+            raise DocumentFactoryError("CONTENT_CHANGED：格式转换检测到正文文本变化，已中止")
 
         # 7. 写保护副本（输入 sha 双重守卫 + 写后 read_docx 有效性校验）。
         if sha256(source) != input_hash:
@@ -141,10 +146,12 @@ class DocumentFormatConverter:
         if sha256(source) != input_hash:
             raise DocumentFactoryError("INPUT_CHANGED：格式转换期间输入文件发生变化")
         output_document = read_docx(output)
-        integrity = verify_content(
-            fingerprint, document=output_document, output_path=output,
-        )
-        content_preserved = integrity["passed"]
+        content_preserved = _all_text(output_document) == original_texts
+        if not content_preserved:
+            raise DocumentFactoryError("CONTENT_CHANGED：输出文件正文文本与输入不一致")
+        # 5c. 包级 Content Integrity Gate：文本/表格结构/关系/media 字节逐一对账，
+        # 任何受保护内容漂移都会抛出 DocumentFactoryError 中止转换。
+        integrity = verify_content_integrity(source, output, changed_parts)
 
         # 8. 真实 lint 复检 + 转换后画像。
         after = lint(output, rules)

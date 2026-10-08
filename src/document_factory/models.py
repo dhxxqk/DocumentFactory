@@ -119,7 +119,9 @@ class NormalizationResult:
     changes: list[dict[str, Any]] = field(default_factory=list)
     remaining_findings: list[dict[str, Any]] = field(default_factory=list)
     source_unchanged: bool = True
-    integrity: dict[str, Any] = field(default_factory=dict)
+    normalization_stats: dict[str, Any] = field(default_factory=dict)
+    content_integrity: dict[str, Any] = field(default_factory=dict)
+    unresolved_counts: dict[str, int] = field(default_factory=dict)
 
     def to_dict(self):
         return asdict(self)

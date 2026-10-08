@@ -32,10 +32,18 @@ from .paragraph import (
     ParagraphProfile,
     apply_alignment,
     apply_indent,
+    apply_keep_next,
     apply_paragraph_format,
+    apply_paragraph_style,
     apply_spacing,
 )
-from .style import STYLE_ROLES, apply_style, find_style_element
+from .style import (
+    STYLE_ROLES,
+    apply_based_on,
+    apply_style,
+    create_paragraph_style,
+    find_style_element,
+)
 from .table import apply_cell_shading, apply_table_alignment, apply_table_font, apply_table_format
 
 __all__ = [
@@ -58,10 +66,14 @@ __all__ = [
     "ParagraphProfile",
     "apply_alignment",
     "apply_indent",
+    "apply_keep_next",
     "apply_paragraph_format",
+    "apply_paragraph_style",
     "apply_spacing",
     "STYLE_ROLES",
+    "apply_based_on",
     "apply_style",
+    "create_paragraph_style",
     "find_style_element",
     "apply_cell_shading",
     "apply_table_alignment",

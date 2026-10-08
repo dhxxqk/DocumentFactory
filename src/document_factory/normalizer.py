@@ -12,31 +12,38 @@ import json
 import re
 
 from . import __version__
-from .docx_reader import read_docx, sha256
+from . import role_classifier
+from .docx_reader import NS, q, read_docx, sha256
+from .integrity import verify_content_integrity
 from .lint_engine import lint, load_rules
 from .models import DocumentFactoryError, NormalizationResult
 from .operations import (
     OperationContext,
+    PageFormat,
     apply_alignment,
+    apply_bold,
     apply_color,
     apply_east_asian_font,
     apply_font_size,
     apply_indent,
+    apply_keep_next,
     apply_latin_font,
+    apply_section_properties,
     apply_spacing,
     atomic_text,
     find_style_element,
     write_package,
 )
 from .output_paths import checked_output
+from . import style_binding
 from .style_resolver import StyleResolver
 
 
 UNSUPPORTED_CAPABILITIES = [
     "自动多级编号、numId、lvlOverride，以及手工编号转自动编号",
     "TOC 创建、重建或刷新",
-    "Normal 转正文、疑似标题转 Heading，以及编制说明、目录标题、封面等语义重分类",
-    "复杂条件表格样式",
+    "高置信正文之外的 Normal 段落、疑似标题、编制说明、目录标题、封面等语义重分类",
+    "复杂条件表格样式、嵌套/合并单元格表格的直接格式规范化",
     "文本框、浮动对象、修订、RTL、复杂文字和图片中文字",
     "视觉美化以及任何无法被现有 lint 再验证的修改",
 ]
@@ -51,6 +58,20 @@ def _ctx(changes, object_type, location, rules, rule_id, prefix=""):
         source=rules["rules"][rule_id]["source"],
         prefix=prefix,
     )
+
+
+def _cm_to_twips(value):
+    return int(round(float(value) / 2.54 * 1440))
+
+
+_FONT_REPAIR_PROPERTIES = ("chinese_font", "latin_font", "font_size_pt")
+
+
+def _count_font_repairs(changes, start, binding_stats):
+    """Tally run-level CN/Latin/size repairs produced since ``start``."""
+    for item in changes[start:]:
+        if item["object_type"] == "Run" and item["property"].endswith(_FONT_REPAIR_PROPERTIES):
+            binding_stats["direct_font_override_repaired_count"] += 1
 
 
 def _normalize_rpr(parent, target, changes, *, object_type, location, rules, prefix="", heading=False):
@@ -115,19 +136,16 @@ def _normalize_body_ppr(parent, config, changes, *, object_type, location, rules
 
 def _normalize_table_ppr(parent, config, changes, *, object_type, location, rules, prefix="table_"):
     """Rule-engine composition: table paragraph indent/spacing ops."""
-    # 表格缩进全部为 0；同时保留 firstLineChars="0" 显式定义，
-    # 使样式级 TABLE007（不得仅依赖继承）与 TABLE004（缩进为 0）同时成立。
     changed = apply_indent(
         parent,
         {
             "firstLine": int(config["first_line_indent"]),
-            "firstLineChars": "0",
             "left": int(config["left_indent"]),
             "right": int(config["right_indent"]),
         },
         _ctx(changes, object_type, location, rules, "TABLE004", prefix),
         remove=(
-            "hanging", "hangingChars", "leftChars", "rightChars",
+            "firstLineChars", "hanging", "hangingChars", "leftChars", "rightChars",
             "start", "startChars", "end", "endChars",
         ),
     )
@@ -155,24 +173,37 @@ def _normalize_table_ppr(parent, config, changes, *, object_type, location, rule
     return changed
 
 
-def _target_for_paragraph(document, resolver, paragraph, rules):
-    if paragraph.in_toc:
-        return None
-    name = resolver.name(paragraph.style_id)
-    level = resolver.heading_level(paragraph)
-    if level and paragraph.table is None:
-        return "heading", dict(rules[f"heading{level}"])
-    if name == rules["body"]["style_name"] and paragraph.table is None:
-        return "body", dict(rules["body"])
-    tables = rules["tables"]
-    allowed = tables["required_styles"] + tables["optional_styles"]
-    if name in allowed:
-        target = dict(tables)
-        is_header = name == tables["required_styles"][0]
-        target["chinese_font"] = tables["header_font"] if is_header else tables["body_font"]
-        target["_table_header"] = is_header
-        return "table", target
-    return None
+def _normalize_caption_ppr(parent, config, changes, *, location, rules):
+    """Caption paragraph: zero indent, single spacing, 6pt before/after, centered."""
+    changed = apply_indent(
+        parent, {"firstLine": 0, "left": 0, "right": 0},
+        _ctx(changes, "Paragraph", location, rules, "CAPTION001"),
+        remove=(
+            "firstLineChars", "hanging", "hangingChars", "leftChars", "rightChars",
+            "start", "startChars", "end", "endChars",
+        ),
+    )
+    line = config.get("line_spacing", "single")
+    line_attrs = (
+        {"line": 240, "lineRule": "auto"}
+        if line == "single"
+        else {"line": int(config["line_spacing_twips"]), "lineRule": "exact"}
+    )
+    changed |= apply_spacing(
+        parent,
+        {
+            "before": int(float(config["space_before_pt"]) * 20),
+            "after": int(float(config["space_after_pt"]) * 20),
+            **line_attrs,
+        },
+        _ctx(changes, "Paragraph", location, rules, "CAPTION001"),
+        remove=("beforeLines", "afterLines", "beforeAutospacing", "afterAutospacing"),
+    )
+    changed |= apply_alignment(
+        parent, config["alignment"],
+        _ctx(changes, "Paragraph", location, rules, "CAPTION001"),
+    )
+    return changed
 
 
 def _has_character_override(document, run, property_name):
@@ -190,6 +221,11 @@ def _has_character_override(document, run, property_name):
     return False
 
 
+def _font_matches(rules, target, actual, expected):
+    aliases = [value.casefold() for value in rules.get("font_aliases", {}).get(expected, [expected])]
+    return actual is not None and actual.casefold() in aliases
+
+
 def _normalize_run(document, resolver, paragraph, run, index, role, target, changes, rules):
     if not run.text.strip() or run.element is None or run.properties.get("cs") or run.properties.get("rtl"):
         return False
@@ -202,7 +238,7 @@ def _normalize_run(document, resolver, paragraph, run, index, role, target, chan
     if has_cn:
         actual, _ = resolver.font(effective, "cn")
         slot = direct.get("rFonts", {})
-        if actual is None or actual.casefold() not in [value.casefold() for value in rules.get("font_aliases", {}).get(target["chinese_font"], [target["chinese_font"]])] or "eastAsiaTheme" in slot:
+        if actual is None or not _font_matches(rules, target, actual, target["chinese_font"]) or "eastAsiaTheme" in slot:
             if "eastAsia" in slot or "eastAsiaTheme" in slot or _has_character_override(document, run, "rFonts"):
                 changed |= apply_east_asian_font(
                     run.element, target["chinese_font"],
@@ -212,8 +248,7 @@ def _normalize_run(document, resolver, paragraph, run, index, role, target, chan
     if has_latin and target.get("latin_font"):
         slot = direct.get("rFonts", {})
         actual_ascii, _ = resolver.font(effective, "ascii")
-        aliases = [value.casefold() for value in rules.get("font_aliases", {}).get(target["latin_font"], [target["latin_font"]])]
-        if actual_ascii is None or actual_ascii.casefold() not in aliases or any(key in slot for key in ("asciiTheme", "hAnsiTheme")):
+        if actual_ascii is None or not _font_matches(rules, target, actual_ascii, target["latin_font"]) or any(key in slot for key in ("asciiTheme", "hAnsiTheme")):
             if any(key in slot for key in ("ascii", "hAnsi", "asciiTheme", "hAnsiTheme")) or _has_character_override(document, run, "rFonts"):
                 changed |= apply_latin_font(
                     run.element, target["latin_font"],
@@ -235,24 +270,180 @@ def _normalize_run(document, resolver, paragraph, run, index, role, target, chan
                 run.element, target["color"],
                 _ctx(changes, "Run", location, rules, "FONT004"),
             )
+        if target.get("bold") is not None and bool(effective.get("b")) != bool(target["bold"]):
+            if "b" in direct or _has_character_override(document, run, "b"):
+                changed |= apply_bold(
+                    run.element, target["bold"],
+                    _ctx(changes, "Run", location, rules, "STYLE005"),
+                )
     return changed
 
 
-def _apply_normalization(document, rules):
-    resolver = StyleResolver(document)
-    changes = []
-    changed_parts = set()
+def _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, *, prefix=""):
+    """Apply a font target whenever the *effective* run format disagrees.
 
+    Unlike ``_normalize_run`` this does not require a direct rPr override:
+    safe-Normal body paragraphs, captions and regular table cells usually
+    inherit wrong fonts from Normal / docDefaults and must receive direct
+    run formatting because their pStyle is deliberately kept.
+    """
+    if not run.text.strip() or run.element is None or run.properties.get("cs") or run.properties.get("rtl"):
+        return False
+    effective = resolver.run(paragraph, run)
+    location = f"{paragraph.location} / Run {index}"
+    changed = False
+    has_cn = bool(re.search(r"[㐀-鿿\U00020000-\U0002fa1f]", run.text))
+    has_latin = bool(re.search(r"[A-Za-z0-9À-ɏ]", run.text))
+    font_rule = "CAPTION002" if prefix == "caption" else "TABLE008" if prefix.startswith("table") else "FONT001"
+    latin_rule = "CAPTION002" if prefix == "caption" else "TABLE008" if prefix.startswith("table") else "FONT002"
+    size_rule = "CAPTION002" if prefix == "caption" else "TABLE008" if prefix.startswith("table") else "FONT003"
+    if has_cn and target.get("chinese_font"):
+        actual, _ = resolver.font(effective, "cn")
+        if actual is None or not _font_matches(rules, target, actual, target["chinese_font"]):
+            changed |= apply_east_asian_font(
+                run.element, target["chinese_font"],
+                _ctx(changes, "Run", location, rules, font_rule, prefix),
+                prop="chinese_font",
+            )
+    if has_latin and target.get("latin_font"):
+        actual_ascii, _ = resolver.font(effective, "ascii")
+        if actual_ascii is None or not _font_matches(rules, target, actual_ascii, target["latin_font"]):
+            changed |= apply_latin_font(
+                run.element, target["latin_font"],
+                _ctx(changes, "Run", location, rules, latin_rule, prefix),
+                prop="latin_font",
+            )
+    size = target.get("font_size_pt", target.get("size_pt"))
+    if size is not None and effective.get("sz") != str(int(float(size) * 2)):
+        changed |= apply_font_size(
+            run.element, size,
+            _ctx(changes, "Run", location, rules, size_rule, prefix),
+        )
+    if target.get("bold") is not None and bool(effective.get("b")) != bool(target["bold"]):
+        changed |= apply_bold(
+            run.element, target["bold"],
+            _ctx(changes, "Run", location, rules, font_rule, prefix),
+        )
+    if target.get("color"):
+        color = effective.get("color", {})
+        if color.get("val", "").upper() != target["color"].upper() or any(key.startswith("theme") for key in color):
+            color_rule = "CAPTION002" if prefix == "caption" else "FONT004"
+            changed |= apply_color(
+                run.element, target["color"],
+                _ctx(changes, "Run", location, rules, color_rule, prefix),
+            )
+    return changed
+
+
+def _normalize_sections(document, rules, changes, changed_parts, stats, warnings):
+    config = rules["document"]
+    root = document.parts.get("word/document.xml")
+    if root is None:
+        return
+    sect_prs = [
+        section for section in root.findall(".//w:sectPr", NS)
+        if not any(ancestor.tag == q("sectPrChange") for ancestor in section.iterancestors())
+    ]
+    stats["page"]["sections_total"] = len(sect_prs)
+    size_pair = config.get("page_size_twips")
+    orientation = config.get("orientation")
+    margins_cm = config.get("margins_cm", {})
+    variants = config.get("variants") or {}
+    preserve_policy = config.get("orientation_policy") == "preserve"
+    for number, sect_pr in enumerate(sect_prs, 1):
+        location = f"word/document.xml / Section {number}"
+        section_changed = False
+        pg_size = sect_pr.find("w:pgSz", NS)
+        if pg_size is not None:
+            current_orient = pg_size.get(q("orient"))
+            if current_orient is None:
+                # 源文档可能省略 w:orient（Word 依宽高推断）。
+                try:
+                    current_orient = "landscape" if int(pg_size.get(q("w"), 0)) > int(pg_size.get(q("h"), 0)) else "portrait"
+                except (TypeError, ValueError):
+                    current_orient = "portrait"
+        else:
+            current_orient = "portrait"
+        # preserve 多节模板：各节边距按其当前方向选取（如纵向 2.54/3.17、
+        # 横向旋转 3.17/2.54）；其他规则集行为不变。
+        section_margins_cm = margins_cm
+        if preserve_policy and current_orient in variants:
+            section_margins_cm = variants[current_orient].get("margins_cm", margins_cm)
+        # preserve 策略：不强制页面尺寸/方向（尤其不得为省略 orient 的节新增
+        # w:orient）；尺寸与节序由 TemplateRunner 的 variants 负责。
+        if size_pair and not preserve_policy and not (orientation == "portrait" and current_orient == "landscape"):
+            width, height = int(size_pair[0]), int(size_pair[1])
+            if orientation == "landscape":
+                width, height = max(width, height), min(width, height)
+            page = PageFormat(
+                width_twips=width, height_twips=height, orientation=orientation,
+            )
+            section_changed |= apply_section_properties(
+                sect_pr, page,
+                _ctx(changes, "Section", location, rules, "PAGE001"),
+            )
+        elif current_orient == "landscape":
+            warnings.append({
+                "kind": "SKIP_LANDSCAPE_SECTION",
+                "location": location,
+                "reason": "横向节允许用于宽表（PAGE002 WARNING），不强制改回纵向",
+            })
+        margin_attrs = {
+            side: _cm_to_twips(value)
+            for side, value in section_margins_cm.items()
+            if side in ("top", "right", "bottom", "left")
+        }
+        if config.get("header_distance_cm") is not None:
+            margin_attrs["header"] = _cm_to_twips(config["header_distance_cm"])
+        if config.get("footer_distance_cm") is not None:
+            margin_attrs["footer"] = _cm_to_twips(config["footer_distance_cm"])
+        if margin_attrs:
+            section_changed |= apply_section_properties(
+                sect_pr, PageFormat(margins=margin_attrs),
+                _ctx(changes, "Section", location, rules, "PAGE003"),
+            )
+        if section_changed:
+            changed_parts.add("word/document.xml")
+            stats["page"]["sections_normalized"] += 1
+
+
+def _normalize_named_styles(document, resolver, rules, changes, changed_parts, stats):
+    """Style-element normalization: headings (extended), 正文 and named table styles."""
     heading_styles = {}
     for paragraph in document.paragraphs:
         if paragraph.part == "word/document.xml" and paragraph.table is None and not paragraph.in_toc:
             level = resolver.heading_level(paragraph)
             if level:
                 heading_styles[paragraph.style_id] = level
+    heading_policy = rules.get("heading_policy") or {}
     for style_id, level in heading_styles.items():
         element = find_style_element(document, style_id)
-        if element is not None and _normalize_rpr(element, rules[f"heading{level}"], changes, object_type="Style", location=f"Style {resolver.name(style_id)}", rules=rules, heading=True):
+        if element is None:
+            continue
+        target = rules[f"heading{level}"]
+        changed = _normalize_rpr(
+            element, target, changes, object_type="Style",
+            location=f"Style {resolver.name(style_id)}", rules=rules, heading=True,
+        )
+        effective_rpr = resolver.style(style_id).get("rPr", {})
+        if target.get("bold") is not None and bool(effective_rpr.get("b")) != bool(target["bold"]):
+            changed |= apply_bold(
+                element, target["bold"],
+                _ctx(changes, "Style", f"Style {resolver.name(style_id)}", rules, "STYLE005"),
+            )
+        if target.get("alignment") and resolver.style(style_id).get("jc") != target["alignment"]:
+            changed |= apply_alignment(
+                element, target["alignment"],
+                _ctx(changes, "Style", f"Style {resolver.name(style_id)}", rules, "STYLE001"),
+            )
+        if heading_policy.get("keep_with_next") and not resolver.style(style_id).get("keepNext"):
+            changed |= apply_keep_next(
+                element, True,
+                _ctx(changes, "Style", f"Style {resolver.name(style_id)}", rules, "STYLE001"),
+            )
+        if changed:
             changed_parts.add("word/styles.xml")
+            stats["objects"]["heading_styles"] += 1
 
     table_names = rules["tables"]["required_styles"] + rules["tables"]["optional_styles"]
     for style in document.styles.values():
@@ -266,39 +457,233 @@ def _apply_normalization(document, rules):
                 changed_parts.add("word/styles.xml")
         elif style.name in table_names:
             target = dict(rules["tables"])
-            is_header = style.name == table_names[0]
-            target["chinese_font"] = rules["tables"]["header_font"] if is_header else rules["tables"]["body_font"]
-            target["_table_header"] = is_header
+            target["chinese_font"] = rules["tables"]["header_font"] if style.name == table_names[0] else rules["tables"]["body_font"]
             changed = _normalize_table_ppr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules)
             changed |= _normalize_rpr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules, prefix="table_")
+            if rules["tables"].get("style_binding"):
+                if style.name == table_names[0]:
+                    alignment = rules["tables"].get("header_alignment")
+                    align_rule = "TABLE002"
+                elif style.name in rules["tables"].get("optional_styles", []):
+                    alignment = "center"
+                    align_rule = "TABLE003"
+                else:
+                    alignment = rules["tables"].get("body_alignment")
+                    align_rule = "TABLE003"
+                if alignment and resolver.style(style_id).get("jc") != alignment:
+                    changed |= apply_alignment(
+                        element, alignment,
+                        _ctx(changes, "Style", f"Style {style.name}", rules, align_rule),
+                    )
             if changed:
                 changed_parts.add("word/styles.xml")
+
+
+def _apply_normalization(document, rules):
+    resolver = StyleResolver(document)
+    classification = role_classifier.classify(document, resolver, rules)
+    changes = []
+    changed_parts = set()
+    warnings = list(classification.warnings)
+    stats = {
+        "page": {"sections_total": 0, "sections_normalized": 0},
+        "objects": Counter(),
+        "style_binding": Counter(),
+        "warnings": warnings,
+    }
+    binding_stats = stats["style_binding"]
+
+    body_binding_enabled = bool(rules["body"].get("style_binding"))
+    table_binding_enabled = bool(rules["tables"].get("style_binding"))
+    # Dedicated paragraph styles are scaffolded before style/paragraph
+    # normalization so every later fact lands on the real target styles.
+    binding = style_binding.ensure_binding_styles(document, rules, changes)
+    if binding.created:
+        changed_parts.add("word/styles.xml")
+    binding_stats["body_style_created"] = 1 if rules["body"]["style_name"] in binding.created else 0
+    binding_stats["table_header_style_created"] = 1 if rules["tables"]["required_styles"][0] in binding.created else 0
+    binding_stats["table_body_style_created"] = 1 if rules["tables"]["required_styles"][1] in binding.created else 0
+    center_name = rules["tables"]["optional_styles"][0] if rules["tables"].get("optional_styles") else None
+    binding_stats["table_center_style_created"] = 1 if center_name and center_name in binding.created else 0
+
+    _normalize_sections(document, rules, changes, changed_parts, stats, warnings)
+    _normalize_named_styles(document, resolver, rules, changes, changed_parts, stats)
+    # Re-sync registered style models: the resolver used by the paragraph
+    # loop must see the explicit facts just written onto the style elements.
+    for style_id in (
+        binding.body_id, binding.table_header_id,
+        binding.table_body_id, binding.table_center_id,
+    ):
+        if style_id is not None:
+            style_binding.sync_style_model(document, style_id)
+
+    table_config = rules["tables"]
+    caption_config = rules.get("caption") or {}
+    heading_policy = rules.get("heading_policy") or {}
+    regular_tables_seen = set()
 
     for paragraph in document.paragraphs:
         if paragraph.part != "word/document.xml":
             continue
-        selected = _target_for_paragraph(document, resolver, paragraph, rules)
-        if selected is None:
+        info = classification.role(paragraph)
+        role = info.role
+        if role == "other":
             continue
-        role, target = selected
+        location = paragraph.location
         changed = False
-        if role == "body" and any(name in paragraph.properties for name in ("ind", "spacing", "jc")):
-            changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=paragraph.location, rules=rules)
-        elif role == "table" and any(name in paragraph.properties for name in ("ind", "spacing")):
-            changed |= _normalize_table_ppr(paragraph.element, target, changes, object_type="Paragraph", location=paragraph.location, rules=rules)
-        for index, run in enumerate(paragraph.runs, 1):
-            changed |= _normalize_run(document, resolver, paragraph, run, index, role, target, changes, rules)
+
+        if role == "heading":
+            level = info.level
+            target = dict(rules[f"heading{level}"])
+            stats["objects"]["heading_paragraphs"] += 1
+            if target.get("alignment") and paragraph.properties.get("jc") and paragraph.properties["jc"] != target["alignment"]:
+                changed |= apply_alignment(
+                    paragraph.element, target["alignment"],
+                    _ctx(changes, "Paragraph", location, rules, "STYLE001"),
+                )
+            if heading_policy.get("keep_with_next") and "keepNext" in paragraph.properties and not paragraph.properties["keepNext"]:
+                changed |= apply_keep_next(
+                    paragraph.element, True,
+                    _ctx(changes, "Paragraph", location, rules, "STYLE001"),
+                )
+            for index, run in enumerate(paragraph.runs, 1):
+                changed |= _normalize_run(document, resolver, paragraph, run, index, "heading", target, changes, rules)
+
+        elif role in ("body_named", "body_safe_normal", "body_unstyled"):
+            target = dict(rules["body"])
+            stats["objects"][f"{role}_paragraphs"] += 1
+            if role == "body_unstyled":
+                binding_stats["unstyled_body_detected_count"] += 1
+            run_start = len(changes)
+            if body_binding_enabled and binding.body_id:
+                # Formal V1.4 output: every formal body paragraph is really
+                # bound to the dedicated 正文 paragraph style.
+                rebound = style_binding.bind_paragraph_style(
+                    document, paragraph, binding.body_id, rules, changes, rule_id="BODY001",
+                )
+                if rebound:
+                    binding_stats["body_style_bound_count"] += 1
+                    if role == "body_unstyled":
+                        binding_stats["unstyled_body_bound_count"] += 1
+                # Explicit body pPr (indent/spacing/jc) on the paragraph itself
+                # so inherited/direct conflicts cannot survive, then repair the
+                # effective run fonts (run-level 宋体/theme overrides included).
+                changed |= _normalize_body_ppr(
+                    paragraph.element, target, changes,
+                    object_type="Paragraph", location=location, rules=rules,
+                )
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _apply_effective_run_target(
+                        document, resolver, paragraph, run, index, target, changes, rules,
+                    )
+                _count_font_repairs(changes, run_start, binding_stats)
+            elif role == "body_named":
+                # Legacy behaviour (binding disabled, e.g. grid preset).
+                if any(name in paragraph.properties for name in ("ind", "spacing", "jc")):
+                    changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules)
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _normalize_run(document, resolver, paragraph, run, index, "body", target, changes, rules)
+            else:
+                # Legacy behaviour (safe-normal detection without binding).
+                changed |= _normalize_body_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules, prefix="safe_normal_")
+                for index, run in enumerate(paragraph.runs, 1):
+                    changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="safe_normal_")
+
+        elif role == "caption":
+            stats["objects"]["caption_paragraphs"] += 1
+            changed |= _normalize_caption_ppr(paragraph.element, caption_config, changes, location=location, rules=rules)
+            target = {
+                "chinese_font": caption_config["chinese_font"],
+                "latin_font": caption_config["latin_font"],
+                "font_size_pt": caption_config["font_size_pt"],
+                "bold": caption_config.get("bold"),
+                "color": caption_config.get("color"),
+            }
+            for index, run in enumerate(paragraph.runs, 1):
+                changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="caption")
+
+        elif role in ("table_header", "table_body", "table_center"):
+            is_header = role == "table_header"
+            is_center = role == "table_center"
+            regular_tables_seen.add(info.table_index)
+            stats["objects"]["table_header_paragraphs" if is_header else "table_center_paragraphs" if is_center else "table_body_paragraphs"] += 1
+            target = {
+                "chinese_font": table_config["header_font"] if is_header else table_config["body_font"],
+                "latin_font": table_config["latin_font"],
+                "font_size_pt": table_config["font_size_pt"],
+                "bold": table_config.get("header_bold") if is_header else None,
+            }
+            if table_binding_enabled:
+                target_style_id = (
+                    binding.table_header_id if is_header
+                    else binding.table_center_id if is_center and binding.table_center_id
+                    else binding.table_body_id
+                )
+                if target_style_id is not None:
+                    bind_rule = "TABLE002" if is_header else "TABLE003"
+                    rebound = style_binding.bind_paragraph_style(
+                        document, paragraph, target_style_id, rules, changes, rule_id=bind_rule,
+                    )
+                    if rebound:
+                        if is_header:
+                            binding_stats["table_header_bound_count"] += 1
+                        elif is_center:
+                            binding_stats["table_center_bound_count"] += 1
+                        else:
+                            binding_stats["table_body_bound_count"] += 1
+            ppr_start = len(changes)
+            changed |= _normalize_table_ppr(
+                paragraph.element, table_config, changes,
+                object_type="Paragraph", location=location, rules=rules, prefix="table_regular_",
+            )
+            if table_binding_enabled:
+                for item in changes[ppr_start:]:
+                    if item["object_type"] == "Paragraph" and item["rule"] == "TABLE004":
+                        binding_stats["table_indent_repaired_count"] += 1
+                        break
+            alignment = (
+                table_config.get("header_alignment") if is_header
+                else "center" if is_center
+                else table_config.get("body_alignment")
+            )
+            if alignment:
+                rule_id = "TABLE002" if is_header else "TABLE003"
+                if paragraph.properties.get("jc") != alignment:
+                    changed |= apply_alignment(
+                        paragraph.element, alignment,
+                        _ctx(changes, "Paragraph", location, rules, rule_id, "table_regular_"),
+                    )
+            run_start = len(changes)
+            for index, run in enumerate(paragraph.runs, 1):
+                changed |= _apply_effective_run_target(document, resolver, paragraph, run, index, target, changes, rules, prefix="table_regular_")
+            if table_binding_enabled:
+                _count_font_repairs(changes, run_start, binding_stats)
+
+        elif role == "table_named":
+            name = resolver.name(paragraph.style_id)
+            target = dict(table_config)
+            target["chinese_font"] = table_config["header_font"] if name == table_config["required_styles"][0] else table_config["body_font"]
+            stats["objects"]["table_named_paragraphs"] += 1
+            if any(name_ in paragraph.properties for name_ in ("ind", "spacing")):
+                changed |= _normalize_table_ppr(paragraph.element, target, changes, object_type="Paragraph", location=location, rules=rules)
+            for index, run in enumerate(paragraph.runs, 1):
+                changed |= _normalize_run(document, resolver, paragraph, run, index, "table", target, changes, rules)
+
         if changed:
             changed_parts.add("word/document.xml")
-    return changes, changed_parts
+
+    stats["objects"]["regular_tables"] = len(regular_tables_seen)
+    return changes, changed_parts, stats
 
 
 def _write_validation_report(result, before, after, rules, generated):
     report = Path(result.report_path)
     json_path = report.with_suffix(".json")
     remaining = result.remaining_findings
+    stats = result.normalization_stats
+    integrity = result.content_integrity
     data = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "generated_at": generated,
         "document_factory_version": __version__,
         "rules": {"path": rules["_path"], "sha256": rules["_sha256"], "spec_version": rules["spec_version"]},
@@ -306,15 +691,9 @@ def _write_validation_report(result, before, after, rules, generated):
         "before_findings": [finding.to_dict() for finding in before.findings],
         "after_findings": [finding.to_dict() for finding in after.findings],
         "unsupported_capabilities": UNSUPPORTED_CAPABILITIES,
-        "content_integrity_gate": {
-            "passed": result.integrity.get("passed"),
-            "checks": [
-                {"check": c["check"], "passed": c["passed"]}
-                for c in result.integrity.get("checks", [])
-            ],
-        },
     }
     change_types = Counter(change["object_type"] for change in result.changes)
+    rule_counts = Counter(change["rule"] for change in result.changes)
     lines = [
         "# DocumentFactory DOCX 规范化 Validation Report", "", "## 1. 基本信息", "",
         f"- 实际生成时间（含时区）：{generated}",
@@ -332,22 +711,96 @@ def _write_validation_report(result, before, after, rules, generated):
         f"| 修复前 | {result.before_counts['ERROR']} | {result.before_counts['WARNING']} | {result.before_counts['INFO']} |",
         f"| 修复后 | {result.after_counts['ERROR']} | {result.after_counts['WARNING']} | {result.after_counts['INFO']} |", "",
         "## 3. 修改统计", "", f"- 属性修改记录：{len(result.changes)}",
+        f"- 实际改动 ZIP 部件：{', '.join(integrity.get('changed_zip_parts', [])) or '无'}",
     ]
     lines += [f"- {name}：{count}" for name, count in sorted(change_types.items())]
-    lines += ["", "## 4. 修改明细", "", "| 对象类型 | 位置 | 属性 | 修改前 | 修改后 | Rule | 规范出处 |", "|---|---|---|---|---|---|---|"]
+    page_stats = stats.get("page", {})
+    objects = stats.get("objects", {})
+    style_binding_stats = stats.get("style_binding", {})
+    lines += [
+        "", "### 3.1 对象角色统计", "",
+        f"- 页面节：{page_stats.get('sections_normalized', 0)}/{page_stats.get('sections_total', 0)} 个节被规范化",
+        f"- 标题样式：{objects.get('heading_styles', 0)} 个；标题段落：{objects.get('heading_paragraphs', 0)} 个",
+        f"- 具名正文（正文）段落：{objects.get('body_named_paragraphs', 0)} 个",
+        f"- 显式 Normal 正文段落：{objects.get('body_safe_normal_paragraphs', 0)} 个（绑定为正文）",
+        f"- 无 pStyle 正文段落：{objects.get('body_unstyled_paragraphs', 0)} 个（识别并绑定为正文）",
+        f"- 题注段落：{objects.get('caption_paragraphs', 0)} 个",
+        f"- 普通内容表格：{objects.get('regular_tables', 0)} 个；表头段落：{objects.get('table_header_paragraphs', 0)} 个；表体段落：{objects.get('table_body_paragraphs', 0)} 个；居中表体段落：{objects.get('table_center_paragraphs', 0)} 个",
+        f"- 具名表格样式段落：{objects.get('table_named_paragraphs', 0)} 个", "",
+        "### 3.2 样式绑定统计（STYLE_BINDING）", "",
+        "| 指标 | 数量 |", "|---|---:|",
+    ]
+    style_binding_keys = [
+        ("body_style_created", "正文样式已创建（0=复用文档既有样式）"),
+        ("body_style_bound_count", "段落绑定为正文（pStyle 实际改写）"),
+        ("table_header_style_created", "表格表头样式已创建"),
+        ("table_body_style_created", "表格正文样式已创建"),
+        ("table_center_style_created", "表格正文-居中样式已创建"),
+        ("table_header_bound_count", "单元格绑定为表格表头"),
+        ("table_body_bound_count", "单元格绑定为表格正文"),
+        ("table_center_bound_count", "单元格绑定为表格正文-居中"),
+        ("unstyled_body_detected_count", "识别到无 pStyle 正文"),
+        ("unstyled_body_bound_count", "无 pStyle 正文已绑定为正文"),
+        ("direct_font_override_repaired_count", "Run 级字体/字号冲突修复"),
+        ("table_indent_repaired_count", "表格段落缩进清除"),
+    ]
+    for key, label in style_binding_keys:
+        lines.append(f"| {label} | {style_binding_stats.get(key, 0)} |")
+    lines += [
+        "",
+        "### 3.3 按规则归因的修改次数", "",
+        "| Rule | 次数 |", "|---|---:|",
+    ]
+    lines += [f"| {rule_id} | {count} |" for rule_id, count in sorted(rule_counts.items())]
+    lines += [
+        "", "## 4. 内容完整性闸门（Content Integrity Gate）", "",
+        f"- 结论：**{integrity.get('status', '未执行')}**",
+        f"- 可见文本一致：{integrity.get('visible_text_equal')}",
+        f"- Run 文本一致：{integrity.get('run_text_equal')}",
+        f"- 表格单元格文本一致：{integrity.get('table_cell_text_equal')}",
+        f"- 表格结构一致：{integrity.get('table_structure_equal')}",
+        f"- 域指令一致：{integrity.get('field_instructions_equal')}",
+        f"- 超链接显示文本一致：{integrity.get('hyperlink_text_equal')}",
+        f"- 页眉页脚文本一致：{integrity.get('header_footer_text_equal')}",
+        f"- 关系部件一致：{integrity.get('relationships_equal')}",
+        f"- 媒体文件数：{integrity.get('media_file_count')}；媒体 SHA-256 一致：{integrity.get('media_sha256_equal')}",
+        f"- 段落 {integrity.get('paragraph_count_before')} → {integrity.get('paragraph_count_after')}；"
+        f"表格 {integrity.get('table_count_before')} → {integrity.get('table_count_after')}；"
+        f"节 {integrity.get('section_count_before')} → {integrity.get('section_count_after')}；"
+        f"绘图 {integrity.get('drawing_count_before')} → {integrity.get('drawing_count_after')}",
+        f"- 实际改动 ZIP 部件：{integrity.get('changed_zip_parts')}", "",
+        "## 5. 未解决对象（本轮刻意不做语义处理）", "",
+        "| 类别 | 数量 |", "|---|---:|",
+    ]
+    for name, count in sorted(result.unresolved_counts.items()):
+        lines.append(f"| {name} | {count} |")
+    if not result.unresolved_counts:
+        lines.append("| 无 | 0 |")
+    warning_items = stats.get("warnings", [])
+    lines += ["", "| 类别 | 位置 | 原因 |", "|---|---|---|"]
+    if warning_items:
+        for item in warning_items:
+            lines.append(f"| {_escape(item['kind'])} | {_escape(item['location'])} | {_escape(item['reason'])} |")
+    else:
+        lines.append("| - | - | 无 |")
+    lines += [
+        "", "## 6. 修改明细", "",
+        "| 对象类型 | 位置 | 属性 | 修改前 | 修改后 | Rule | 规范出处 |",
+        "|---|---|---|---|---|---|---|",
+    ]
     for change in result.changes:
         values = [change[key] for key in ("object_type", "location", "property", "before", "after", "rule", "source")]
         lines.append("| " + " | ".join(_escape(value) for value in values) + " |")
     if not result.changes:
         lines.append("| - | - | - | 无需修改 | 无需修改 | - | - |")
-    lines += ["", "## 5. 修复后剩余 ERROR / WARNING / UNSUPPORTED", "", "| Rule ID | Severity | 状态 | 位置 | 当前值 | 预期值 | 说明 |", "|---|---|---|---|---|---|---|"]
+    lines += ["", "## 7. 修复后剩余 ERROR / WARNING / UNSUPPORTED", "", "| Rule ID | Severity | 状态 | 位置 | 当前值 | 预期值 | 说明 |", "|---|---|---|---|---|---|---|"]
     for finding in remaining:
         values = [finding[key] for key in ("rule_id", "severity", "status", "location", "actual", "expected", "message")]
         lines.append("| " + " | ".join(_escape(value) for value in values) + " |")
     if not remaining:
         lines.append("| - | - | - | - | - | - | 无剩余 ERROR / WARNING / UNSUPPORTED |")
-    lines += ["", "## 6. 本轮明确不自动修复", ""] + [f"- {item}" for item in UNSUPPORTED_CAPABILITIES]
-    lines += ["", "## 7. 机器可读结果", "", f"同名 JSON：`{json_path}`", ""]
+    lines += ["", "## 8. 本轮明确不自动修复", ""] + [f"- {item}" for item in UNSUPPORTED_CAPABILITIES]
+    lines += ["", "## 9. 机器可读结果", "", f"同名 JSON：`{json_path}`", ""]
     atomic_text(report, "\n".join(lines))
     atomic_text(json_path, json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True))
 
@@ -381,26 +834,24 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
         raise DocumentFactoryError("规则缺少 tables.normalization_line_spacing，无法确定表格规范化目标")
     before = lint(source, rules)
     input_hash = before.document.sha256
-    # Content Integrity Gate：规范化前快照受保护内容（文本/图片/关系/section）。
-    from .integrity import capture_fingerprint, verify_content
-    fingerprint = capture_fingerprint(source, before.document)
-    changes, changed_parts = _apply_normalization(before.document, rules)
-    verify_content(fingerprint, document=before.document)
+    changes, changed_parts, stats = _apply_normalization(before.document, rules)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     write_package(source, output, before.document, changed_parts)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     # read_docx is intentionally called before lint so an invalid or partial ZIP can never be reported as success.
-    output_document = read_docx(output)
-    gate_result = verify_content(
-        fingerprint, document=output_document, output_path=output,
-    )
+    read_docx(output)
+    integrity = verify_content_integrity(source, output, changed_parts)
+    stats["changed_zip_parts"] = integrity["changed_zip_parts"]
     after = lint(output, rules)
     remaining = [
         finding.to_dict() for finding in after.findings
         if finding.severity in ("ERROR", "WARNING") or finding.status == "UNSUPPORTED"
     ]
+    unresolved_counts = Counter(item["kind"] for item in stats.get("warnings", []))
+    unresolved_counts["RESIDUAL_LINT_ERROR"] = after.counts["ERROR"]
+    unresolved_counts["RESIDUAL_LINT_WARNING"] = after.counts["WARNING"]
     result = NormalizationResult(
         status=after.result,
         input_path=str(source),
@@ -413,7 +864,16 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
         changes=changes,
         remaining_findings=remaining,
         source_unchanged=sha256(source) == input_hash,
-        integrity=gate_result,
+        normalization_stats={
+            "page": stats["page"],
+            "objects": dict(stats["objects"]),
+            "style_binding": dict(stats["style_binding"]),
+            "rules_applied": dict(Counter(change["rule"] for change in changes)),
+            "changed_zip_parts": stats["changed_zip_parts"],
+            "warnings": stats["warnings"],
+        },
+        content_integrity=integrity,
+        unresolved_counts=dict(unresolved_counts),
     )
     generated = datetime.now().astimezone().isoformat(timespec="seconds")
     _write_validation_report(result, before, after, rules, generated)

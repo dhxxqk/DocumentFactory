@@ -15,14 +15,52 @@
 """
 from __future__ import annotations
 
+import hashlib
 import re
+import zipfile
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..docx_reader import read_docx
-from ..integrity import capture_fingerprint
 from ..style_resolver import StyleResolver
+
+W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
+R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+WP_NS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+V_NS = "urn:schemas-microsoft-com:vml"
+
+
+def _media_facts(source, document) -> dict:
+    """Read-only media inventory: per-part size/sha256, embed rId order,
+    and drawing extents in document order. Aggregates only — no content text.
+    """
+    parts: list[dict] = []
+    with zipfile.ZipFile(source, "r") as archive:
+        for info in archive.infolist():
+            if re.match(r"word/media/[^/]+$", info.filename):
+                payload = archive.read(info.filename)
+                parts.append({
+                    "part": info.filename,
+                    "size": info.file_size,
+                    "sha256": hashlib.sha256(payload).hexdigest(),
+                })
+    root = document.parts.get("word/document.xml")
+    embed_order: list[str] = []
+    extents: list[dict] = []
+    if root is not None:
+        for blip in root.iter(f"{{{A_NS}}}blip"):
+            rid = blip.get(f"{{{R_NS}}}embed")
+            if rid:
+                embed_order.append(rid)
+        for image in root.iter(f"{{{V_NS}}}imagedata"):
+            rid = image.get(f"{{{R_NS}}}id")
+            if rid:
+                embed_order.append(rid)
+        for extent in root.iter(f"{{{WP_NS}}}extent"):
+            extents.append({"cx": extent.get("cx"), "cy": extent.get("cy")})
+    return {"parts": parts, "embed_order": embed_order, "extents": extents}
 
 _BUILTIN_HEADING = re.compile(r"(?:heading\s*|标题\s*)([1-3])$", re.I)
 _SZ_TO_PT = 2.0
@@ -233,7 +271,7 @@ def analyze_visible_format(source, *, document=None, title_pattern: str | None =
                         body_size_c[size] += 1
                     body_bold_c[bold] += 1
 
-    fingerprint = capture_fingerprint(source, doc)
+    media = _media_facts(source, doc)
     num_ids = Counter(
         str((p.properties or {}).get("numPr", {}).get("numId"))
         for p in main if (p.properties or {}).get("numPr")
@@ -278,11 +316,7 @@ def analyze_visible_format(source, *, document=None, title_pattern: str | None =
             "body_bold_runs": _counter(body_bold_c),
             "body_alignment_paragraphs": _counter(body_jc_c),
         },
-        media={
-            "parts": fingerprint.media,
-            "embed_order": fingerprint.embeds,
-            "extents": fingerprint.extents,
-        },
+        media=media,
         numbering={"numpr_paragraphs": counts["paragraphs_with_numpr"],
                    "num_ids": _counter(num_ids)},
     )

@@ -141,7 +141,6 @@ def ensure_template_styles(document, template, changes: list) -> tuple[list[str]
                 f'<w:style xmlns:w="{W}" w:type="paragraph" w:styleId="{style_id}">'
                 f'<w:name w:val="{name}"/>{table_based}'
                 f'<w:pPr>'
-                f'<w:ind w:firstLineChars="0" w:firstLine="0" w:left="0" w:right="0"/>'
                 f'<w:spacing w:before="0" w:after="0" w:line="{line_twips}" w:lineRule="auto"/>'
                 f'{jc_xml}</w:pPr>'
                 f'<w:rPr><w:rFonts w:ascii="{t.latin_font}" w:hAnsi="{t.latin_font}" '

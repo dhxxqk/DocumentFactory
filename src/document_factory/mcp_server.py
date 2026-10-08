@@ -24,13 +24,26 @@ from .report_writer import write_report
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# TASK_DOC_STYLE_BINDING_001：默认规范统一为 default_technical_document_v1；
+# grid_tech_v1_4 保留为可显式调用的兼容 preset，不删除、不改变其行为。
+DEFAULT_PRESET = "default_technical_document_v1"
 PRESETS = {
+    "default_technical_document_v1": {
+        "id": "default_technical_document_v1",
+        "display_name": "DocumentFactory 默认技术文档规范 V1",
+        "rules_path": PROJECT_ROOT / "rules" / "default_technical_document_v1.yaml",
+        "description": (
+            "与业务无关的默认技术文档规范（正式 ID：DEFAULT_TECHNICAL_DOCUMENT_V1）："
+            "A4 纵向、仿宋正文、黑体多级标题、10.5pt 表格；确定性检查并规范化，"
+            "不含任何项目身份信息，不自动修复编号或 TOC。"
+        ),
+    },
     "grid_tech_v1_4": {
         "id": "grid_tech_v1_4",
         "display_name": "电网科技项目实施方案 V1.4",
         "rules_path": PROJECT_ROOT / "rules" / "grid_tech_v1_4.yaml",
         "description": "确定性检查并规范化已确认的 Heading、正文和表格样式；不自动修复编号或 TOC。",
-    }
+    },
 }
 
 SERVER_INSTRUCTIONS = """
@@ -93,11 +106,11 @@ def list_presets() -> dict[str, Any]:
                 "description": item["description"],
             }
         )
-    return {"presets": presets, "default": "grid_tech_v1_4"}
+    return {"presets": presets, "default": DEFAULT_PRESET}
 
 
 @mcp.tool(structured_output=True)
-def audit_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str, Any]:
+def audit_document(input_path: str, preset: str = DEFAULT_PRESET) -> dict[str, Any]:
     """只检查指定 DOCX，不修改输入；生成 Markdown 审计报告。用户说“检查但不要修改”时使用。"""
     source = _input_docx(input_path)
     preset_info = _preset(preset)
@@ -129,7 +142,7 @@ def audit_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str,
 
 
 @mcp.tool(structured_output=True)
-def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str, Any]:
+def format_document(input_path: str, preset: str = DEFAULT_PRESET) -> dict[str, Any]:
     """按已注册规范统一 DOCX 格式。直接调用 DocumentFactory normalize Core，并返回需用 DSH present 交付的 DOCX 与 Markdown。"""
     source = _input_docx(input_path)
     preset_info = _preset(preset)
@@ -140,10 +153,12 @@ def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str
     except DocumentFactoryError as exc:
         raise ToolError(f"DocumentFactory normalize 失败：{exc}") from exc
     after_error = result.after_counts["ERROR"]
+    integrity = result.content_integrity
+    stats = result.normalization_stats
     summary = (
         f"规范化完成：ERROR {result.before_counts['ERROR']} → {after_error}，"
         f"WARNING {result.before_counts['WARNING']} → {result.after_counts['WARNING']}，"
-        f"修改 {len(result.changes)} 项。"
+        f"修改 {len(result.changes)} 项；内容完整性闸门 {integrity.get('status', '未执行')}。"
         + ("输出仍有 ERROR，不能宣称全部合格；请查看 Validation Report。" if after_error else "输出未发现 ERROR；WARNING 仍需人工确认。")
     )
     return {
@@ -157,6 +172,23 @@ def format_document(input_path: str, preset: str = "grid_tech_v1_4") -> dict[str
         "changed_count": len(result.changes),
         "remaining_error_count": after_error,
         "source_unchanged": result.source_unchanged,
+        "normalization_stats": {
+            "page": stats.get("page", {}),
+            "objects": stats.get("objects", {}),
+            "style_binding": stats.get("style_binding", {}),
+            "rules_applied": stats.get("rules_applied", {}),
+            "changed_zip_parts": stats.get("changed_zip_parts", []),
+        },
+        "content_integrity": {
+            "status": integrity.get("status"),
+            "media_file_count": integrity.get("media_file_count"),
+            "media_sha256_equal": integrity.get("media_sha256_equal"),
+            "paragraph_count_after": integrity.get("paragraph_count_after"),
+            "table_count_after": integrity.get("table_count_after"),
+            "section_count_after": integrity.get("section_count_after"),
+            "changed_zip_parts": integrity.get("changed_zip_parts", []),
+        },
+        "unresolved_counts": result.unresolved_counts,
         "summary": summary,
         "deliverables": [
             {"kind": "docx", "path": result.output_path, "label": "规范化后的 DOCX"},

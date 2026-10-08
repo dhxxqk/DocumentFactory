@@ -1,256 +1,223 @@
-"""Content Integrity Gate — 内容不可变守卫。
+"""Content Integrity Gate for DOCX normalization.
 
-DocumentFactory 的一切操作只允许改格式。本模块在规范化前后对以下内容做
-逐字/逐字节比对，任何不一致都抛出 ``ContentIntegrityError`` 中止流程：
-
-- word/document.xml 全部故事段落文本（含表格单元格，按文档顺序）；
-- word/media/* 每个部件的字节数与 SHA-256（图片内容不得改变）；
-- 图片嵌入引用顺序（a:blip@r:embed 与 VML v:imagedata@r:id）；
-- 图片显示尺寸（wp:extent cx/cy 序列）；
-- word/_rels/document.xml.rels 中图片关系目标；
-- 表格数量与 section 方向序列（portrait/landscape 结构不得被破坏）。
-
-纯确定性实现：不调用任何外部服务，不做语义判断。
+Runs after the output package has been written and compares it against the
+source package independently of whole-file hashes (formatting changes are
+supposed to change XML bytes). Any drift in visible text, field instructions,
+table structure, section/table/drawing counts, relationships or media bytes is
+a hard failure and aborts normalization.
 """
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
-from zipfile import ZipFile
+import re
+import zipfile
 
-from lxml import etree
-
+from .docx_reader import NS, read_docx
 from .models import DocumentFactoryError
 
-W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
-R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-V_NS = "urn:schemas-microsoft-com:vml"
-WP_NS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
-REL_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
-
-MEDIA_PREFIX = "word/media/"
-IMAGE_REL_TYPE_SUFFIX = "/image"
+_MEDIA_RE = re.compile(r"word/media/[^/]+$")
+_HEADER_FOOTER_RE = re.compile(r"word/(?:header|footer)[^/]*\.xml$")
 
 
-class ContentIntegrityError(DocumentFactoryError):
-    """Raised when a normalization would change protected document content."""
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 
 
-@dataclass(frozen=True)
-class ContentFingerprint:
-    """Immutable snapshot of the content that must survive normalization."""
-
-    source_path: str
-    texts: list[str]
-    media: dict[str, dict]
-    image_rels: dict[str, str]
-    embeds: list[list]
-    extents: list[list]
-    table_count: int
-    section_sequence: list[str]
-
-    def to_dict(self) -> dict:
-        return {
-            "source_path": self.source_path,
-            "paragraph_count": len(self.texts),
-            "text_chars": sum(len(t) for t in self.texts),
-            "media_parts": len(self.media),
-            "media": self.media,
-            "image_relationship_count": len(self.image_rels),
-            "embed_count": len(self.embeds),
-            "extent_count": len(self.extents),
-            "table_count": self.table_count,
-            "section_sequence": self.section_sequence,
-        }
+def _paragraph_text_map(document):
+    return [
+        (paragraph.part, paragraph.index, paragraph.text)
+        for paragraph in document.paragraphs
+    ]
 
 
-def _story_texts(document) -> list[str]:
-    return [p.text for p in document.paragraphs if p.part == "word/document.xml"]
+def _run_text_map(document):
+    return [
+        (paragraph.part, paragraph.index, index, run.text)
+        for paragraph in document.paragraphs
+        for index, run in enumerate(paragraph.runs)
+    ]
 
 
-def _extract_embeds(root) -> list[list]:
-    """Ordered image references: [kind, rId] for blip@embed + imagedata@id."""
-    result: list[list] = []
-    for node in root.iter():
-        tag = etree.QName(node).localname
-        namespace = etree.QName(node).namespace
-        if namespace == A_NS and tag == "blip":
-            rid = node.get(f"{{{R_NS}}}embed")
-            if rid:
-                result.append(["blip", rid])
-        elif namespace == V_NS and tag == "imagedata":
-            rid = node.get(f"{{{R_NS}}}id")
-            if rid:
-                result.append(["imagedata", rid])
-    return result
-
-
-def _extract_extents(root) -> list[list]:
-    """Ordered wp:extent [cx, cy] pairs (inline/anchor image display size)."""
-    result: list[list] = []
-    for node in root.iter(f"{{{WP_NS}}}extent"):
-        result.append([node.get("cx"), node.get("cy")])
-    return result
-
-
-def _section_sequence(root) -> list[str]:
-    sequence = []
-    for sect_pr in root.iter(f"{{{W_NS}}}sectPr"):
-        if any(a.tag == f"{{{W_NS}}}sectPrChange" for a in sect_pr.iterancestors()):
-            continue
-        pg_size = sect_pr.find(f"{{{W_NS}}}pgSz")
-        orientation = "portrait"
-        if pg_size is not None:
-            orient = pg_size.get(f"{{{W_NS}}}orient")
-            if orient in ("portrait", "landscape"):
-                orientation = orient
-            else:
-                try:
-                    w = int(pg_size.get(f"{{{W_NS}}}w") or 0)
-                    h = int(pg_size.get(f"{{{W_NS}}}h") or 0)
-                    if w > h:
-                        orientation = "landscape"
-                except ValueError:
-                    pass
-        sequence.append(orientation)
-    return sequence
-
-
-def _read_package_facts(path) -> tuple[dict, dict, list, list]:
-    """Return (media, image_rels, embeds, extents) directly from a DOCX zip."""
-    media: dict[str, dict] = {}
-    image_rels: dict[str, str] = {}
-    with ZipFile(path) as archive:
-        for info in archive.infolist():
-            if info.is_dir() or info.filename.endswith("/"):
-                continue
-            if info.filename.startswith(MEDIA_PREFIX):
-                data = archive.read(info.filename)
-                media[info.filename] = {
-                    "size": len(data),
-                    "sha256": hashlib.sha256(data).hexdigest(),
+def _table_structure(document):
+    structure = []
+    for table in document.tables:
+        rows = []
+        for row in table.rows:
+            rows.append([
+                {
+                    "index": cell["index"],
+                    "grid_span": cell["grid_span"],
+                    "v_merge": cell["v_merge"],
+                    "paragraphs": list(cell["paragraphs"]),
                 }
-        rels_name = "word/_rels/document.xml.rels"
-        if rels_name in archive.namelist():
-            rels_root = etree.fromstring(archive.read(rels_name))
-            for relation in rels_root:
-                rel_type = relation.get("Type", "")
-                target = relation.get("Target")
-                if rel_type.endswith(IMAGE_REL_TYPE_SUFFIX) and target:
-                    image_rels[relation.get("Id")] = target
-        document_root = etree.fromstring(archive.read("word/document.xml"))
-    return media, image_rels, _extract_embeds(document_root), _extract_extents(document_root)
+                for cell in row["cells"]
+            ])
+        structure.append((table.part, table.index, table.columns, rows))
+    return structure
 
 
-def capture_fingerprint(source_path, document=None) -> ContentFingerprint:
-    """Snapshot the protected content of a source DOCX."""
-    source_path = str(source_path)
-    media, image_rels, embeds, extents = _read_package_facts(source_path)
-    if document is not None:
-        root = document.parts.get("word/document.xml")
-        texts = _story_texts(document)
-        embeds = _extract_embeds(root) if root is not None else embeds
-        extents = _extract_extents(root) if root is not None else extents
-        table_count = len(document.tables)
-        section_sequence = _section_sequence(root) if root is not None else []
-    else:
-        with ZipFile(source_path) as archive:
-            document_root = etree.fromstring(archive.read("word/document.xml"))
-        texts = [
-            "".join(node.text or "" for node in paragraph.iter(f"{{{W_NS}}}t"))
-            for paragraph in document_root.iter(f"{{{W_NS}}}p")
-        ]
-        table_count = len(document_root.findall(f".//{{{W_NS}}}tbl"))
-        section_sequence = _section_sequence(document_root)
-    return ContentFingerprint(
-        source_path=source_path,
-        texts=texts,
-        media=media,
-        image_rels=image_rels,
-        embeds=embeds,
-        extents=extents,
-        table_count=table_count,
-        section_sequence=section_sequence,
+def _table_cell_texts(document):
+    texts = []
+    paragraph_lookup = {
+        (paragraph.part, paragraph.index): paragraph
+        for paragraph in document.paragraphs
+    }
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row["cells"]:
+                joined = "".join(
+                    paragraph_lookup[(table.part, pi)].text
+                    for pi in cell["paragraphs"]
+                    if (table.part, pi) in paragraph_lookup
+                )
+                texts.append((table.part, table.index, row["index"], cell["index"], joined))
+    return texts
+
+
+def _fields(document):
+    return sorted(
+        (field.part, field.paragraph_index, field.instruction, field.complete)
+        for field in document.fields
     )
 
 
-def _check(name: str, ok: bool, before, after) -> dict:
-    return {"check": name, "passed": bool(ok), "before": before, "after": after}
+def _hyperlink_texts(parts):
+    result = []
+    for name, root in parts.items():
+        links = root.findall(".//w:hyperlink", NS)
+        for index, link in enumerate(links):
+            text = "".join(node.text or "" for node in link.findall(".//w:t", NS))
+            result.append((name, index, text))
+    return sorted(result)
 
 
-def verify_content(
-    fingerprint: ContentFingerprint,
-    *,
-    document=None,
-    output_path=None,
-    raise_on_failure: bool = True,
-) -> dict:
-    """Verify a (possibly normalized) document against a content fingerprint.
+def _drawing_counts(parts):
+    counts = {}
+    for name, root in parts.items():
+        counts[name] = {
+            "drawing": len(root.findall(".//w:drawing", NS)),
+            "pict": len(root.findall(".//w:pict", NS)),
+        }
+    return {name: value for name, value in counts.items()
+            if value["drawing"] or value["pict"]}
 
-    - ``document``: in-memory Document to compare texts/structure against;
-    - ``output_path``: written DOCX whose media/embeds/extents/rels are
-      compared at byte level.
-    Returns a result dict ``{passed, checks}`` and raises on failure unless
-    ``raise_on_failure`` is False.
-    """
-    checks: list[dict] = []
 
-    if document is not None:
-        actual_texts = _story_texts(document)
-        checks.append(_check(
-            "paragraph_text", actual_texts == fingerprint.texts,
-            {"paragraphs": len(fingerprint.texts),
-             "chars": sum(len(t) for t in fingerprint.texts)},
-            {"paragraphs": len(actual_texts),
-             "chars": sum(len(t) for t in actual_texts)},
-        ))
-        root = document.parts.get("word/document.xml")
-        if root is not None:
-            actual_embeds = _extract_embeds(root)
-            checks.append(_check(
-                "image_embed_order", actual_embeds == fingerprint.embeds,
-                fingerprint.embeds, actual_embeds,
-            ))
-            actual_extents = _extract_extents(root)
-            checks.append(_check(
-                "image_extents", actual_extents == fingerprint.extents,
-                fingerprint.extents, actual_extents,
-            ))
-            actual_sections = _section_sequence(root)
-            checks.append(_check(
-                "section_sequence", actual_sections == fingerprint.section_sequence,
-                fingerprint.section_sequence, actual_sections,
-            ))
-        checks.append(_check(
-            "table_count", len(document.tables) == fingerprint.table_count,
-            fingerprint.table_count, len(document.tables),
-        ))
+def _header_footer_text(document):
+    return [
+        (paragraph.part, paragraph.index, paragraph.text)
+        for paragraph in document.paragraphs
+        if _HEADER_FOOTER_RE.match(paragraph.part)
+    ]
 
-    if output_path is not None:
-        media, image_rels, embeds, extents = _read_package_facts(output_path)
-        checks.append(_check(
-            "media_parts", media == fingerprint.media,
-            fingerprint.media, media,
-        ))
-        checks.append(_check(
-            "image_relationships", image_rels == fingerprint.image_rels,
-            fingerprint.image_rels, image_rels,
-        ))
-        checks.append(_check(
-            "package_embed_order", embeds == fingerprint.embeds,
-            fingerprint.embeds, embeds,
-        ))
-        checks.append(_check(
-            "package_extents", extents == fingerprint.extents,
-            fingerprint.extents, extents,
-        ))
 
-    failures = [c for c in checks if not c["passed"]]
-    result = {"passed": not failures, "checks": checks}
-    if failures and raise_on_failure:
-        labels = ", ".join(c["check"] for c in failures)
-        raise ContentIntegrityError(
-            f"CONTENT_INTEGRITY_GATE_FAILED：{labels}；已中止写出/继续处理"
+def _media_hashes(archive):
+    return {
+        name: _sha256_bytes(archive.read(name))
+        for name in archive.namelist()
+        if _MEDIA_RE.match(name)
+    }
+
+
+def verify_content_integrity(source_path, output_path, changed_parts):
+    """Compare output vs source; raise DocumentFactoryError on any content drift."""
+    violations = []
+    changed_parts = set(changed_parts)
+
+    with zipfile.ZipFile(source_path) as before_zip, zipfile.ZipFile(output_path) as after_zip:
+        before_names = before_zip.namelist()
+        after_names = after_zip.namelist()
+        if before_names != after_names:
+            missing = sorted(set(before_names) - set(after_names))
+            added = sorted(set(after_names) - set(before_names))
+            if missing:
+                violations.append(f"ZIP 部件丢失：{missing}")
+            if added:
+                violations.append(f"新增未知 ZIP 部件：{added}")
+        before_media = _media_hashes(before_zip)
+        after_media = _media_hashes(after_zip)
+        changed_zip_parts = []
+        for name in before_names:
+            if name not in after_names:
+                continue
+            before_bytes = before_zip.read(name)
+            after_bytes = after_zip.read(name)
+            if before_bytes != after_bytes:
+                changed_zip_parts.append(name)
+                if name not in changed_parts:
+                    violations.append(f"未登记的部件被修改：{name}")
+                continue
+            if name in changed_parts:
+                # Declared changed but byte-identical: tolerated, not a violation.
+                pass
+        after_media = _media_hashes(after_zip)
+    unexpected_changes = sorted(set(changed_zip_parts) - {"word/document.xml", "word/styles.xml"})
+    if unexpected_changes:
+        violations.append(f"格式规范化只允许修改 document/styles 部件，实际改动：{unexpected_changes}")
+    if before_media != after_media:
+        violations.append(
+            f"媒体文件发生变化：before={sorted(before_media)} after={sorted(after_media)}"
         )
-    return result
+
+    before_doc = read_docx(source_path)
+    after_doc = read_docx(output_path)
+
+    before_texts = _paragraph_text_map(before_doc)
+    after_texts = _paragraph_text_map(after_doc)
+    if before_texts != after_texts:
+        violations.append("可见段落文本序列（含题注/标题/页眉页脚）不一致")
+    if _run_text_map(before_doc) != _run_text_map(after_doc):
+        violations.append("Run 级文本切分或内容不一致")
+    if _table_cell_texts(before_doc) != _table_cell_texts(after_doc):
+        violations.append("表格单元格文本不一致")
+    if _table_structure(before_doc) != _table_structure(after_doc):
+        violations.append("表格结构（行数/单元格/gridSpan/vMerge）不一致")
+    if len(before_doc.paragraphs) != len(after_doc.paragraphs):
+        violations.append(
+            f"段落数量不一致：{len(before_doc.paragraphs)} → {len(after_doc.paragraphs)}"
+        )
+    if len(before_doc.tables) != len(after_doc.tables):
+        violations.append(
+            f"表格数量不一致：{len(before_doc.tables)} → {len(after_doc.tables)}"
+        )
+    if len(before_doc.sections) != len(after_doc.sections):
+        violations.append(
+            f"节数量不一致：{len(before_doc.sections)} → {len(after_doc.sections)}"
+        )
+    if _fields(before_doc) != _fields(after_doc):
+        violations.append("域指令（instrText / fldSimple）不一致")
+    if _hyperlink_texts(before_doc.parts) != _hyperlink_texts(after_doc.parts):
+        violations.append("超链接显示文本不一致")
+    if _header_footer_text(before_doc) != _header_footer_text(after_doc):
+        violations.append("页眉页脚文本不一致")
+    if _drawing_counts(before_doc.parts) != _drawing_counts(after_doc.parts):
+        violations.append("绘图对象（w:drawing/w:pict）数量不一致")
+    if before_doc.relationships != after_doc.relationships:
+        violations.append("关系部件（*.rels）内容不一致")
+
+    if violations:
+        raise DocumentFactoryError(
+            "CONTENT_INTEGRITY_GATE 失败，已阻止交付：" + "；".join(violations)
+        )
+
+    return {
+        "status": "PASS",
+        "paragraph_count_before": len(before_doc.paragraphs),
+        "paragraph_count_after": len(after_doc.paragraphs),
+        "table_count_before": len(before_doc.tables),
+        "table_count_after": len(after_doc.tables),
+        "section_count_before": len(before_doc.sections),
+        "section_count_after": len(after_doc.sections),
+        "drawing_count_before": sum(v["drawing"] for v in _drawing_counts(before_doc.parts).values()),
+        "drawing_count_after": sum(v["drawing"] for v in _drawing_counts(after_doc.parts).values()),
+        "visible_text_equal": True,
+        "run_text_equal": True,
+        "table_cell_text_equal": True,
+        "table_structure_equal": True,
+        "field_instructions_equal": True,
+        "hyperlink_text_equal": True,
+        "header_footer_text_equal": True,
+        "relationships_equal": True,
+        "media_file_count": len(after_media),
+        "media_sha256_equal": True,
+        "changed_zip_parts": sorted(changed_zip_parts),
+    }
