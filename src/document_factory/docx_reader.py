@@ -56,6 +56,15 @@ def sha256(path):
         return digest.hexdigest()
 
 
+def is_single_cell_table(table) -> bool:
+    """1 行 × 1 列表格视为排版容器（提示框/信息块），不适用"首行即表头"。
+
+    显式 w:tblHeader 重复表头标记仍由调用方优先尊重（1×1 重复表头无实际意义，
+    但源文档显式意图不被隐式规则覆盖）。
+    """
+    return len(table.rows) == 1 and table.columns == 1
+
+
 def read_docx(path):
     path = Path(path).resolve()
     if not path.is_file():

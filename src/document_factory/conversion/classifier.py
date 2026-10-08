@@ -17,6 +17,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from ..docx_reader import is_single_cell_table
+
 #: 一、二、… 十、百（h1）
 _CN_LEVEL1 = re.compile(r"^\s*([一二三四五六七八九十百]+)\s*[、.．]\s*\S")
 #: （一）(二) …（h2）
@@ -107,11 +109,12 @@ def classify_paragraphs(
     """
     main = [p for p in document.paragraphs if p.part == "word/document.xml"]
 
-    # 表格重复表头行映射。
+    # 表格重复表头行映射。1×1 单格排版容器不适用“首行即表头”。
     repeat_rows: dict[int, set[int]] = {}
     for table in document.tables:
         flagged = {r["index"] for r in table.rows if r["repeat_header"]}
-        flagged.add(1)
+        if not is_single_cell_table(table):
+            flagged.add(1)
         repeat_rows[table.index] = flagged
 
     # 第一遍：发现标题候选（不含表格），确定封面边界。

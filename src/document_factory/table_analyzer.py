@@ -1,5 +1,7 @@
 import re
 
+from .docx_reader import is_single_cell_table
+
 
 def zero_indent(props):
     ind = props.get("ind", {})
@@ -67,7 +69,12 @@ def analyze(ctx):
         # A style-name hint is not enough to prove semantics, so downgrade conflicts.
         cover_candidate = bool(table_paragraphs) and all(re.match(config.get("cover_style_pattern", r"(?!)"), ctx.resolver.name(p.style_id), re.I) for p in table_paragraphs if p.text.strip()) and any(p.text.strip() for p in table_paragraphs)
         for row in table.rows:
-            header = row["repeat_header"] or (config["header_strategy"] == "first_row_or_repeat" and row["index"] == 1)
+            # 1×1 单格排版容器不适用“首行即表头”（显式 tblHeader 除外）。
+            header = row["repeat_header"] or (
+                config["header_strategy"] == "first_row_or_repeat"
+                and row["index"] == 1
+                and not is_single_cell_table(table)
+            )
             for p in (p for p in ctx.main_paragraphs if p.table == table.index and p.row == row["index"]):
                 name = ctx.resolver.name(p.style_id)
                 if name == body_name:

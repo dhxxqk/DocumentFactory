@@ -27,6 +27,8 @@ output/*
 !output/.gitkeep
 # 真实业务文档（内部培训材料等）只能留在本地，禁止进入 GitHub
 local_samples/
+# 真实文档的逐篇转换报告含业务文本片段，仅本地保留
+reports/internal_training_conversion/
 reports/*.json
 !reports/BASELINE_HASHES.json
 !reports/template_demo_profile.json

@@ -22,7 +22,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..docx_reader import read_docx
+from ..docx_reader import is_single_cell_table, read_docx
 from ..style_resolver import StyleResolver
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -217,7 +217,9 @@ def analyze_visible_format(source, *, document=None, title_pattern: str | None =
     repeat_rows: dict[int, set[int]] = {}
     for table in doc.tables:
         rows = {r["index"] for r in table.rows if r["repeat_header"]}
-        rows.add(1)
+        # 1×1 单格排版容器不计入表头统计（显式 tblHeader 除外）。
+        if not is_single_cell_table(table):
+            rows.add(1)
         repeat_rows[table.index] = rows
     header_fill, header_font, header_size, header_bold, header_jc = (
         Counter() for _ in range(5)

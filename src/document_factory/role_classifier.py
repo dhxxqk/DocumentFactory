@@ -30,7 +30,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import re
 
-from .docx_reader import NS
+from .docx_reader import NS, is_single_cell_table
 
 NORMAL_STYLE_NAMES = {"normal", "常规"}
 FRONT_MATTER_HEADING_NAMES = {"编制说明", "目录"}
@@ -230,16 +230,19 @@ def classify(document, resolver, rules):
             if regular_table_enabled:
                 info = table_info.get(paragraph.table)
                 if info is not None and info.kind == "regular":
+                    table_obj = document.tables[paragraph.table - 1]
                     row = next(
-                        (row for row in document.tables[paragraph.table - 1].rows
+                        (row for row in table_obj.rows
                          if row["index"] == paragraph.row),
                         None,
                     )
+                    # 1×1 单格排版容器不适用“首行即表头”（显式 tblHeader 除外）。
                     is_header = (
                         row is not None
                         and (row["repeat_header"]
                              or (rules["tables"]["header_strategy"] == "first_row_or_repeat"
-                                 and paragraph.row == 1))
+                                 and paragraph.row == 1
+                                 and not is_single_cell_table(table_obj)))
                     )
                     if is_caption(paragraph):
                         classification.paragraph_roles[key] = ParagraphRole("caption")
