@@ -119,6 +119,7 @@ class NormalizationResult:
     changes: list[dict[str, Any]] = field(default_factory=list)
     remaining_findings: list[dict[str, Any]] = field(default_factory=list)
     source_unchanged: bool = True
+    integrity: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self):
         return asdict(self)

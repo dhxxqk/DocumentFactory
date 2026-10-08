@@ -14,7 +14,17 @@ def zero_spacing(props):
 def allowed_line_spacing(props, config):
     spacing = props.get("spacing", {})
     rule, line = spacing.get("lineRule", "auto"), spacing.get("line")
-    return ("single" in config["line_spacing_allowed"] and rule == "auto" and line == "240") or ("exact" in config["line_spacing_allowed"] and rule == "exact" and line is not None and int(line) > 0)
+    if ("single" in config["line_spacing_allowed"] and rule == "auto" and line == "240") or \
+            ("exact" in config["line_spacing_allowed"] and rule == "exact" and line is not None and int(line) > 0):
+        return True
+    # 显式允许的 auto 倍数行距（如内部培训模板 1.0/1.5 倍）。
+    multiples = config.get("line_spacing_multiples_allowed") or []
+    if rule == "auto" and line is not None:
+        try:
+            return any(abs(int(line) / 240 - float(value)) < 0.01 for value in multiples)
+        except ValueError:
+            return False
+    return False
 
 
 def analyze(ctx):

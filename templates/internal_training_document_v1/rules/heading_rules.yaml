@@ -1,0 +1,30 @@
+# 内部培训管理规范模板 — 标题规则分片。
+# 源文档内置标题样式可见事实（直接 rPr 覆盖后的有效值）：
+# Heading 1 = 华文中宋 16pt 加粗；Heading 2 = 华文中宋 15pt 加粗。
+# 标题带 numId=1 自动编号，本模板不重建、不迁移该编号。
+headings:
+  h1:
+    word_style: heading 1
+    chinese_font: 华文中宋
+    latin_font: 华文中宋
+    size_pt: 16
+    color: "000000"
+    bold: true
+    alignment: left
+  h2:
+    word_style: heading 2
+    chinese_font: 华文中宋
+    latin_font: 华文中宋
+    size_pt: 15
+    color: "000000"
+    bold: true
+    alignment: left
+  # 源文档未出现稳定的 Heading 3 事实；h3 仅为兼容保留，不主动生成。
+  h3:
+    word_style: heading 3
+    chinese_font: 华文中宋
+    latin_font: 华文中宋
+    size_pt: 14
+    color: "000000"
+    bold: true
+    alignment: left

@@ -20,6 +20,10 @@ class OperationPlan:
     body_paragraph: ParagraphProfile
     heading_fonts: dict[str, FontProfile] = field(default_factory=dict)
     page: PageFormat | None = None
+    #: orientation -> PageFormat；多 section 文档按各节当前方向选取。
+    pages: dict[str, PageFormat] = field(default_factory=dict)
+    #: preserve = 不新增/改写 w:orient，仅写显式宽高与对应边距。
+    page_orientation_policy: str | None = None
     table_font: FontProfile | None = None
     table_alignment: str | None = None
     table_style_names: list[str] = field(default_factory=list)

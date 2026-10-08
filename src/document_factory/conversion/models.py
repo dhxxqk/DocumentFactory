@@ -33,6 +33,8 @@ class ConversionResult:
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     source_unchanged: bool = True
+    #: Content Integrity Gate 逐项结果（文本/图片/关系/section/表格）。
+    integrity: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

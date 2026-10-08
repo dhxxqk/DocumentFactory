@@ -82,6 +82,17 @@ class TableRule:
     font_size_pt: float
     alignment: str
     style_names: list[str] = field(default_factory=list)
+    #: 表头底纹显式 fill 值（None = 不写底纹）。
+    header_shading_fill: str | None = None
+    #: 无稳定源值时的回退灰值（仅记录，runner 用 header_shading_fill）。
+    header_shading_fill_fallback: str | None = None
+    #: 表头文字颜色（None = 不强制）。
+    header_text_color: str | None = None
+    #: true = 表体单元格逐格保留原水平对齐，不写统一 jc。
+    preserve_body_alignment: bool = False
+    #: 表头/表体行距倍数（缺省单倍）。
+    header_line_spacing: float = 1.0
+    body_line_spacing: float = 1.0
 
     @classmethod
     def from_dict(cls, data):
@@ -100,6 +111,12 @@ class TableRule:
             font_size_pt=data["font_size_pt"],
             alignment=data["alignment"],
             style_names=list(data.get("style_names") or []),
+            header_shading_fill=data.get("header_shading_fill"),
+            header_shading_fill_fallback=data.get("header_shading_fill_fallback"),
+            header_text_color=data.get("header_text_color"),
+            preserve_body_alignment=bool(data.get("preserve_body_alignment", False)),
+            header_line_spacing=float(data.get("header_line_spacing", 1.0)),
+            body_line_spacing=float(data.get("body_line_spacing", 1.0)),
         )
 
 

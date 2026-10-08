@@ -6,8 +6,29 @@ cells and automatic column width are explicitly out of scope.
 """
 from __future__ import annotations
 
+from ..docx_reader import NS
+from ._oxml import TCPR_ORDER, ensure_child, set_properties
 from .font import FontProfile, apply_font
 from .paragraph import apply_alignment
+
+
+def apply_cell_shading(tc, fill, ctx, *, color="auto", rule_id=None, source=None):
+    """Set explicit w:shd fill on a w:tc and drop theme fill references.
+
+    The shading is made deterministic: val=clear, color=auto and an explicit
+    hex fill; themeFill/themeFillTint/themeFillShade are removed so the
+    rendered gray cannot drift with the document theme.
+    """
+    tc_pr = tc.find("w:tcPr", NS)
+    if tc_pr is None:
+        tc_pr = ensure_child(tc, "tcPr", TCPR_ORDER)
+    return set_properties(
+        tc_pr, "shd",
+        {"val": "clear", "color": color, "fill": str(fill)},
+        {"themeFill", "themeFillTint", "themeFillShade"},
+        ctx, prop="cell_shading", rule_id=rule_id, source=source,
+        order=TCPR_ORDER,
+    )
 
 
 def apply_table_font(parent, profile, ctx):

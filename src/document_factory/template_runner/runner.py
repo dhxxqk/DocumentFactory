@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -80,6 +80,27 @@ def _resolve_sect_prs(document) -> list:
     return result
 
 
+def _section_orientation(sect_pr) -> str:
+    """Determine a section's orientation from its own w:pgSz.
+
+    Honors an explicit w:orient first; otherwise infers from dimensions
+    (Word itself infers portrait/landscape when orient is absent).
+    """
+    pg_size = sect_pr.find("w:pgSz", NS)
+    if pg_size is not None:
+        orient = pg_size.get(q("orient"))
+        if orient in ("portrait", "landscape"):
+            return orient
+        try:
+            width = int(pg_size.get(q("w")) or 0)
+            height = int(pg_size.get(q("h")) or 0)
+            if width and height:
+                return "landscape" if width > height else "portrait"
+        except ValueError:
+            pass
+    return "portrait"
+
+
 class TemplateRunner:
     """Apply an OperationPlan to a Document and return an ExecutionResult."""
 
@@ -141,13 +162,22 @@ class TemplateRunner:
                 changed_parts.add("word/styles.xml")
 
         # --- Page / section ---
-        if plan.page is not None:
+        # 多 section + orientation variants：按各节当前方向选取目标格式；
+        # orientation_policy=preserve 时不新增/改写 w:orient，保持方向与节序。
+        if plan.page is not None or plan.pages:
             sect_prs = _resolve_sect_prs(document)
             if not sect_prs:
                 warnings.append("未找到 sectPr 元素，跳过页面规则")
+            preserve_orientation = plan.page_orientation_policy == "preserve"
             for sect_pr in sect_prs:
-                ctx = _ctx(changes, "Section", "Section properties", template_id, prefix="page_")
-                if apply_section_properties(sect_pr, plan.page, ctx):
+                orientation = _section_orientation(sect_pr)
+                page_format = plan.pages.get(orientation) or plan.page
+                if page_format is None:
+                    continue
+                if preserve_orientation:
+                    page_format = replace(page_format, orientation=None)
+                ctx = _ctx(changes, "Section", f"Section ({orientation})", template_id, prefix="page_")
+                if apply_section_properties(sect_pr, page_format, ctx):
                     changed_parts.add("word/document.xml")
 
         # --- Table styles ---

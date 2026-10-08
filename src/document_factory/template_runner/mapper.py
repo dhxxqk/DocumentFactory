@@ -75,6 +75,27 @@ def _build_page(page: dict) -> PageFormat | None:
     )
 
 
+def _build_pages(page: dict) -> dict[str, PageFormat]:
+    """Build per-orientation PageFormat variants when ``variants`` is present.
+
+    Each variant may override page_size/orientation/margins_cm; missing keys
+    fall back to the top-level page facts.
+    """
+    variants = page.get("variants") or {}
+    result: dict[str, PageFormat] = {}
+    for orientation, fragment in variants.items():
+        merged = {
+            "page_size": page.get("page_size"),
+            "orientation": orientation,
+            "margins_cm": page.get("margins_cm") or {},
+            **dict(fragment),
+        }
+        built = _build_page(merged)
+        if built is not None:
+            result[orientation] = built
+    return result
+
+
 def _build_table_font(rule) -> FontProfile | None:
     return FontProfile(
         east_asia=rule.header_font,
@@ -97,6 +118,7 @@ def build_operation_plan(template: TemplateDefinition) -> OperationPlan:
         for level, rule in rules.headings.items()
     }
     page = _build_page(rules.page) if rules.page else None
+    pages = _build_pages(rules.page) if rules.page else {}
     table_font = _build_table_font(rules.tables) if rules.tables else None
     table_alignment = rules.tables.alignment if rules.tables else None
     table_style_names = list(rules.tables.style_names) if rules.tables else []
@@ -105,6 +127,8 @@ def build_operation_plan(template: TemplateDefinition) -> OperationPlan:
         body_paragraph=_build_body_paragraph(body),
         heading_fonts=heading_fonts,
         page=page,
+        pages=pages,
+        page_orientation_policy=(rules.page or {}).get("orientation_policy"),
         table_font=table_font,
         table_alignment=table_alignment,
         table_style_names=table_style_names,

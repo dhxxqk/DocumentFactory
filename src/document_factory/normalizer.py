@@ -115,16 +115,19 @@ def _normalize_body_ppr(parent, config, changes, *, object_type, location, rules
 
 def _normalize_table_ppr(parent, config, changes, *, object_type, location, rules, prefix="table_"):
     """Rule-engine composition: table paragraph indent/spacing ops."""
+    # 表格缩进全部为 0；同时保留 firstLineChars="0" 显式定义，
+    # 使样式级 TABLE007（不得仅依赖继承）与 TABLE004（缩进为 0）同时成立。
     changed = apply_indent(
         parent,
         {
             "firstLine": int(config["first_line_indent"]),
+            "firstLineChars": "0",
             "left": int(config["left_indent"]),
             "right": int(config["right_indent"]),
         },
         _ctx(changes, object_type, location, rules, "TABLE004", prefix),
         remove=(
-            "firstLineChars", "hanging", "hangingChars", "leftChars", "rightChars",
+            "hanging", "hangingChars", "leftChars", "rightChars",
             "start", "startChars", "end", "endChars",
         ),
     )
@@ -134,6 +137,11 @@ def _normalize_table_ppr(parent, config, changes, *, object_type, location, rule
         if line == "single"
         else {"line": int(config["normalization_exact_line_twips"]), "lineRule": "exact"}
     )
+    # 表头行距可独立于表体（如内部培训模板表头 1.5 倍、表体单倍）；
+    # 未配置 header_normalization_line_spacing 的旧规则行为不变。
+    if config.get("_table_header") and config.get("header_normalization_line_spacing"):
+        multiple = float(config["header_normalization_line_spacing"])
+        line_attrs = {"line": int(multiple * 240), "lineRule": "auto"}
     changed |= apply_spacing(
         parent,
         {
@@ -160,7 +168,9 @@ def _target_for_paragraph(document, resolver, paragraph, rules):
     allowed = tables["required_styles"] + tables["optional_styles"]
     if name in allowed:
         target = dict(tables)
-        target["chinese_font"] = tables["header_font"] if name == tables["required_styles"][0] else tables["body_font"]
+        is_header = name == tables["required_styles"][0]
+        target["chinese_font"] = tables["header_font"] if is_header else tables["body_font"]
+        target["_table_header"] = is_header
         return "table", target
     return None
 
@@ -256,7 +266,9 @@ def _apply_normalization(document, rules):
                 changed_parts.add("word/styles.xml")
         elif style.name in table_names:
             target = dict(rules["tables"])
-            target["chinese_font"] = rules["tables"]["header_font"] if style.name == table_names[0] else rules["tables"]["body_font"]
+            is_header = style.name == table_names[0]
+            target["chinese_font"] = rules["tables"]["header_font"] if is_header else rules["tables"]["body_font"]
+            target["_table_header"] = is_header
             changed = _normalize_table_ppr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules)
             changed |= _normalize_rpr(element, target, changes, object_type="Style", location=f"Style {style.name}", rules=rules, prefix="table_")
             if changed:
@@ -294,6 +306,13 @@ def _write_validation_report(result, before, after, rules, generated):
         "before_findings": [finding.to_dict() for finding in before.findings],
         "after_findings": [finding.to_dict() for finding in after.findings],
         "unsupported_capabilities": UNSUPPORTED_CAPABILITIES,
+        "content_integrity_gate": {
+            "passed": result.integrity.get("passed"),
+            "checks": [
+                {"check": c["check"], "passed": c["passed"]}
+                for c in result.integrity.get("checks", [])
+            ],
+        },
     }
     change_types = Counter(change["object_type"] for change in result.changes)
     lines = [
@@ -362,14 +381,21 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
         raise DocumentFactoryError("规则缺少 tables.normalization_line_spacing，无法确定表格规范化目标")
     before = lint(source, rules)
     input_hash = before.document.sha256
+    # Content Integrity Gate：规范化前快照受保护内容（文本/图片/关系/section）。
+    from .integrity import capture_fingerprint, verify_content
+    fingerprint = capture_fingerprint(source, before.document)
     changes, changed_parts = _apply_normalization(before.document, rules)
+    verify_content(fingerprint, document=before.document)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     write_package(source, output, before.document, changed_parts)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     # read_docx is intentionally called before lint so an invalid or partial ZIP can never be reported as success.
-    read_docx(output)
+    output_document = read_docx(output)
+    gate_result = verify_content(
+        fingerprint, document=output_document, output_path=output,
+    )
     after = lint(output, rules)
     remaining = [
         finding.to_dict() for finding in after.findings
@@ -387,6 +413,7 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
         changes=changes,
         remaining_findings=remaining,
         source_unchanged=sha256(source) == input_hash,
+        integrity=gate_result,
     )
     generated = datetime.now().astimezone().isoformat(timespec="seconds")
     _write_validation_report(result, before, after, rules, generated)

@@ -16,7 +16,11 @@ from .classifier import RoleAssignment, classify_paragraphs
 from .converter import DocumentFormatConverter, convert_document
 from .inputs import DocumentInputProvider, load_input_docx
 from .models import ConversionResult
-from .structure import ensure_template_styles, reassign_paragraph_styles
+from .structure import (
+    apply_table_header_cells,
+    ensure_template_styles,
+    reassign_paragraph_styles,
+)
 
 __all__ = [
     "RoleAssignment",
@@ -28,4 +32,5 @@ __all__ = [
     "ConversionResult",
     "ensure_template_styles",
     "reassign_paragraph_styles",
+    "apply_table_header_cells",
 ]

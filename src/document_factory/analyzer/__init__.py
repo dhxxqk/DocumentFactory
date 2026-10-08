@@ -10,5 +10,11 @@ Public API:
 - profile:          DocumentProfile, analyze_document
 """
 from .profile import DocumentProfile, analyze_document
+from .visible_format import VisibleFormatStats, analyze_visible_format
 
-__all__ = ["DocumentProfile", "analyze_document"]
+__all__ = [
+    "DocumentProfile",
+    "analyze_document",
+    "VisibleFormatStats",
+    "analyze_visible_format",
+]

@@ -1,0 +1,22 @@
+# 内部培训管理规范模板 — 页面规则分片。
+# 源文档稳定事实：A4，三个 section（portrait → landscape → portrait）。
+page:
+  page_size: A4
+  # preserve = 不把所有节强制为单一方向；按各节现有方向选择对应变体。
+  orientation_policy: preserve
+  orientation: portrait
+  # 纵向节（§1/§3）：上下 2.54cm、左右 3.17cm（源文档 1440/1800 twips）。
+  margins_cm: {top: 2.54, bottom: 2.54, left: 3.17, right: 3.17, header: 1.5, footer: 1.75}
+  variants:
+    portrait:
+      page_size: A4
+      orientation: portrait
+      margins_cm: {top: 2.54, bottom: 2.54, left: 3.17, right: 3.17, header: 1.5, footer: 1.75}
+    landscape:
+      # 横向节（§2，宽表）：纸张宽高互换，页边距随方向旋转（源文档 1800/1440 twips）。
+      page_size: A4
+      orientation: landscape
+      margins_cm: {top: 3.17, bottom: 3.17, left: 2.54, right: 2.54, header: 1.5, footer: 1.75}
+  # section 顺序与分节类型必须保持：nextPage / nextPage。
+  preserve_section_breaks: true
+  expected_section_sequence: [portrait, landscape, portrait]

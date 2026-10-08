@@ -15,8 +15,24 @@ def analyze(ctx):
         except (KeyError, ValueError):
             ctx.add("PAGE001", loc, size, config["page_size"], "缺少或无法读取页面尺寸", severity="WARNING", status="UNSUPPORTED")
         landscape = size.get("orient", "portrait") == "landscape"
-        ctx.check("PAGE002", loc, not landscape, size.get("orient", "portrait"), config["orientation"], "横向节允许用于宽表，需人工确认用途" if landscape else "默认纵向")
-        for side, cm in config["margins_cm"].items():
+        # 未显式写 orient 时按宽高推断（与 Word 行为一致）。
+        if size.get("orient") not in ("portrait", "landscape"):
+            try:
+                landscape = int(size.get("w") or 0) > int(size.get("h") or 0) > 0
+            except (TypeError, ValueError):
+                landscape = False
+        if config.get("orientation_policy") == "preserve":
+            # 多 section 模板：纵向/横向均为合法结构，仅核对该节事实可读。
+            ctx.check("PAGE002", loc, True,
+                      "landscape" if landscape else "portrait",
+                      "preserve (portrait/landscape)",
+                      "保留多节方向结构（portrait → landscape → portrait）")
+        else:
+            ctx.check("PAGE002", loc, not landscape, size.get("orient", "portrait"), config["orientation"], "横向节允许用于宽表，需人工确认用途" if landscape else "默认纵向")
+        variants = config.get("variants") or {}
+        margins_cm = (variants.get("landscape" if landscape else "portrait") or {}).get("margins_cm") \
+            or config["margins_cm"]
+        for side, cm in margins_cm.items():
             actual = section["margins"].get(side)
             if actual is None:
                 ctx.add("PAGE003", loc, section["margins"], config["margins_cm"], f"未显式给出 {side} 页边距", severity="WARNING", status="UNSUPPORTED")

@@ -31,6 +31,8 @@ _NUM_BOLD = re.compile(r"^\s*(\d+(?:\.\d+){0,2})(?=[\u4e00-\u9fff])")
 _TOC_DOTS = re.compile(r"(?:\.{3,}|…{2,}|\t)\s*\d+\s*$")
 #: 编号后紧跟年月日（年份/日期误判保护）
 _DATE_TAIL = re.compile(r"^\s*\d+(?:\.\d+){0,2}\s*[年月日]")
+#: 内置 Heading 样式名：heading 1 / heading 2 / heading 3 / 标题 1 ……
+_BUILTIN_HEADING = re.compile(r"(?:heading\s*|标题\s*)([1-3])$", re.I)
 
 MAX_HEADING_LEN = 50
 _SENTENCE_END = tuple("。！？；：!?;:")
@@ -79,12 +81,29 @@ def _heading_level(paragraph) -> tuple[str, str] | None:
     return None
 
 
-def classify_paragraphs(document) -> list[RoleAssignment]:
+def _builtin_heading_level(document, paragraph) -> tuple[str, str] | None:
+    """Return (role, reason) when the paragraph directly uses a built-in
+    Heading paragraph style (heading 1-3 / 标题 1-3)."""
+    style = document.styles.get(paragraph.style_id)
+    if style is None or style.kind != "paragraph":
+        return None
+    match = _BUILTIN_HEADING.match((style.name or "").strip())
+    if match is None:
+        return None
+    return f"heading{match.group(1)}", "builtin_heading_style"
+
+
+def classify_paragraphs(
+    document,
+    *,
+    body_style_name: str = "正文",
+) -> list[RoleAssignment]:
     """Assign a conversion role to every word/document.xml paragraph.
 
     Table rows flagged as repeat headers, plus each table's first row, are
     treated as table headers. Cover paragraphs precede the first detected
-    heading and are left untouched.
+    heading and are left untouched. Paragraphs already carrying a built-in
+    Heading style are recognized as headings without manual-number guessing.
     """
     main = [p for p in document.paragraphs if p.part == "word/document.xml"]
 
@@ -101,7 +120,7 @@ def classify_paragraphs(document) -> list[RoleAssignment]:
     for paragraph in main:
         if paragraph.table is not None or paragraph.in_toc:
             continue
-        match = _heading_level(paragraph)
+        match = _builtin_heading_level(document, paragraph) or _heading_level(paragraph)
         if match is not None:
             detected[paragraph.index] = match
             if first_heading_index is None or paragraph.index < first_heading_index:
@@ -124,7 +143,7 @@ def classify_paragraphs(document) -> list[RoleAssignment]:
                 paragraph.index, paragraph.location, "blank", None, "empty_paragraph",
             ))
             continue
-        # 手工编号识别的标题。
+        # 内置 Heading 样式或手工编号识别的标题。
         if paragraph.index in detected:
             role, reason = detected[paragraph.index]
             target = f"heading {role[-1]}"
@@ -141,6 +160,6 @@ def classify_paragraphs(document) -> list[RoleAssignment]:
             continue
         # 其余非空段落一律视为正文。
         assignments.append(RoleAssignment(
-            paragraph.index, paragraph.location, "body", "正文", "non_heading_text",
+            paragraph.index, paragraph.location, "body", body_style_name, "non_heading_text",
         ))
     return assignments

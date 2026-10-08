@@ -25,6 +25,8 @@ secrets*
 Thumbs.db
 output/*
 !output/.gitkeep
+# 真实业务文档（内部培训材料等）只能留在本地，禁止进入 GitHub
+local_samples/
 reports/*.json
 !reports/BASELINE_HASHES.json
 !reports/template_demo_profile.json

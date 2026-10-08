@@ -1,0 +1,105 @@
+version: '1.0.0'
+spec_version: V1.0
+source: templates/internal_training_document_v1/definition/template_structure_analysis.md
+# 内部培训管理规范文档模板 V1 的 lint/规范化规则。
+# 与模板 template.yaml 事实同源；独立规则，不复用 grid 规则语义。
+# 字号：小四=12pt、五号=10.5pt；华文中宋标题 16/15pt、总标题 24pt。
+document:
+  page_size: A4
+  page_size_twips: [11906, 16838]
+  # preserve：允许并保持 portrait/landscape 多节结构；各节按实际方向取 variants 边距。
+  orientation: portrait
+  orientation_policy: preserve
+  margins_cm: {top: 2.54, bottom: 2.54, left: 3.17, right: 3.17, header: 1.5, footer: 1.75}
+  variants:
+    portrait:
+      margins_cm: {top: 2.54, bottom: 2.54, left: 3.17, right: 3.17, header: 1.5, footer: 1.75}
+    landscape:
+      margins_cm: {top: 3.17, bottom: 3.17, left: 2.54, right: 2.54, header: 1.5, footer: 1.75}
+  tolerance_twips: 3
+body:
+  style_name: Normal
+  chinese_font: 宋体
+  latin_font: 宋体
+  font_size_pt: 12
+  first_line_indent_chars: 2
+  line_spacing: 1.5
+  space_before_pt: 0
+  space_after_pt: 0
+  alignment: both
+heading1: {word_style: heading 1, chinese_font: 华文中宋, size_pt: 16, color: '000000'}
+heading2: {word_style: heading 2, chinese_font: 华文中宋, size_pt: 15, color: '000000'}
+heading3: {word_style: heading 3, chinese_font: 华文中宋, size_pt: 14, color: '000000'}
+toc:
+  # 内部管理规范不要求 TOC 域。
+  required: false
+  levels: [1, 2]
+  expected_field_logic: 'TOC \o "1-2" \h \z \u'
+  update_fields: false
+numbering:
+  # 保留源文档 numId=1 自动编号；不要求、不重建、不禁止手写编号判定。
+  automatic_multilevel_required: false
+  manual_heading_number_forbidden: false
+  manual_patterns: []
+tables:
+  required_styles: [表格表头, 表格正文]
+  optional_styles: []
+  header_strategy: first_row_or_repeat
+  first_line_indent: 0
+  left_indent: 0
+  right_indent: 0
+  space_before_pt: 0
+  space_after_pt: 0
+  header_font: 宋体
+  body_font: 宋体
+  latin_font: 宋体
+  font_size_pt: 10.5
+  # 表头 1.5 倍行距、表体单倍：均为合法 auto 行距倍数。
+  line_spacing_allowed: [single]
+  line_spacing_multiples_allowed: [1.0, 1.5]
+  normalization_line_spacing: single
+  header_normalization_line_spacing: 1.5
+  # 表体单元格水平对齐逐格保留，不由规范化统一覆盖。
+  preserve_body_alignment: true
+  header_shading_fill: 'D7D7D7'
+font_aliases:
+  宋体: [宋体, SimSun]
+  华文中宋: [华文中宋, STZhongsong]
+rules:
+  PAGE001: {source: '§2', severity: ERROR}
+  PAGE002: {source: '§2', severity: INFO}
+  PAGE003: {source: '§2', severity: ERROR}
+  STYLE001: {source: '§4', severity: ERROR}
+  STYLE002: {source: '§4', severity: ERROR}
+  STYLE003: {source: '§4', severity: ERROR}
+  STYLE004: {source: '§4', severity: ERROR}
+  STYLE005: {source: '§4', severity: ERROR}
+  BODY001: {source: '§5', severity: ERROR}
+  BODY002: {source: '§5', severity: ERROR}
+  BODY003: {source: '§5', severity: WARNING}
+  NUM001: {source: '§4', severity: INFO}
+  NUM002: {source: '§4', severity: INFO}
+  NUM003: {source: '§4', severity: INFO}
+  TOC001: {source: '§8', severity: INFO}
+  TOC002: {source: '§8', severity: INFO}
+  TOC003: {source: '§8', severity: WARNING}
+  TOC004: {source: '§8', severity: INFO}
+  TOC005: {source: '§8', severity: INFO}
+  TABLE001: {source: '§6', severity: ERROR}
+  TABLE002: {source: '§6', severity: WARNING}
+  TABLE003: {source: '§6', severity: ERROR}
+  TABLE004: {source: '§6', severity: ERROR}
+  TABLE005: {source: '§6', severity: ERROR}
+  TABLE006: {source: '§6', severity: WARNING}
+  TABLE007: {source: '§6', severity: ERROR}
+  TABLE008: {source: '§6', severity: ERROR}
+  TABLE009: {source: '§6', severity: INFO}
+  TABLE010: {source: '§6', severity: ERROR}
+  FONT001: {source: '§5、§6', severity: ERROR}
+  FONT002: {source: '§5、§6', severity: ERROR}
+  FONT003: {source: '§5、§6', severity: ERROR}
+  FONT004: {source: '§4', severity: ERROR}
+  FRONT001: {source: '§3', severity: WARNING}
+  FRONT002: {source: '§8', severity: WARNING}
+  FRONT003: {source: '§4', severity: WARNING}
+  STRUCT001: {source: '§7', severity: WARNING}

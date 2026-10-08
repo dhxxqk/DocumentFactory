@@ -34,6 +34,11 @@ SECTPR_ORDER = [
     "paperSrc", "pgBorders", "lnNumType", "pgNumType", "cols", "formProt", "vAlign", "noEndnote",
     "titlePg", "textDirection", "bidi", "rtlGutter", "docGrid", "printerSettings", "sectPrChange",
 ]
+TCPR_ORDER = [
+    "cnfStyle", "tcW", "gridSpan", "hMerge", "vMerge", "tcBorders", "shd", "noWrap",
+    "tcMar", "textDirection", "tcFitText", "vAlign", "hideMark", "headers", "cellIns",
+    "cellDel", "cellMerge", "tcPrChange",
+]
 
 
 def local(element) -> str:

@@ -1,0 +1,36 @@
+id: INTERNAL_TRAINING_DOCUMENT_V1
+name: 内部培训管理规范文档模板
+version: "1.0"
+category:
+  - internal_document
+  - training_management
+description: |
+  基于内部培训类管理规范真实文档稳定主流格式事实抽象的独立确定性模板（MVP）。
+  本模板不继承 DEFAULT_TECHNICAL_DOCUMENT_V1，规则全部来自脱敏事实统计：
+  正文宋体 12pt、1.5 倍行距、首行缩进 2 字符、两端对齐；标题使用内置
+  Heading 1/2（华文中宋 16/15pt 加粗）；保留 portrait → landscape → portrait
+  多 section 结构（orientation_policy=preserve，不新增 w:orient）；表头
+  宋体 10.5pt 加粗、水平居中、黑字、浅灰底纹（源文档稳定值 #D7D7D7），
+  表体宋体 10.5pt 但保留各单元格原有水平对齐；不重建多级编号、不触碰图片
+  与 media 关系。
+  字号映射：三号=16pt、小三=15pt、小四=12pt、五号=10.5pt。
+  已知限制（MVP 未实现）：首页【第X周】总标题（华文中宋 24pt）目前与普通
+  Heading 1 同样处理，未提供独立 document_title 能力，留待后续任务。
+
+metadata:
+  kind: internal_style_specification
+  abstracted_from: 内部培训管理规范文档（脱敏统计；真实文件仅存 local_samples/，不入 Git）
+  definition: templates/internal_training_document_v1/definition/template_structure_analysis.md
+  rule_file: rules/internal_training_document_v1.yaml
+  business_content: none
+  independent: true
+  extends_default: false
+  author: DocumentFactory
+  created_at: "2026-10-08"
+
+# 独立模板：无 extends。规则按维度分片，loader 按序深合并。
+rules_include:
+  - rules/page_rules.yaml
+  - rules/paragraph_rules.yaml
+  - rules/heading_rules.yaml
+  - rules/table_rules.yaml

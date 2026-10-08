@@ -36,7 +36,7 @@ from .paragraph import (
     apply_spacing,
 )
 from .style import STYLE_ROLES, apply_style, find_style_element
-from .table import apply_table_alignment, apply_table_font, apply_table_format
+from .table import apply_cell_shading, apply_table_alignment, apply_table_font, apply_table_format
 
 __all__ = [
     "OperationContext",
@@ -63,6 +63,7 @@ __all__ = [
     "STYLE_ROLES",
     "apply_style",
     "find_style_element",
+    "apply_cell_shading",
     "apply_table_alignment",
     "apply_table_font",
     "apply_table_format",

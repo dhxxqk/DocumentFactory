@@ -24,6 +24,7 @@ from pathlib import Path
 
 from ..analyzer import analyze_document
 from ..docx_reader import read_docx, sha256
+from ..integrity import capture_fingerprint, verify_content
 from ..lint_engine import lint, load_rules
 from ..models import DocumentFactoryError
 from ..normalizer import _apply_normalization
@@ -35,16 +36,16 @@ from .classifier import classify_paragraphs
 from .inputs import DocumentInputProvider
 from .models import ConversionResult
 from .report import write_conversion_report
-from .structure import ensure_template_styles, reassign_paragraph_styles
+from .structure import (
+    apply_table_header_cells,
+    ensure_template_styles,
+    reassign_paragraph_styles,
+)
 
 
 def _project_root() -> Path:
     # src/document_factory/conversion/converter.py -> parents[3] = project root
     return Path(__file__).resolve().parents[3]
-
-
-def _all_text(document) -> list[str]:
-    return [p.text for p in document.paragraphs if p.part == "word/document.xml"]
 
 
 class DocumentFormatConverter:
@@ -89,7 +90,8 @@ class DocumentFormatConverter:
         before = lint(source, rules)
         input_hash = document.sha256
         profile_before = analyze_document(document).to_dict()
-        original_texts = _all_text(document)
+        # Content Integrity Gate：转换前快照（文本/图片/关系/section/表格）。
+        fingerprint = capture_fingerprint(source, document)
 
         changes: list = []
         changed_parts: set[str] = set()
@@ -101,7 +103,10 @@ class DocumentFormatConverter:
         changed_parts |= scaffold_parts
 
         # 3. 确定性角色分类 + 段落样式重指派（仅 w:pStyle，不动文本）。
-        assignments = classify_paragraphs(document)
+        assignments = classify_paragraphs(
+            document,
+            body_style_name=template.rules.body.style_name,
+        )
         cover_assignments = [a for a in assignments if a.role == "cover"]
         count, reassign_parts = reassign_paragraph_styles(document, assignments, template_id, changes)
         changed_parts |= reassign_parts
@@ -120,10 +125,14 @@ class DocumentFormatConverter:
         changes.extend(norm_changes)
         changed_parts |= norm_parts
 
-        # 6. 内容一致性守卫（内存态）：转换前后正文逐字一致。
-        content_preserved = _all_text(document) == original_texts
-        if not content_preserved:
-            raise DocumentFactoryError("CONTENT_CHANGED：格式转换检测到正文文本变化，已中止")
+        # 5b. 表头单元格直写：水平居中、加粗黑字、显式灰底纹（表体对齐逐格保留）。
+        header_changes, header_parts = apply_table_header_cells(
+            document, assignments, template, changes,
+        )
+        changed_parts |= header_parts
+
+        # 6. Content Integrity Gate（内存态）：文本/图片/关系/section 逐字逐字节一致。
+        verify_content(fingerprint, document=document)
 
         # 7. 写保护副本（输入 sha 双重守卫 + 写后 read_docx 有效性校验）。
         if sha256(source) != input_hash:
@@ -132,9 +141,10 @@ class DocumentFormatConverter:
         if sha256(source) != input_hash:
             raise DocumentFactoryError("INPUT_CHANGED：格式转换期间输入文件发生变化")
         output_document = read_docx(output)
-        content_preserved = _all_text(output_document) == original_texts
-        if not content_preserved:
-            raise DocumentFactoryError("CONTENT_CHANGED：输出文件正文文本与输入不一致")
+        integrity = verify_content(
+            fingerprint, document=output_document, output_path=output,
+        )
+        content_preserved = integrity["passed"]
 
         # 8. 真实 lint 复检 + 转换后画像。
         after = lint(output, rules)
@@ -164,6 +174,7 @@ class DocumentFormatConverter:
             warnings=warnings,
             errors=errors,
             source_unchanged=sha256(source) == input_hash,
+            integrity=integrity,
         )
         write_conversion_report(result)
         return result

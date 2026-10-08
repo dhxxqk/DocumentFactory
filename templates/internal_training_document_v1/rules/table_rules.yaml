@@ -1,0 +1,23 @@
+# 内部培训管理规范模板 — 表格规则分片。
+# 源文档 7 张表格（Table Grid 单实线边框）稳定事实：
+# 表头 37/37 = 宋体 10.5pt 加粗 水平居中；表体 宋体 10.5pt 非加粗。
+tables:
+  header_font: 宋体
+  body_font: 宋体
+  latin_font: 宋体
+  font_size_pt: 10.5
+  # 仅用于表头；表体水平对齐必须逐格保留（both=224 / center=53），不统一覆盖。
+  alignment: center
+  style_names:
+    - 表格表头
+    - 表格正文
+  # 表头底纹：源文档 100% 稳定灰值（含 themeFillShade=D8 派生），优先采用源值；
+  # 仅当无稳定值时才退回 D9D9D9（本模板不触发回退）。
+  header_shading_fill: "D7D7D7"
+  header_shading_fill_fallback: "D9D9D9"
+  header_text_color: "000000"
+  # 表体不做统一水平对齐：保留每格原 jc（both/center/左对齐）。
+  preserve_body_alignment: true
+  # 行距：表头段落主流 line=360/auto；表体单倍 line=240。
+  header_line_spacing: 1.5
+  body_line_spacing: 1.0
