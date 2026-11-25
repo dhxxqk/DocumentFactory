@@ -6,13 +6,41 @@ from .models import DocumentFactoryError, Finding, Paragraph
 from .docx_reader import read_docx, sha256
 from .style_resolver import StyleResolver
 from .numbering_analyzer import NumberingAnalyzer
-from . import table_analyzer, section_analyzer, toc_analyzer
+from . import table_analyzer, section_analyzer, toc_analyzer, academic_tables
+from .templates.loader import deep_merge
+
+
+def _academic_inheritance(path, rules, visited=()):
+    parent = rules.get('extends')
+    if not parent:
+        return rules
+    if not isinstance(parent, str) or Path(parent).name != parent:
+        raise ValueError('学术表规则只能继承同目录的规则文件')
+    base_path = (path.parent / parent).resolve()
+    if base_path.parent != path.parent or base_path in (*visited, path):
+        raise ValueError('学术表规则继承越界或存在循环')
+    base = yaml.safe_load(base_path.read_text(encoding='utf-8-sig'))
+    if not isinstance(base, dict) or base.get('scope') != academic_tables.SCOPE:
+        raise ValueError('只能继承同类型学术表规则')
+    inherited = _academic_inheritance(base_path, base, (*visited, path))
+    composed = deep_merge(inherited, rules)
+    composed['_inherited_rules'] = inherited.get('_inherited_rules', {}) | {parent: sha256(base_path)}
+    return composed
 
 
 def load_rules(path):
     path = Path(path).resolve()
     try:
         rules = yaml.safe_load(path.read_text(encoding="utf-8-sig"))
+        if isinstance(rules, dict) and rules.get('scope') == academic_tables.SCOPE:
+            rules = _academic_inheritance(path, rules)
+            academic_tables.validate_rules(rules)
+            for name, definition in rules['rules'].items():
+                if definition['severity'] not in ('ERROR','WARNING','INFO') or not definition.get('source'):
+                    raise ValueError(f'规则 {name} 缺少有效 severity/source')
+            source = (path.parent.parent / rules['source']).resolve()
+            rules.update(_path=str(path), _sha256=sha256(path), _source_sha256=sha256(source))
+            return rules
         required = ("version", "spec_version", "source", "document", "body", "heading1", "heading2", "heading3", "toc", "numbering", "tables", "rules")
         if not isinstance(rules, dict) or any(k not in rules for k in required):
             raise ValueError("规则缺少必需配置节")
@@ -175,6 +203,11 @@ def analyze_runs(ctx):
 
 def lint_document(document, rules):
     ctx = LintContext(document, rules)
+    if rules.get('scope') == academic_tables.SCOPE:
+        academic_tables.analyze(ctx)
+        if sha256(document.path) != document.sha256:
+            raise DocumentFactoryError('INPUT_CHANGED：审计期间输入文件发生变化')
+        return ctx
     try:
         section_analyzer.analyze(ctx)
         analyze_styles_and_body(ctx)

@@ -1,0 +1,27 @@
+version: 1.0.0
+spec_version: academic-three-line-v1
+source: specs/academic_three_line_v1.md
+scope: academic_tables
+rules:
+  TABLEA000: {severity: ERROR, source: 'Academic three-line V1 / target and supported structure'}
+  TABLEA001: {severity: ERROR, source: 'Academic three-line V1 / border hierarchy and fill'}
+  TABLEA002: {severity: ERROR, source: 'Academic three-line V1 / table and row geometry'}
+  TABLEA003: {severity: ERROR, source: 'Academic three-line V1 / paragraph and font controls'}
+  TABLEA004: {severity: ERROR, source: 'Academic three-line V1 / caption controls'}
+academic_tables:
+  targets:
+    - table_caption: AcademicThreeLine
+  format:
+    column_widths_pt: null
+    header_alignments: []
+    body_alignments: []
+    font: {latin: Times New Roman, east_asia: SimSun, size_pt: 10, color: '000000'}
+    body_bold: null
+    borders:
+      top: {width_pt: 1, color: '000000', style: single}
+      header: {width_pt: 0.5, color: '000000', style: single}
+      bottom: {width_pt: 1, color: '000000', style: single}
+    cell_margins_pt: {top: 0, bottom: 0, left: 3, right: 3}
+    header_height_pt: 16
+    body_line_pt: 12
+    caption: null

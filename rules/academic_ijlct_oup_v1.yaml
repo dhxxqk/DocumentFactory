@@ -1,0 +1,47 @@
+version: 1.0.0
+spec_version: academic-ijlct-ctae052-reference-v1
+source: specs/academic_three_line_v1.md
+scope: academic_tables
+extends: academic_three_line_v1.yaml
+rules:
+  TABLEA001: {source: 'Duan et al. (2024), DOI 10.1093/ijlct/ctae052, p. 1095 / PDF rule strokes'}
+  TABLEA002: {source: 'Duan et al. (2024), p. 1095 / PDF text centers and measured row pitch'}
+  TABLEA003: {source: 'Duan et al. (2024), p. 1095 / PDF body type and alignment'}
+  TABLEA004: {source: 'Duan et al. (2024), p. 1095 / PDF caption typography and baseline'}
+academic_tables:
+  targets:
+    - table_caption: IJLCT-Table-1
+      caption_text: 'Table 1.  Input feature.'
+      format:
+        column_widths_pt: [54.45, 186.50]
+        header_alignments: [left, center]
+        body_alignments: [left, center]
+        caption:
+          space_after_pt: 5.35
+    - table_caption: IJLCT-Table-2
+      caption_text: 'Table 2.  Evaluation indicators of the different models.'
+      format:
+        column_widths_pt: [75.25, 48.50, 74.35, 42.85]
+        header_alignments: [left, center, center, center]
+        body_alignments: [left, center, center, center]
+        caption:
+          space_after_pt: 4.00
+  format:
+    # Sabon and Univers are publication faces. Georgia and Arial are installed substitutes.
+    font: {latin: Georgia, east_asia: Georgia, size_pt: 8, color: '000000'}
+    script_size_pt: 8
+    body_bold: false
+    borders:
+      top: {width_pt: 0.504, color: '000000', style: single}
+      header: {width_pt: 0.504, color: '000000', style: single}
+      bottom: {width_pt: 0.504, color: '000000', style: single}
+    # Margin estimates and row policy are Word equivalents, not PDF facts.
+    cell_margins_pt: {top: 0, bottom: 0, left: 0, right: 0}
+    header_height_pt: 15.10
+    body_line_pt: 9.45
+    first_body_pad_pt: 2.60
+    last_body_pad_pt: 5.10
+    caption:
+      font: {latin: Arial, east_asia: Arial, size_pt: 7.5, color: '000000'}
+      line_pt: 9
+      space_after_pt: 5.35

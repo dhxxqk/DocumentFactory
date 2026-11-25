@@ -1,5 +1,7 @@
 # DocumentFactory v0.5-alpha
 
+学术三线表可通过 `normalize` 或 `lint` 的 `--rules rules/academic_three_line_v1.yaml` 入口处理。目标标记、期刊参考配置及范围见 [学术三线表 V1](specs/academic_three_line_v1.md)。
+
 DocumentFactory 是一个面向 AI 生成内容的 DOCX 文档生成、格式规范化和质量验证引擎。
 
 通过 OOXML 解析、规则驱动审计、模板迁移、确定性格式修复和渲染验证，解决 AI 生成 Word 文档过程中出现的格式漂移、模板失效和排版不一致问题。

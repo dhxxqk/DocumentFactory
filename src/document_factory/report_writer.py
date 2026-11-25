@@ -24,6 +24,8 @@ def write_report(ctx, path, render_result=None, *, root=None):
                 "规则 SHA-256": ctx.rules.get("_sha256", "未提供"), "规范 SHA-256": ctx.rules.get("_source_sha256", "未提供"),
                 "运行环境": f"{platform.platform()} / Python {platform.python_version()} / {sys.executable}",
                 "是否成功渲染": render_result.status if render_result else "NOT_REQUESTED（仅执行 lint）"}
+    if ctx.rules.get('_inherited_rules'):
+        metadata['继承规则 SHA-256'] = ctx.rules['_inherited_rules']
     data = {"metadata": metadata, "result": ctx.result, "counts": ctx.counts,
             "render": asdict(render_result) if render_result else None, "findings": [f.to_dict() for f in ctx.findings],
             "inventory": {"paragraphs": len(ctx.document.paragraphs), "tables": len(ctx.document.tables), "sections": ctx.document.sections,

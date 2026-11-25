@@ -12,7 +12,7 @@ import json
 import re
 
 from . import __version__
-from . import role_classifier
+from . import role_classifier, academic_tables
 from .docx_reader import NS, q, read_docx, sha256
 from .integrity import verify_content_integrity
 from .lint_engine import lint, load_rules
@@ -686,7 +686,8 @@ def _write_validation_report(result, before, after, rules, generated):
         "schema_version": "1.1",
         "generated_at": generated,
         "document_factory_version": __version__,
-        "rules": {"path": rules["_path"], "sha256": rules["_sha256"], "spec_version": rules["spec_version"]},
+        "rules": {"path": rules["_path"], "sha256": rules["_sha256"], "spec_version": rules["spec_version"],
+                  **({"inherited": rules["_inherited_rules"]} if rules.get("_inherited_rules") else {})},
         "normalization": result.to_dict(),
         "before_findings": [finding.to_dict() for finding in before.findings],
         "after_findings": [finding.to_dict() for finding in after.findings],
@@ -704,6 +705,7 @@ def _write_validation_report(result, before, after, rules, generated):
         f"- 输出 SHA-256：{result.output_sha256}",
         f"- 规则文件：{rules['_path']}",
         f"- 规则 SHA-256：{rules['_sha256']}",
+        *[f'- 继承规则 {name} SHA-256：{digest}' for name,digest in rules.get('_inherited_rules',{}).items()],
         f"- 输入文件未变化：{result.source_unchanged}", "",
         "## 2. Validation 结论", "", f"**RESULT: {result.status}**", "",
         "最终结论来自输出 DOCX 的真实 lint；ERROR 下降不等于全部格式合格。", "",
@@ -830,11 +832,13 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
     if report.suffix.lower() != ".md":
         raise DocumentFactoryError("normalize 报告必须使用 .md 扩展名（同名 JSON 自动生成）")
     rules = load_rules(rules_path)
-    if rules["tables"].get("normalization_line_spacing") is None:
+    academic_scope = rules.get('scope') == academic_tables.SCOPE
+    if not academic_scope and rules["tables"].get("normalization_line_spacing") is None:
         raise DocumentFactoryError("规则缺少 tables.normalization_line_spacing，无法确定表格规范化目标")
     before = lint(source, rules)
     input_hash = before.document.sha256
-    changes, changed_parts, stats = _apply_normalization(before.document, rules)
+    apply = academic_tables.normalize if academic_scope else _apply_normalization
+    changes, changed_parts, stats = apply(before.document, rules)
     if sha256(source) != input_hash:
         raise DocumentFactoryError("INPUT_CHANGED：规范化期间输入文件发生变化")
     write_package(source, output, before.document, changed_parts)
