@@ -35,7 +35,8 @@ def _font(font):
 
 def _validate_profile(profile):
     allowed={'font','borders','cell_margins_pt','header_height_pt','body_line_pt','column_widths_pt',
-             'header_alignments','body_alignments','first_body_pad_pt','last_body_pad_pt','caption','script_size_pt','body_bold'}
+             'header_alignments','body_alignments','first_body_pad_pt','last_body_pad_pt','caption','script_size_pt','body_bold',
+             'font_overrides','body_line_rule','math_line_rule','subscript_position_pt','numeric_columns'}
     if set(profile)-allowed:
         raise ValueError(f'未知学术表格属性：{set(profile)-allowed}')
     lines=profile['borders']
@@ -60,6 +61,19 @@ def _validate_profile(profile):
             raise ValueError('上下标基准字号使用半磅单位')
     if profile.get('body_bold') is not None and not isinstance(profile['body_bold'],bool):
         raise ValueError('body_bold 应为布尔值或 null')
+    for rule in ('body_line_rule','math_line_rule'):
+        if profile.get(rule,'atLeast') not in ('atLeast','exact'):
+            raise ValueError(f'{rule} 只支持 atLeast 或 exact')
+    if 'subscript_position_pt' in profile:
+        _number(profile['subscript_position_pt'],'下标垂直偏移',-4,4)
+        if profile['subscript_position_pt']*2 % 1:
+            raise ValueError('下标垂直偏移使用半磅单位')
+    for role,font in profile.get('font_overrides',{}).items():
+        if role not in ('header','italic','script','caption_bold','numeric'):
+            raise ValueError(f'不支持的字体局部覆盖：{role}')
+        _font(font)
+    if any(type(col) is not int or col<1 for col in profile.get('numeric_columns',[])):
+        raise ValueError('numeric_columns 使用从 1 开始的列号')
     widths=profile['column_widths_pt']
     if widths is not None:
         if not isinstance(widths,list) or not widths:
@@ -122,6 +136,8 @@ def _unsupported(table,caption,expect_caption,profile):
     for key in ('column_widths_pt','header_alignments','body_alignments'):
         if profile[key] and len(profile[key])!=len(cols):
             return f'{key} 与实际列数不一致'
+    if any(col>len(cols) for col in profile.get('numeric_columns',[])):
+        return '数值格式列号超出实际范围'
     if any(w<=0 for w in profile['column_widths_pt']):
         return '列网格宽度必须为正'
     if profile['caption'] is not None and (caption is None or caption.tag!=q('p')):

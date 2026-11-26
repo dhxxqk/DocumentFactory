@@ -6,7 +6,7 @@ from .models import DocumentFactoryError, Finding, Paragraph
 from .docx_reader import read_docx, sha256
 from .style_resolver import StyleResolver
 from .numbering_analyzer import NumberingAnalyzer
-from . import table_analyzer, section_analyzer, toc_analyzer, academic_tables
+from . import table_analyzer, section_analyzer, toc_analyzer, academic_tables, academic_font_audit
 from .templates.loader import deep_merge
 
 
@@ -35,6 +35,11 @@ def load_rules(path):
         if isinstance(rules, dict) and rules.get('scope') == academic_tables.SCOPE:
             rules = _academic_inheritance(path, rules)
             academic_tables.validate_rules(rules)
+            policy = rules[academic_tables.SCOPE].get('font_audit')
+            if policy:
+                academic_font_audit.validate(policy)
+                if any(key not in rules['rules'] for key in ('TABLEA005','TABLEA006')):
+                    raise ValueError('字体审计缺少 TABLEA005 或 TABLEA006')
             for name, definition in rules['rules'].items():
                 if definition['severity'] not in ('ERROR','WARNING','INFO') or not definition.get('source'):
                     raise ValueError(f'规则 {name} 缺少有效 severity/source')
@@ -205,6 +210,10 @@ def lint_document(document, rules):
     ctx = LintContext(document, rules)
     if rules.get('scope') == academic_tables.SCOPE:
         academic_tables.analyze(ctx)
+        if rules[academic_tables.SCOPE].get('font_audit'):
+            ctx.font_preflight = academic_font_audit.preflight(document,rules)
+            ctx.check('TABLEA005','Table fonts',ctx.font_preflight['status']=='PASS',ctx.font_preflight,
+                      'APPROVED_FACES_AVAILABLE','字体、字形覆盖及渲染后端预检')
         if sha256(document.path) != document.sha256:
             raise DocumentFactoryError('INPUT_CHANGED：审计期间输入文件发生变化')
         return ctx

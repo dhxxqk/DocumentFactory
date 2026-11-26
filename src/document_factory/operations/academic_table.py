@@ -62,7 +62,7 @@ def _margins(parent,name,values,ctx,order):
         _exact(props,side,{'w':units(values[side],20),'type':'dxa'},ctx,EDGES)
 
 
-def _paragraph(paragraph, alignment, line, ctx, *, after=0):
+def _paragraph(paragraph, alignment, line, ctx, *, after=0, line_rule='atLeast'):
     ppr=ensure_child(paragraph,'pPr',PPR_ORDER)
     borders=ensure_child(ppr,'pBdr',PPR_ORDER)
     edges=(*EDGES[:4],'between','bar')
@@ -71,24 +71,45 @@ def _paragraph(paragraph, alignment, line, ctx, *, after=0):
         _exact(borders,side,{'val':'nil'},ctx,edges)
     _exact(ppr,'shd',{'val':'nil'},ctx,PPR_ORDER)
     apply_alignment(paragraph,alignment,ctx)
-    apply_spacing(paragraph,{'before':0,'after':units(after,20),'line':units(line,20),'lineRule':'atLeast'},
+    apply_spacing(paragraph,{'before':0,'after':units(after,20),'line':units(line,20),'lineRule':line_rule},
                   ctx,remove=SPACING_OVERRIDES)
     apply_indent(paragraph,{'left':0,'right':0,'firstLine':0},ctx,remove=INDENT_OVERRIDES)
     set_toggle(ppr,'contextualSpacing',False,ctx,prop='contextualSpacing',order=PPR_ORDER)
     set_toggle(ppr,'snapToGrid',False,ctx,prop='snapToGrid',order=PPR_ORDER)
 
 
-def _runs(paragraph,profile,ctx,*,override_bold=None,script_size=None):
-    for i,run in enumerate(paragraph.findall('.//w:r',NS),1):
-        if run.xpath('ancestor::*[namespace-uri()="http://schemas.openxmlformats.org/officeDocument/2006/math"]'):
-            continue
+def text_runs(paragraph):
+    return [r for r in paragraph.findall('.//w:r',NS) if not any(
+        a.tag.startswith('{http://schemas.openxmlformats.org/officeDocument/2006/math}') for a in r.iterancestors())]
+
+
+def run_role(run, area):
+    def on(name):
+        item=run.find(f'w:rPr/w:{name}',NS)
+        return item is not None and item.get(q('val'),'1') not in ('0','false','off')
+    if area=='caption':
+        return 'caption_bold' if on('b') else 'caption'
+    script=run.find('w:rPr/w:vertAlign',NS)
+    if script is not None and script.get(q('val')) in ('subscript','superscript'):
+        return 'script'
+    if on('i'):
+        return 'italic'
+    return area
+
+
+def _runs(paragraph,profile,ctx,*,area,override_bold=None):
+    for i,run in enumerate(text_runs(paragraph),1):
         run_ctx=replace(ctx,location=f'{ctx.location} / Run {i}')
-        run_profile=dict(profile, bold=override_bold)
+        role=run_role(run,area)
+        default_font=profile['caption']['font'] if area=='caption' else profile['font']
+        run_profile=dict(profile.get('font_overrides',{}).get(role,default_font),bold=override_bold)
         special=run.find('w:rPr/w:vertAlign',NS)
-        if script_size is not None and special is not None and special.get(q('val')) in ('subscript','superscript'):
-            run_profile['size_pt']=script_size
+        if role=='script' and 'script_size_pt' in profile:
+            run_profile['size_pt']=profile['script_size_pt']
         apply_font(run,run_profile,run_ctx)
         rpr=run.find('w:rPr',NS)
+        if role=='script' and 'subscript_position_pt' in profile and special.get(q('val'))=='subscript':
+            _exact(rpr,'position',{'val':units(profile['subscript_position_pt'],2)},run_ctx,RPR_ORDER)
         _exact(rpr,'shd',{'val':'nil'},run_ctx,RPR_ORDER)
         _exact(rpr,'highlight',{'val':'none'},run_ctx,RPR_ORDER)
 
@@ -152,14 +173,18 @@ def apply_three_line_table(table,caption,profile,contexts):
                 margins['bottom']+=profile.get('last_body_pad_pt',0)
             _margins(cp,'tcMar',margins,cell_geometry,TCPR_ORDER)
             column_alignment=alignment[j] if alignment else ('left' if j==0 else 'center')
+            area='header' if header else 'numeric' if j+1 in profile.get('numeric_columns',[]) else 'body'
             for k,paragraph in enumerate(cell.findall('w:p',NS),1):
                 pctx=replace(cell_content,location=f'{loc} / Paragraph {k}')
-                _paragraph(paragraph,column_alignment,profile['body_line_pt'],pctx)
-                _runs(paragraph,profile['font'],pctx,override_bold=True if header else profile.get('body_bold'),
-                      script_size=profile.get('script_size_pt'))
+                line_rule='atLeast' if header else profile.get('body_line_rule','atLeast')
+                if any(run_role(r,'body')=='script' for r in text_runs(paragraph)):
+                    line_rule=profile.get('math_line_rule',line_rule)
+                _paragraph(paragraph,column_alignment,profile['body_line_pt'],pctx,line_rule=line_rule)
+                _runs(paragraph,profile,pctx,area=area,
+                      override_bold=True if header else profile.get('body_bold'))
 
     if caption is not None:
         style=profile['caption']
         _paragraph(caption,'left',style['line_pt'],caption_ctx,after=style['space_after_pt'])
         apply_keep_next(caption,True,caption_ctx)
-        _runs(caption,style['font'],caption_ctx)
+        _runs(caption,profile,caption_ctx,area='caption')

@@ -1,0 +1,48 @@
+version: 2.0.0
+spec_version: academic-ijlct-ctae052-reference-r2
+source: specs/academic_three_line_v1.md
+scope: academic_tables
+extends: academic_ijlct_oup_v1.yaml
+rules:
+  TABLEA005: {severity: ERROR, source: 'Academic R2 / installed and approved faces'}
+  TABLEA006: {severity: ERROR, source: 'Academic R2 / PDF font resource, outline variant and size evidence'}
+academic_tables:
+  targets:
+    - table_caption: IJLCT-Table-1
+      caption_text: 'Table 1.  Input feature.'
+      format:
+        column_widths_pt: [54.45, 186.50]
+        header_alignments: [left, center]
+        body_alignments: [left, center]
+        caption: {space_after_pt: 5.00}
+        math_line_rule: exact
+        script_size_pt: 9
+        subscript_position_pt: -0.5
+    - table_caption: IJLCT-Table-2
+      caption_text: 'Table 2.  Evaluation indicators of the different models.'
+      format:
+        column_widths_pt: [75.25, 48.50, 74.35, 42.85]
+        header_alignments: [left, center, center, center]
+        body_alignments: [left, center, center, center]
+        caption: {space_after_pt: 3.75}
+        header_height_pt: 14.85
+        numeric_columns: [2, 3, 4]
+  format:
+    font: {latin: Book Antiqua, east_asia: Book Antiqua, size_pt: 8, color: '000000'}
+    body_line_rule: exact
+    caption:
+      font: {latin: Segoe UI Light, east_asia: Segoe UI Light, size_pt: 7.5, color: '000000'}
+    font_overrides:
+      header: {latin: Times New Roman, east_asia: Times New Roman, size_pt: 8, color: '000000'}
+      numeric: {latin: Century Schoolbook, east_asia: Century Schoolbook, size_pt: 8, color: '000000'}
+      caption_bold: {latin: Segoe UI, east_asia: Segoe UI, size_pt: 7.5, color: '000000'}
+  font_audit:
+    backend: Word COM
+    faces:
+      body: {reference: 'SabonLTStd-Roman; MTMI for visible ellipsis only', family: Book Antiqua, postscript: [BookAntiqua], render_size_pt: 8, reason: 'Local Word trials preserve lining numerals, text proportions and the published line breaks.'}
+      header: {reference: SabonLTStd-Bold, family: Times New Roman, postscript: [TimesNewRomanPS-BoldMT], render_size_pt: 8, reason: 'Measured stronger foreground overlap and closer weight on the actual headers.'}
+      italic: {reference: SabonLTStd-Italic, family: Book Antiqua, postscript: [BookAntiqua-Italic], render_size_pt: 8, reason: 'More similar local x-height and strokes for italic X and t in the comparison.'}
+      script: {reference: SabonLTStd-Roman, family: Book Antiqua, postscript: [BookAntiqua], render_size_pt: 6, reason: 'Editable Word subscript scaled and checked against the rendered baseline.'}
+      numeric: {reference: SabonLTStd-Roman, family: Century Schoolbook, postscript: [CenturySchoolbook], render_size_pt: 8, reason: 'Lining digits retain shape and height in the actual metric columns.'}
+      caption: {reference: UniversLTStd-Light, family: Segoe UI Light, postscript: [SegoeUI-Light], render_size_pt: 7.5, reason: 'Light sans-serif strokes preserve the numbered caption hierarchy.'}
+      caption_bold: {reference: UniversLTStd-Bold, family: Segoe UI, postscript: [SegoeUI-Bold], render_size_pt: 7.5, reason: 'Installed true bold of the same UI family preserves a distinct caption number.'}

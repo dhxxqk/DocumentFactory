@@ -6,6 +6,7 @@ import json
 import platform
 import sys
 from . import __version__
+from . import academic_font_audit, academic_tables
 from .output_paths import checked_output
 
 
@@ -18,6 +19,13 @@ def write_report(ctx, path, render_result=None, *, root=None):
     root = Path(root or Path.cwd()).resolve()
     path = checked_output(path, root, "reports", ctx.document.path)
     json_path = checked_output(path.with_suffix(".json"), root, "reports", ctx.document.path)
+    configured = ctx.rules.get(academic_tables.SCOPE,{}).get('font_audit')
+    font_audit = None
+    if configured and render_result is not None:
+        font_audit = academic_font_audit.audit_pdf(ctx.document,ctx.rules,render_result)
+        evidence_path = checked_output(path.with_name(path.stem+'_font_render_audit.json'),root,'reports',ctx.document.path)
+        ctx.check('TABLEA006','Table fonts',font_audit['status']=='MATCH',font_audit['status'],'MATCH',
+                  'PDF 实际字体、样式、字号与逐字定位')
     generated = datetime.now().astimezone().isoformat(timespec="seconds")
     metadata = {"生成时间": generated, "DocumentFactory 版本": __version__, "规范版本": ctx.rules["spec_version"],
                 "输入文件": str(ctx.document.path), "输入 SHA-256": ctx.document.sha256, "Lint 规则版本": ctx.rules["version"],
@@ -26,6 +34,9 @@ def write_report(ctx, path, render_result=None, *, root=None):
                 "是否成功渲染": render_result.status if render_result else "NOT_REQUESTED（仅执行 lint）"}
     if ctx.rules.get('_inherited_rules'):
         metadata['继承规则 SHA-256'] = ctx.rules['_inherited_rules']
+    if font_audit is not None:
+        metadata['实际渲染字体核验'] = font_audit['status']
+        metadata['字体核验证据'] = str(evidence_path)
     data = {"metadata": metadata, "result": ctx.result, "counts": ctx.counts,
             "render": asdict(render_result) if render_result else None, "findings": [f.to_dict() for f in ctx.findings],
             "inventory": {"paragraphs": len(ctx.document.paragraphs), "tables": len(ctx.document.tables), "sections": ctx.document.sections,
@@ -53,6 +64,16 @@ def write_report(ctx, path, render_result=None, *, root=None):
                   f"- PNG 页数：{len(render_result.pages)}", f"- 原文件 SHA-256 未变化：{render_result.source_unchanged}", f"- 说明：{render_result.message}"]
     else:
         lines.append("本次仅执行 lint，未请求渲染。")
+    if font_audit is not None:
+        lines += ['', '### PDF 字体核验', '', f'字体状态 **{font_audit["status"]}**。', '',
+                  '| 角色 | PDF 实际字体 | 字号 pt | 核验状态 |', '|---|---|---|---|']
+        for table in font_audit['tables']:
+            entries={(run['role'],glyph['font'],glyph['size_pt'],run['status'])
+                     for run in table.get('runs',[]) for glyph in run['observed']}
+            for row in sorted(entries):
+                lines.append('| '+' | '.join(escaped(value) for value in row)+' |')
+            if table.get('message'):
+                lines.append(table['message'])
     lines += ["", "## 11. 问题明细", "", "完整 PASS 与问题记录另见同名 JSON。以下列出所有非 PASS 记录。", "", "| Rule ID | Severity | 状态 | 对象类型 | 位置 | 当前值 | 预期值 | 说明 | 规范出处 |", "|---|---|---|---|---|---|---|---|---|"]
     for f in ctx.findings:
         if f.status != "PASS":
@@ -60,4 +81,6 @@ def write_report(ctx, path, render_result=None, *, root=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    if font_audit is not None:
+        evidence_path.write_text(json.dumps(font_audit,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return path

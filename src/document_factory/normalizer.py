@@ -836,6 +836,10 @@ def normalize(input_path, rules_path, output_path=None, report_path=None):
     if not academic_scope and rules["tables"].get("normalization_line_spacing") is None:
         raise DocumentFactoryError("规则缺少 tables.normalization_line_spacing，无法确定表格规范化目标")
     before = lint(source, rules)
+    preflight = getattr(before,'font_preflight',None)
+    if preflight is not None and preflight['status']!='PASS':
+        reasons = ', '.join(f'{face["role"]}={face["status"]}' for face in preflight['faces'])
+        raise DocumentFactoryError(f'字体预检未通过（{reasons or "无可验证文字"}）。可先执行 lint 获取完整证据。')
     input_hash = before.document.sha256
     apply = academic_tables.normalize if academic_scope else _apply_normalization
     changes, changed_parts, stats = apply(before.document, rules)
